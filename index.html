@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Follow Up de Vagas - Sistema de Recrutamento</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; }
+    .header { background: white; border-bottom: 1px solid #e5e7eb; padding: 0 24px; }
+    .nav { display: flex; gap: 0; }
+    .nav-btn { padding: 16px 20px; font-size: 14px; font-weight: 500; background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: #6b7280; }
+    .nav-btn.active { color: #2563eb; border-bottom-color: #2563eb; }
+    .main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+    .kpi { border-radius: 8px; padding: 20px; border: 1px solid #e5e7eb; }
+    .kpi-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+    .kpi-value { font-size: 32px; font-weight: 700; }
+    .kpi-sub { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+    .card { background: white; border-radius: 8px; border: 1px solid #e5e7eb; padding: 20px; margin-bottom: 24px; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card-title { font-weight: 600; font-size: 14px; color: #374151; }
+    .tabs { display: flex; gap: 8px; }
+    .tab-btn { padding: 6px 16px; font-size: 13px; font-weight: 500; border-radius: 4px; border: none; cursor: pointer; background: #e5e7eb; color: #374151; }
+    .tab-btn.active { background: #2563eb; color: white; }
+    .etapas-row { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 8px; }
+    .etapa-card { min-width: 80px; text-align: center; padding: 8px 4px; background: #f9fafb; border-radius: 4px; border: 1px solid #e5e7eb; flex-shrink: 0; }
+    .etapa-name { font-size: 11px; color: #6b7280; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .etapa-qty { font-size: 14px; font-weight: 700; color: #111827; }
+    .etapa-ef { font-size: 12px; font-weight: 600; border-radius: 2px; padding: 1px 4px; }
+    .section-title { font-weight: 700; font-size: 18px; color: #111827; margin-bottom: 16px; }
+    .subtitle { font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { padding: 12px 16px; text-align: left; font-weight: 600; color: #6b7280; border-bottom: 2px solid #e5e7eb; }
+    th.center { text-align: center; }
+    td { padding: 16px; border-bottom: 1px solid #f3f4f6; }
+    td.center { text-align: center; }
+    tr:nth-child(even) { background: #f9fafb; }
+    .badge { padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 13px; }
+    .badge-pill { border-radius: 20px; padding: 4px 16px; font-weight: 500; }
+    .blue-bg { background: #eff6ff; }
+    .purple-bg { background: #faf5ff; }
+    .green-bg { background: #f0fdf4; }
+    .red-bg { background: #fef2f2; }
+    .blue { color: #2563eb; }
+    .purple { color: #9333ea; }
+    .green { color: #16a34a; }
+    .red { color: #dc2626; }
+    .yellow { color: #ca8a04; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .page-title { font-size: 24px; font-weight: 700; }
+    .btn-group { display: flex; gap: 12px; }
+    .btn { padding: 10px 20px; font-size: 14px; font-weight: 500; border-radius: 6px; border: none; cursor: pointer; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-outline { background: white; color: #374151; border: 1px solid #d1d5db; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 4px; }
+    .filters { display: grid; grid-template-columns: 1fr 200px 200px auto; gap: 16px; align-items: center; }
+    .filters-4 { grid-template-columns: 1fr 200px 200px 200px; }
+    input, select { width: 100%; padding: 10px 14px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 6px; outline: none; }
+    .actions { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 50; }
+    .modal { background: white; border-radius: 8px; padding: 24px; width: 100%; max-width: 400px; margin: 16px; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .hidden { display: none; }
+    .overflow-x { overflow-x: auto; }
+    .text-small { font-size: 12px; }
+    .text-gray { color: #6b7280; }
+    .font-bold { font-weight: 700; }
+    .mb-24 { margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav">
+      <button class="nav-btn active" onclick="showTab('dashboard')">Dashboard</button>
+      <button class="nav-btn" onclick="showTab('vagas')">Vagas</button>
+      <button class="nav-btn" onclick="showTab('candidatos')">Candidatos</button>
+    </nav>
+  </header>
+
+  <main class="main">
+    <div id="dashboard"></div>
+    <div id="vagas" class="hidden"></div>
+    <div id="candidatos" class="hidden"></div>
+  </main>
+
+  <div id="modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2 class="modal-title" id="modal-title"></h2>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // DADOS
+    let vagas = [
+      { id: 1, title: 'Ajudante De Motorista', state: 'BA', quantity: 32 },
+      { id: 2, title: 'Motorista Carreteiro', state: 'BA', quantity: 29 },
+      { id: 3, title: 'Motorista Truck', state: 'BA', quantity: 7 },
+      { id: 4, title: 'Tecnico Em Seguranca Do Trabalho', state: 'BA', quantity: 5 },
+      { id: 5, title: 'Ajudante De Motorista', state: 'RN', quantity: 28 },
+      { id: 6, title: 'Motorista Carreteiro', state: 'RN', quantity: 22 },
+      { id: 7, title: 'Motorista Truck', state: 'RN', quantity: 6 },
+      { id: 8, title: 'Tecnico Em Seguranca Do Trabalho', state: 'RN', quantity: 5 },
+    ];
+
+    let candidatos = [
+      { id: 1, name: 'Anderson John Da Silva Lopes', phone: '(71) 99999-0001', positionId: 4, currentStage: 11, status: 'in_process' },
+      { id: 2, name: 'Naylanda Rosario Silva De Melo', phone: '(71) 99999-0002', positionId: 4, currentStage: 9, status: 'in_process' },
+      { id: 3, name: 'Luan Henrique Alaman De Souza', phone: '(71) 99999-0003', positionId: 4, currentStage: 9, status: 'in_process' },
+      { id: 4, name: 'Jose Leonardo', phone: '(71) 99999-0004', positionId: 1, currentStage: 10, status: 'in_process' },
+      { id: 5, name: 'Carlos Antonio Cavalcante', phone: '(71) 99999-0005', positionId: 1, currentStage: 9, status: 'in_process' },
+      { id: 6, name: 'Cleudo Rocha Da Silva', phone: '(71) 99999-0006', positionId: 2, currentStage: 9, status: 'in_process' },
+      { id: 7, name: 'Antonio Francikleber Candido Dos Santos', phone: '(71) 99999-0007', positionId: 1, currentStage: 9, status: 'in_process' },
+      { id: 8, name: 'Ivanio Cabral', phone: '(71) 99999-0008', positionId: 2, currentStage: 10, status: 'in_process' },
+      { id: 9, name: 'Isaac Da Silva Dantas', phone: '(71) 99999-0009', positionId: 2, currentStage: 10, status: 'in_process' },
+      { id: 10, name: 'Geanatan Araujo Batista De Oliveira', phone: '(71) 99999-0010', positionId: 2, currentStage: 10, status: 'in_process' },
+      { id: 11, name: 'Jose Luiz Souza Lima', phone: '(71) 99999-0011', positionId: 2, currentStage: 3, status: 'in_process' },
+      { id: 12, name: 'Cleres Santos De Jesus', phone: '(71) 99999-0012', positionId: 2, currentStage: 3, status: 'in_process' },
+      { id: 13, name: 'Valter Cassio De Oliveira Santos', phone: '(71) 99999-0013', positionId: 2, currentStage: 3, status: 'in_process' },
+    ];
+
+    // Gerar mais candidatos
+    for(let i=0; i<1; i++) candidatos.push({ id: 100+i, name: 'João Silva '+(i+1), phone: '(71) 98888-1001', positionId: 1, currentStage: 6, status: 'in_process' });
+    for(let i=0; i<4; i++) candidatos.push({ id: 110+i, name: 'Maria Santos '+(i+1), phone: '(71) 98888-1002', positionId: 1, currentStage: 7, status: 'in_process' });
+    for(let i=0; i<2; i++) candidatos.push({ id: 120+i, name: 'Pedro Costa '+(i+1), phone: '(71) 98888-1003', positionId: 1, currentStage: 8, status: 'in_process' });
+    for(let i=0; i<2; i++) candidatos.push({ id: 130+i, name: 'Ana Lima '+(i+1), phone: '(71) 98888-1004', positionId: 1, currentStage: 13, status: 'in_process' });
+    for(let i=0; i<17; i++) candidatos.push({ id: 140+i, name: 'Carlos Oliveira '+(i+1), phone: '(71) 98888-1005', positionId: 1, currentStage: 14, status: 'approved' });
+    for(let i=0; i<6; i++) candidatos.push({ id: 200+i, name: 'Roberto Alves '+(i+1), phone: '(71) 98888-2001', positionId: 2, currentStage: 4, status: 'in_process' });
+    for(let i=0; i<3; i++) candidatos.push({ id: 210+i, name: 'Fernanda Souza '+(i+1), phone: '(71) 98888-2002', positionId: 2, currentStage: 5, status: 'in_process' });
+    for(let i=0; i<4; i++) candidatos.push({ id: 220+i, name: 'Marcos Pereira '+(i+1), phone: '(71) 98888-2003', positionId: 2, currentStage: 7, status: 'in_process' });
+    for(let i=0; i<1; i++) candidatos.push({ id: 230+i, name: 'Lucia Ferreira '+(i+1), phone: '(71) 98888-2004', positionId: 2, currentStage: 8, status: 'in_process' });
+    for(let i=0; i<3; i++) candidatos.push({ id: 240+i, name: 'Paulo Rocha '+(i+1), phone: '(71) 98888-2005', positionId: 2, currentStage: 13, status: 'in_process' });
+    for(let i=0; i<13; i++) candidatos.push({ id: 250+i, name: 'Sandra Dias '+(i+1), phone: '(71) 98888-2006', positionId: 2, currentStage: 14, status: 'approved' });
+    for(let i=0; i<1; i++) candidatos.push({ id: 300+i, name: 'Ricardo Gomes '+(i+1), phone: '(71) 98888-3001', positionId: 3, currentStage: 7, status: 'in_process' });
+    for(let i=0; i<3; i++) candidatos.push({ id: 310+i, name: 'Juliana Martins '+(i+1), phone: '(71) 98888-3002', positionId: 3, currentStage: 14, status: 'approved' });
+    for(let i=0; i<2; i++) candidatos.push({ id: 400+i, name: 'Eduardo Nascimento '+(i+1), phone: '(71) 98888-4001', positionId: 4, currentStage: 8, status: 'in_process' });
+    for(let i=0; i<2; i++) candidatos.push({ id: 500+i, name: 'Camila Ribeiro '+(i+1), phone: '(84) 98888-5001', positionId: 5, currentStage: 9, status: 'in_process' });
+    for(let i=0; i<1; i++) candidatos.push({ id: 510+i, name: 'Thiago Cardoso '+(i+1), phone: '(84) 98888-5002', positionId: 5, currentStage: 10, status: 'in_process' });
+    for(let i=0; i<2; i++) candidatos.push({ id: 520+i, name: 'Bianca Moreira '+(i+1), phone: '(84) 98888-5003', positionId: 5, currentStage: 13, status: 'in_process' });
+    for(let i=0; i<21; i++) candidatos.push({ id: 530+i, name: 'Felipe Barbosa '+(i+1), phone: '(84) 98888-5004', positionId: 5, currentStage: 14, status: 'approved' });
+    for(let i=0; i<1; i++) candidatos.push({ id: 600+i, name: 'Amanda Teixeira '+(i+1), phone: '(84) 98888-6001', positionId: 6, currentStage: 9, status: 'in_process' });
+    for(let i=0; i<3; i++) candidatos.push({ id: 610+i, name: 'Diego Carvalho '+(i+1), phone: '(84) 98888-6002', positionId: 6, currentStage: 10, status: 'in_process' });
+    for(let i=0; i<3; i++) candidatos.push({ id: 620+i, name: 'Priscila Andrade '+(i+1), phone: '(84) 98888-6003', positionId: 6, currentStage: 13, status: 'in_process' });
+    for(let i=0; i<17; i++) candidatos.push({ id: 630+i, name: 'Bruno Mendes '+(i+1), phone: '(84) 98888-6004', positionId: 6, currentStage: 14, status: 'approved' });
+    for(let i=0; i<1; i++) candidatos.push({ id: 700+i, name: 'Carla Nunes '+(i+1), phone: '(84) 98888-7001', positionId: 7, currentStage: 13, status: 'in_process' });
+    for(let i=0; i<5; i++) candidatos.push({ id: 710+i, name: 'Rodrigo Freitas '+(i+1), phone: '(84) 98888-7002', positionId: 7, currentStage: 14, status: 'approved' });
+    for(let i=0; i<1; i++) candidatos.push({ id: 800+i, name: 'Vanessa Pinto '+(i+1), phone: '(84) 98888-8001', positionId: 8, currentStage: 10, status: 'in_process' });
+    for(let i=0; i<1; i++) candidatos.push({ id: 810+i, name: 'Leandro Castro '+(i+1), phone: '(84) 98888-8002', positionId: 8, currentStage: 13, status: 'in_process' });
+    for(let i=0; i<3; i++) candidatos.push({ id: 820+i, name: 'Tatiana Correia '+(i+1), phone: '(84) 98888-8003', positionId: 8, currentStage: 14, status: 'approved' });
+
+    const ETAPAS = ['Abertura da Vaga','Captação','Triagem','Checagem Dados','Entrevista RH','Teste Prático','Proposta Benel','ASO','Análise de Docs','Enviar para DP','Apto para Integração Benel','Subir Doc. Portal','PT Cliente','Integração Cliente','Aprovado no Portal'];
+    const ESTADOS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
+    let currentTab = 'dashboard';
+    let abaEficiencia = 'geral';
+
+    function showTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('vagas').classList.add('hidden');
+      document.getElementById('candidatos').classList.add('hidden');
+      document.getElementById(tab).classList.remove('hidden');
+      render();
+    }
+
+    function setAbaEficiencia(aba) {
+      abaEficiencia = aba;
+      render();
+    }
+
+    function getVagasInfo() {
+      return vagas.map(v => ({
+        ...v,
+        totalCandidates: candidatos.filter(c => c.positionId === v.id).length,
+        candidatesByStage: ETAPAS.map((_, i) => candidatos.filter(c => c.positionId === v.id && c.currentStage === i).length)
+      }));
+    }
+
+    function getEfColor(e) { return e >= 80 ? 'green' : e >= 50 ? 'yellow' : 'red'; }
+    function getEfBg(e) { return e >= 80 ? '#dcfce7' : e >= 50 ? '#fef9c3' : '#fee2e2'; }
+    function getEfTextColor(e) { return e >= 80 ? '#16a34a' : e >= 50 ? '#ca8a04' : '#dc2626'; }
+
+    function renderEtapaCards(candPorEtapa, efPorEtapa) {
+      return ETAPAS.map((etapa, idx) => `
+        <div class="etapa-card">
+          <div class="etapa-name">${etapa}</div>
+          <div class="etapa-qty">${candPorEtapa[idx] || '-'}</div>
+          <div class="etapa-ef" style="background:${efPorEtapa[idx] >= 50 ? '#dcfce7' : efPorEtapa[idx] > 0 ? '#fef9c3' : 'transparent'}; color:${efPorEtapa[idx] >= 50 ? '#16a34a' : efPorEtapa[idx] > 0 ? '#ca8a04' : '#9ca3af'}">${efPorEtapa[idx]}%</div>
+        </div>
+      `).join('');
+    }
+
+    function renderDashboard() {
+      const vagasInfo = getVagasInfo();
+      const totalPlanejado = vagas.reduce((s, v) => s + v.quantity, 0);
+      const totalCandidatos = candidatos.length;
+      const totalIntegrados = vagasInfo.reduce((s, v) => s + (v.candidatesByStage[14] || 0), 0);
+      const eficienciaGeral = totalPlanejado > 0 ? Math.round((totalIntegrados / totalPlanejado) * 100) : 0;
+      const tqf = totalIntegrados - totalPlanejado;
+
+      const candPorEtapa = ETAPAS.map((_, i) => candidatos.filter(c => c.currentStage === i).length);
+      const efPorEtapa = ETAPAS.map((_, i) => totalPlanejado > 0 ? Math.round((candPorEtapa[i] / totalPlanejado) * 100) : 0);
+
+      const vagasPorEstado = {};
+      vagasInfo.forEach(v => { if (!vagasPorEstado[v.state]) vagasPorEstado[v.state] = []; vagasPorEstado[v.state].push(v); });
+
+      const vagasPorTitulo = {};
+      vagasInfo.forEach(v => { if (!vagasPorTitulo[v.title]) vagasPorTitulo[v.title] = []; vagasPorTitulo[v.title].push(v); });
+
+      let eficienciaContent = '';
+      if (abaEficiencia === 'geral') {
+        eficienciaContent = `<div class="etapas-row">${renderEtapaCards(candPorEtapa, efPorEtapa)}</div>`;
+      } else if (abaEficiencia === 'unidade') {
+        eficienciaContent = Object.entries(vagasPorEstado).map(([estado, vagasDoEstado]) => {
+          const totalPlan = vagasDoEstado.reduce((s, v) => s + v.quantity, 0);
+          const candPorEtapaEstado = ETAPAS.map((_, i) => vagasDoEstado.reduce((s, v) => s + (v.candidatesByStage[i] || 0), 0));
+          const efPorEtapaEstado = ETAPAS.map((_, i) => totalPlan > 0 ? Math.round((candPorEtapaEstado[i] / totalPlan) * 100) : 0);
+          return `<div class="mb-24"><div class="subtitle">${estado}</div><div class="etapas-row">${renderEtapaCards(candPorEtapaEstado, efPorEtapaEstado)}</div></div>`;
+        }).join('');
+      } else if (abaEficiencia === 'vaga') {
+        eficienciaContent = Object.entries(vagasPorTitulo).map(([titulo, vagasDoTitulo]) => {
+          const totalPlan = vagasDoTitulo.reduce((s, v) => s + v.quantity, 0);
+          const candPorEtapaTitulo = ETAPAS.map((_, i) => vagasDoTitulo.reduce((s, v) => s + (v.candidatesByStage[i] || 0), 0));
+          const efPorEtapaTitulo = ETAPAS.map((_, i) => totalPlan > 0 ? Math.round((candPorEtapaTitulo[i] / totalPlan) * 100) : 0);
+          return `<div class="mb-24"><div class="subtitle">${titulo}</div><div class="etapas-row">${renderEtapaCards(candPorEtapaTitulo, efPorEtapaTitulo)}</div></div>`;
+        }).join('');
+      }
+
+      const tabelasPorEstado = Object.entries(vagasPorEstado).map(([estado, vagasEstado]) => `
+        <div class="card">
+          <div class="section-title">${estado}</div>
+          <div class="overflow-x">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width:250px">Vaga</th>
+                  <th class="center">Planejado</th>
+                  <th class="center" style="min-width:220px">Candidatos efetivos e banco de vagas</th>
+                  <th class="center">TQF</th>
+                  <th class="center">Eficiência</th>
+                  ${ETAPAS.map((_, i) => `<th class="center text-small text-gray">E${i+1}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${vagasEstado.map(vaga => {
+                  const ef = vaga.quantity > 0 ? Math.round((vaga.totalCandidates / vaga.quantity) * 100) : 0;
+                  const tqfV = vaga.totalCandidates - vaga.quantity;
+                  return `
+                    <tr>
+                      <td class="font-bold">${vaga.title}</td>
+                      <td class="center font-bold blue">${vaga.quantity}</td>
+                      <td class="center font-bold blue">${vaga.totalCandidates}</td>
+                      <td class="center font-bold ${tqfV > 0 ? 'green' : tqfV < 0 ? 'red' : ''}">${tqfV}</td>
+                      <td class="center"><span class="badge" style="background:${getEfBg(ef)};color:${getEfTextColor(ef)}">${ef}%</span></td>
+                      ${vaga.candidatesByStage.map(c => `<td class="center text-gray">${c}</td>`).join('')}
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('dashboard').innerHTML = `
+        <div class="grid-5">
+          <div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${totalPlanejado}</div><div class="kpi-sub">Total: ${vagas.length}</div></div>
+          <div class="kpi purple-bg"><div class="kpi-label">Total de Candidatos</div><div class="kpi-value purple">${totalCandidatos}</div><div class="kpi-sub">Em processo</div></div>
+          <div class="kpi green-bg"><div class="kpi-label">Integrados</div><div class="kpi-value green">${totalIntegrados}</div><div class="kpi-sub">Finalizados</div></div>
+          <div class="kpi ${eficienciaGeral >= 50 ? 'green-bg' : 'red-bg'}"><div class="kpi-label">Eficiência Geral</div><div class="kpi-value ${eficienciaGeral >= 50 ? 'green' : 'red'}">${eficienciaGeral}%</div><div class="kpi-sub">Taxa de conversão</div></div>
+          <div class="kpi ${tqf >= 0 ? 'green-bg' : 'red-bg'}"><div class="kpi-label">TQF (Faltam Concluir)</div><div class="kpi-value ${tqf >= 0 ? 'green' : 'red'}">${tqf}</div><div class="kpi-sub">Pessoas pendentes</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Eficiência por Etapa</div>
+            <div class="tabs">
+              <button class="tab-btn ${abaEficiencia === 'geral' ? 'active' : ''}" onclick="setAbaEficiencia('geral')">Geral</button>
+              <button class="tab-btn ${abaEficiencia === 'unidade' ? 'active' : ''}" onclick="setAbaEficiencia('unidade')">Por Unidade</button>
+              <button class="tab-btn ${abaEficiencia === 'vaga' ? 'active' : ''}" onclick="setAbaEficiencia('vaga')">Por Vaga</button>
+            </div>
+          </div>
+          ${eficienciaContent}
+        </div>
+        ${tabelasPorEstado}
+      `;
+    }
+
+    function renderVagas() {
+      const vagasInfo = getVagasInfo();
+      document.getElementById('vagas').innerHTML = `
+        <div class="page-header">
+          <h1 class="page-title">Vagas</h1>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModalVaga()">+ Nova Vaga</button>
+            <button class="btn btn-outline">📥 Importar Vagas</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="filters">
+            <input type="text" placeholder="Buscar por nome da vaga..." id="searchVaga" onkeyup="render()">
+            <select id="filterEstadoVaga" onchange="render()"><option value="todos">Todos os Estados</option>${ESTADOS.map(e => `<option value="${e}">${e}</option>`).join('')}</select>
+            <select><option>Ordenar por Nome</option></select>
+            <div class="btn-group"><button class="btn btn-outline">Visualizar Cards</button><button class="btn btn-primary">Visualizar Lista</button></div>
+          </div>
+        </div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead><tr><th>Vaga</th><th>Estado</th><th class="center">Quantidade</th><th class="center">Candidatos</th><th class="center">Ações</th></tr></thead>
+            <tbody>
+              ${vagasInfo.filter(v => {
+                const search = document.getElementById('searchVaga')?.value?.toLowerCase() || '';
+                const estado = document.getElementById('filterEstadoVaga')?.value || 'todos';
+                return v.title.toLowerCase().includes(search) && (estado === 'todos' || v.state === estado);
+              }).map(v => `
+                <tr>
+                  <td>${v.title}</td>
+                  <td class="text-gray">${v.state}</td>
+                  <td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td>
+                  <td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${v.totalCandidates}</span></td>
+                  <td class="center"><button class="btn btn-outline btn-sm" onclick="openModalVaga(${v.id})">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteVaga(${v.id})">Deletar</button></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderCandidatos() {
+      document.getElementById('candidatos').innerHTML = `
+        <div class="page-header">
+          <h1 class="page-title">Candidatos</h1>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openModalCandidato()">+ Novo Candidato</button>
+            <button class="btn btn-outline">📥 Importar Candidatos</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="filters filters-4">
+            <input type="text" placeholder="Buscar por nome ou telefone..." id="searchCand" onkeyup="render()">
+            <select id="filterEtapa" onchange="render()"><option value="todos">Todas as Etapas</option>${ETAPAS.map((e, i) => `<option value="${i}">${i+1}. ${e}</option>`).join('')}</select>
+            <select id="filterEstadoCand" onchange="render()"><option value="todos">Todos os Estados</option>${ESTADOS.map(e => `<option value="${e}">${e}</option>`).join('')}</select>
+            <select id="filterFuncao" onchange="render()"><option value="todos">Todas as Funções</option>${[...new Set(vagas.map(v => v.title))].map(f => `<option value="${f}">${f}</option>`).join('')}</select>
+          </div>
+        </div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead><tr><th>Nome ⇅</th><th>Telefone ⇅</th><th>Vaga ⇅</th><th>Etapa ⇅</th><th class="center">Ações</th></tr></thead>
+            <tbody>
+              ${candidatos.filter(c => {
+                const v = vagas.find(x => x.id === c.positionId);
+                const search = document.getElementById('searchCand')?.value?.toLowerCase() || '';
+                const etapa = document.getElementById('filterEtapa')?.value || 'todos';
+                const estado = document.getElementById('filterEstadoCand')?.value || 'todos';
+                const funcao = document.getElementById('filterFuncao')?.value || 'todos';
+                return (c.name.toLowerCase().includes(search) || c.phone.includes(search)) &&
+                       (etapa === 'todos' || c.currentStage === parseInt(etapa)) &&
+                       (estado === 'todos' || (v && v.state === estado)) &&
+                       (funcao === 'todos' || (v && v.title === funcao));
+              }).slice(0, 50).map(c => {
+                const v = vagas.find(x => x.id === c.positionId);
+                const isRej = c.status === 'rejected';
+                return `
+                  <tr style="${isRej ? 'background:#fef2f2' : ''}">
+                    <td>${c.name}</td>
+                    <td class="text-gray">${c.phone}</td>
+                    <td class="text-gray">${v?.title || 'N/A'}</td>
+                    <td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span></td>
+                    <td>
+                      <div class="actions">
+                        ${!isRej && c.currentStage < 14 ? `<button class="btn btn-primary btn-sm" onclick="avancarCandidato(${c.id})">Avancar</button>` : ''}
+                        <button class="btn btn-outline btn-sm" onclick="openModalEditarEtapa(${c.id})">Editar</button>
+                        ${!isRej ? `<button class="btn btn-sm" style="background:white;border:1px solid #dc2626;color:#dc2626" onclick="openModalReprovar(${c.id})">Reprovar</button>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button>
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function render() {
+      if (currentTab === 'dashboard') renderDashboard();
+      else if (currentTab === 'vagas') renderVagas();
+      else if (currentTab === 'candidatos') renderCandidatos();
+    }
+
+    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+    function openModalVaga(id = null) {
+      const vaga = id ? vagas.find(v => v.id === id) : null;
+      document.getElementById('modal-title').textContent = vaga ? 'Editar Vaga' : 'Nova Vaga';
+      document.getElementById('modal-content').innerHTML = `
+        <div class="form-group"><input type="text" id="vagaTitle" placeholder="Nome da Vaga" value="${vaga?.title || ''}"></div>
+        <div class="form-group"><select id="vagaState">${ESTADOS.map(e => `<option value="${e}" ${vaga?.state === e ? 'selected' : ''}>${e}</option>`).join('')}</select></div>
+        <div class="form-group"><input type="number" id="vagaQty" placeholder="Quantidade" value="${vaga?.quantity || 1}"></div>
+        <div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>
+      `;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function saveVaga(id) {
+      const title = document.getElementById('vagaTitle').value;
+      const state = document.getElementById('vagaState').value;
+      const quantity = parseInt(document.getElementById('vagaQty').value) || 1;
+      if (!title) return alert('Preencha o nome');
+      if (id) { const v = vagas.find(x => x.id === id); v.title = title; v.state = state; v.quantity = quantity; }
+      else { vagas.push({ id: Math.max(0, ...vagas.map(v => v.id)) + 1, title, state, quantity }); }
+      closeModal(); render();
+    }
+
+    function deleteVaga(id) { if (confirm('Deletar esta vaga?')) { vagas = vagas.filter(v => v.id !== id); candidatos = candidatos.filter(c => c.positionId !== id); render(); }}
+
+    function openModalCandidato() {
+      document.getElementById('modal-title').textContent = 'Novo Candidato';
+      document.getElementById('modal-content').innerHTML = `
+        <div class="form-group"><input type="text" id="candName" placeholder="Nome"></div>
+        <div class="form-group"><input type="text" id="candPhone" placeholder="Telefone"></div>
+        <div class="form-group"><select id="candVaga"><option value="">Selecione uma vaga</option>${vagas.map(v => `<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div>
+        <div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>
+      `;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function saveCandidato() {
+      const name = document.getElementById('candName').value;
+      const phone = document.getElementById('candPhone').value;
+      const positionId = parseInt(document.getElementById('candVaga').value);
+      if (!name || !positionId) return alert('Preencha nome e selecione vaga');
+      candidatos.push({ id: Math.max(0, ...candidatos.map(c => c.id)) + 1, name, phone, positionId, currentStage: 0, status: 'in_process' });
+      closeModal(); render();
+    }
+
+    function avancarCandidato(id) { const c = candidatos.find(x => x.id === id); if (c && c.currentStage < 14) c.currentStage++; render(); }
+
+    function deleteCandidato(id) { if (confirm('Deletar este candidato?')) { candidatos = candidatos.filter(c => c.id !== id); render(); }}
+
+    function openModalReprovar(id) {
+      const c = candidatos.find(x => x.id === id);
+      document.getElementById('modal-title').textContent = 'Reprovar Candidato';
+      document.getElementById('modal-content').innerHTML = `
+        <p class="text-gray">Candidato: <strong>${c.name}</strong></p>
+        <div class="form-group"><textarea id="motivoRejeicao" placeholder="Motivo da reprovação" rows="4" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px"></textarea></div>
+        <div class="btn-group"><button class="btn btn-danger" style="flex:1" onclick="reprovarCandidato(${id})">Reprovar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>
+      `;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function reprovarCandidato(id) {
+      const motivo = document.getElementById('motivoRejeicao').value;
+      if (!motivo.trim()) return alert('Informe o motivo');
+      const c = candidatos.find(x => x.id === id); c.status = 'rejected';
+      closeModal(); render();
+    }
+
+    function openModalEditarEtapa(id) {
+      const c = candidatos.find(x => x.id === id);
+      document.getElementById('modal-title').textContent = 'Editar Etapa';
+      document.getElementById('modal-content').innerHTML = `
+        <p class="text-gray">Candidato: <strong>${c.name}</strong></p>
+        <div class="form-group"><select id="novaEtapa">${ETAPAS.map((e, i) => `<option value="${i}" ${c.currentStage === i ? 'selected' : ''}>${i+1}. ${e}</option>`).join('')}</select></div>
+        <div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="salvarEtapa(${id})">Confirmar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>
+      `;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function salvarEtapa(id) {
+      const novaEtapa = parseInt(document.getElementById('novaEtapa').value);
+      const c = candidatos.find(x => x.id === id); c.currentStage = novaEtapa; c.status = 'in_process';
+      closeModal(); render();
+    }
+
+    // Fechar modal clicando fora
+    document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+    // Inicializar
+    render();
+  </script>
+</body>
+</html>

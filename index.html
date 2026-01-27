@@ -77,7 +77,8 @@
     .uf-total-num{font-size:20px;font-weight:700;color:#1e40af;margin-top:2px}
     .uf-total-num span{font-size:12px;font-weight:400;color:#64748b}
     .etapas-lista{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
-    .etapa-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0}
+    .etapa-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;transition:all 0.2s}
+    .etapa-item:hover{background:#e0e7ff;border-color:#818cf8;transform:scale(1.02)}
     .etapa-item-qty{background:#3b82f6;color:#fff;font-weight:700;font-size:13px;min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
     .etapa-item-name{font-size:12px;color:#334155;font-weight:500;flex:1}
     .etapa-aprovado{background:#f0fdf4;border-color:#86efac}
@@ -432,6 +433,49 @@
     function getEfBg(e){return e>=100?'#dcfce7':e>=80?'#dcfce7':e>=50?'#fef9c3':'#fee2e2'}
     function getEfTxt(e){return e>=100?'#16a34a':e>=80?'#16a34a':e>=50?'#ca8a04':'#dc2626'}
 
+    function mostrarCandidatosEtapa(positionId, etapaIdx) {
+      const vaga = vagas.find(v => v.id === positionId);
+      const cands = candidatos.filter(c => c.positionId === positionId && c.currentStage === etapaIdx);
+      const etapaNome = ETAPAS[etapaIdx];
+      
+      document.getElementById('modal-title').textContent = `${etapaNome}`;
+      document.getElementById('modal-content').innerHTML = `
+        <div style="margin-bottom:16px;padding:12px;background:#f1f5f9;border-radius:8px">
+          <div style="font-size:13px;color:#64748b">Vaga: <strong style="color:#1e40af">${vaga.title}</strong></div>
+          <div style="font-size:13px;color:#64748b">Estado: <strong style="color:#1e40af">${vaga.state === 'BA' ? 'Bahia' : 'Rio Grande do Norte'}</strong></div>
+          <div style="font-size:13px;color:#64748b">Total: <strong style="color:#16a34a">${cands.length} candidato(s)</strong></div>
+        </div>
+        <div style="max-height:400px;overflow-y:auto">
+          ${cands.length > 0 ? `
+            <table style="width:100%;font-size:12px;border-collapse:collapse">
+              <thead>
+                <tr style="background:#f8fafc">
+                  <th style="padding:8px;text-align:left;border-bottom:2px solid #e2e8f0">#</th>
+                  <th style="padding:8px;text-align:left;border-bottom:2px solid #e2e8f0">Nome</th>
+                  <th style="padding:8px;text-align:center;border-bottom:2px solid #e2e8f0">Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${cands.map((c, i) => `
+                  <tr style="border-bottom:1px solid #e2e8f0">
+                    <td style="padding:8px;color:#64748b">${i + 1}</td>
+                    <td style="padding:8px;font-weight:500">${c.name}</td>
+                    <td style="padding:8px;text-align:center">
+                      <button class="btn btn-primary btn-sm" onclick="closeModal();setTimeout(()=>openModalEditarEtapa(${c.id}),100)" style="font-size:11px;padding:4px 8px">Editar</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : '<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato nesta etapa</p>'}
+        </div>
+        <div class="btn-group" style="margin-top:16px">
+          <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Fechar</button>
+        </div>
+      `;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
     function renderEtapaCards(cpe,epe){return ETAPAS.map((et,i)=>{const q=cpe[i],ef=epe[i],hv=q>0;return`<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty">${hv?q:'-'}</div><div class="etapa-ef" style="background:${hv?(ef>=50?'#dcfce7':'#fef9c3'):'transparent'};color:${hv?(ef>=50?'#16a34a':'#ca8a04'):'#9ca3af'}">${ef}%</div></div>`}).join('')}
 
     function renderDashboard(){
@@ -484,7 +528,8 @@
           
           dados.etapasComCand.forEach(etapa=>{
             const isAprovado=etapa.idx===14;
-            efCruzada+=`<div class="etapa-item ${isAprovado?'etapa-aprovado':''}">
+            const vagaId=vagas.find(v=>v.title===func&&v.state===dados.est)?.id;
+            efCruzada+=`<div class="etapa-item ${isAprovado?'etapa-aprovado':''}" onclick="mostrarCandidatosEtapa(${vagaId},${etapa.idx})" style="cursor:pointer" title="Clique para ver os candidatos">
               <span class="etapa-item-qty">${etapa.qty}</span>
               <span class="etapa-item-name">${etapa.nome}</span>
             </div>`;

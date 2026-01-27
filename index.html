@@ -9,59 +9,84 @@
     body{font-family:system-ui,-apple-system,sans-serif;background:#f8f9fa;min-height:100vh}
     .header{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 24px}
     .nav{display:flex}
-    .nav-btn{padding:16px 20px;font-size:14px;font-weight:500;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;color:#6b7280}
+    .nav-btn{padding:16px 24px;font-size:15px;font-weight:500;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;color:#6b7280}
     .nav-btn.active{color:#2563eb;border-bottom-color:#2563eb}
     .main{padding:16px;max-width:100%}
     .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
-    .kpi{border-radius:8px;padding:14px;border:1px solid #e5e7eb}
-    .kpi-label{font-size:11px;color:#6b7280;margin-bottom:4px}
-    .kpi-value{font-size:26px;font-weight:700}
-    .kpi-sub{font-size:10px;color:#9ca3af;margin-top:2px}
-    .card{background:#fff;border-radius:8px;border:1px solid #e5e7eb;padding:14px;margin-bottom:14px}
-    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .card-title{font-weight:600;font-size:14px;color:#374151}
-    .tabs{display:flex;gap:6px}
-    .tab-btn{padding:5px 14px;font-size:12px;font-weight:500;border-radius:4px;border:none;cursor:pointer;background:#e5e7eb;color:#374151}
-    .tab-btn.active{background:#2563eb;color:#fff}
-    .etapas-row{display:flex;gap:2px}
-    .etapa-card{flex:1;text-align:center;padding:5px 2px;background:#f9fafb;border-radius:3px;border:1px solid #e5e7eb}
-    .etapa-name{font-size:8px;color:#6b7280;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .etapa-qty{font-size:11px;font-weight:700;color:#111827}
-    .etapa-ef{font-size:9px;font-weight:600;border-radius:2px;padding:1px 2px}
-    .section-title{font-weight:700;font-size:15px;color:#111827;margin-bottom:10px}
-    .subtitle{font-weight:600;font-size:12px;color:#374151;margin-bottom:8px}
-    table{width:100%;border-collapse:collapse;font-size:11px}
-    th{padding:6px 4px;text-align:left;font-weight:600;color:#6b7280;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    .kpi{border-radius:8px;padding:16px;border:1px solid #e5e7eb}
+    .kpi-label{font-size:13px;color:#6b7280;margin-bottom:4px}
+    .kpi-value{font-size:32px;font-weight:700}
+    .kpi-sub{font-size:12px;color:#9ca3af;margin-top:2px}
+    .card{background:#fff;border-radius:8px;border:1px solid #e5e7eb;padding:16px;margin-bottom:16px}
+    .card-title{font-weight:600;font-size:15px;color:#374151;margin-bottom:12px}
+    .etapas-row{display:flex;gap:3px}
+    .etapa-card{flex:1;text-align:center;padding:6px 2px;background:#f9fafb;border-radius:4px;border:1px solid #e5e7eb}
+    .etapa-name{font-size:9px;color:#6b7280;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .etapa-qty{font-size:14px;font-weight:700;color:#111827}
+    .etapa-ef{font-size:11px;font-weight:600;border-radius:2px;padding:1px 3px}
+    .section-title{font-weight:700;font-size:16px;color:#111827;margin-bottom:12px}
+    .subtitle{font-weight:600;font-size:14px;color:#374151;margin-bottom:8px;margin-top:12px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th{padding:8px 4px;text-align:left;font-weight:600;color:#6b7280;border-bottom:2px solid #e5e7eb;white-space:nowrap}
     th.center{text-align:center}
     th.sortable{cursor:pointer}
     th.sortable:hover{color:#2563eb}
-    td{padding:8px 4px;border-bottom:1px solid #f3f4f6}
+    td{padding:10px 4px;border-bottom:1px solid #f3f4f6}
     td.center{text-align:center}
     tr:nth-child(even){background:#f9fafb}
-    .badge{padding:2px 6px;border-radius:3px;font-weight:700;font-size:10px}
-    .badge-pill{border-radius:20px;padding:2px 10px;font-weight:500}
+    .badge{padding:3px 8px;border-radius:4px;font-weight:700;font-size:11px}
+    .badge-pill{border-radius:20px;padding:3px 12px;font-weight:500}
     .blue-bg{background:#eff6ff}.purple-bg{background:#faf5ff}.green-bg{background:#f0fdf4}.red-bg{background:#fef2f2}.yellow-bg{background:#fefce8}
     .blue{color:#2563eb}.purple{color:#9333ea}.green{color:#16a34a}.red{color:#dc2626}.yellow{color:#ca8a04}
-    .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-    .page-title{font-size:18px;font-weight:700}
+    .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .page-title{font-size:20px;font-weight:700}
     .btn-group{display:flex;gap:6px}
-    .btn{padding:7px 14px;font-size:12px;font-weight:500;border-radius:5px;border:none;cursor:pointer}
+    .btn{padding:8px 16px;font-size:13px;font-weight:500;border-radius:5px;border:none;cursor:pointer}
     .btn-primary{background:#2563eb;color:#fff}
     .btn-outline{background:#fff;color:#374151;border:1px solid #d1d5db}
     .btn-danger{background:#dc2626;color:#fff}
-    .btn-sm{padding:4px 8px;font-size:11px;border-radius:3px;min-width:60px;text-align:center}
-    .filters{display:grid;grid-template-columns:1fr 160px 160px 160px;gap:10px;align-items:center}
-    input,select{width:100%;padding:7px 10px;font-size:12px;border:1px solid #d1d5db;border-radius:5px;outline:none}
-    .actions{display:flex;justify-content:flex-end;gap:4px;min-width:250px}
+    .btn-sm{padding:5px 10px;font-size:12px;border-radius:4px;min-width:65px;text-align:center}
+    .filters{display:grid;grid-template-columns:1fr 170px 170px 170px;gap:12px;align-items:center}
+    input,select{width:100%;padding:8px 12px;font-size:13px;border:1px solid #d1d5db;border-radius:5px;outline:none}
+    .actions{display:flex;justify-content:flex-end;gap:5px;min-width:270px}
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50}
-    .modal{background:#fff;border-radius:8px;padding:20px;width:100%;max-width:380px;margin:16px}
-    .modal-title{font-size:16px;font-weight:700;margin-bottom:16px}
-    .form-group{margin-bottom:14px}
+    .modal{background:#fff;border-radius:8px;padding:24px;width:100%;max-width:400px;margin:16px}
+    .modal-title{font-size:18px;font-weight:700;margin-bottom:20px}
+    .form-group{margin-bottom:16px}
+    .form-group label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px}
     .hidden{display:none}
     .text-gray{color:#6b7280}
     .font-bold{font-weight:700}
-    .mb-14{margin-bottom:14px}
-    .etapa-col{width:24px;text-align:center;font-size:10px;padding:6px 1px!important}
+    .mb-8{margin-bottom:8px}
+    .etapa-col{width:26px;text-align:center;font-size:11px;padding:8px 2px!important}
+    .ef-section{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e5e7eb}
+    .ef-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .ef-title{font-weight:700;font-size:14px;color:#2563eb;margin-bottom:10px}
+    .funcoes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .funcao-card{background:#fff;border:2px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+    .funcao-header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:12px 16px;font-weight:700;font-size:14px;text-align:center}
+    .funcao-body-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .uf-col{padding:12px;border-right:1px solid #e2e8f0}
+    .uf-col:last-child{border-right:none}
+    .uf-header-box{padding:10px;border-radius:8px;margin-bottom:10px;text-align:center}
+    .uf-header-box.uf-ba{background:#fef3c7;border:1px solid #fcd34d}
+    .uf-header-box.uf-rn{background:#dbeafe;border:1px solid #93c5fd}
+    .uf-nome{font-weight:700;font-size:14px;color:#1e293b}
+    .uf-total-num{font-size:20px;font-weight:700;color:#1e40af;margin-top:2px}
+    .uf-total-num span{font-size:12px;font-weight:400;color:#64748b}
+    .etapas-lista{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+    .etapa-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0}
+    .etapa-item-qty{background:#3b82f6;color:#fff;font-weight:700;font-size:13px;min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .etapa-item-name{font-size:12px;color:#334155;font-weight:500;flex:1}
+    .etapa-aprovado{background:#f0fdf4;border-color:#86efac}
+    .etapa-aprovado .etapa-item-qty{background:#16a34a}
+    .etapa-aprovado .etapa-item-name{color:#16a34a;font-weight:600}
+    .uf-resumo-box{display:flex;justify-content:space-around;padding:10px;background:#f1f5f9;border-radius:8px;margin-top:auto}
+    .resumo-processo,.resumo-aprovado{text-align:center}
+    .resumo-num{display:block;font-weight:700;font-size:20px}
+    .resumo-label{font-size:11px;color:#64748b}
+    .resumo-processo .resumo-num{color:#f59e0b}
+    .resumo-aprovado .resumo-num{color:#16a34a}
   </style>
 </head>
 <body>
@@ -273,10 +298,10 @@
     const ETAPAS=['Abertura da Vaga','Captação','Triagem','Checagem Dados','Entrevista RH','Teste Prático','Proposta Benel','ASO','Análise de Docs','Enviar para DP','Apto para Integração Benel','Subir Doc. Portal','PT Cliente','Integração Cliente','Aprovado no Portal'];
     const ESTADOS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
     
-    let currentTab='dashboard',abaEficiencia='geral',sortCol='name',sortDir='asc';
-    // Filtros como variáveis globais para não perder valores
+    let currentTab='dashboard',sortCol='name',sortDir='asc';
     let filterSearch='',filterEtapa='todos',filterEstado='todos',filterFuncao='todos';
     let filterSearchVaga='',filterEstadoVaga='todos';
+    let nextId = 173;
 
     function showTab(t){
       currentTab=t;
@@ -289,7 +314,6 @@
       render();
     }
     
-    function setAbaEficiencia(a){abaEficiencia=a;render()}
     function setSortCol(c){if(sortCol===c)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=c;sortDir='asc'}renderTableCandidatos()}
     function getSortIcon(c){return sortCol===c?(sortDir==='asc'?' ↑':' ↓'):' ⇅'}
     function getVagasInfo(){return vagas.map(v=>({...v,totalCandidates:candidatos.filter(c=>c.positionId===v.id).length,candidatesByStage:ETAPAS.map((_,i)=>candidatos.filter(c=>c.positionId===v.id&&c.currentStage===i).length)}))}
@@ -303,12 +327,87 @@
       const cpe=ETAPAS.map((_,i)=>candidatos.filter(c=>c.currentStage===i).length),epe=ETAPAS.map((_,i)=>tp>0?Math.round(cpe[i]/tp*100):0);
       const vpe={};vi.forEach(v=>{if(!vpe[v.state])vpe[v.state]=[];vpe[v.state].push(v)});
       const vpt={};vi.forEach(v=>{if(!vpt[v.title])vpt[v.title]=[];vpt[v.title].push(v)});
-      let ec='';
-      if(abaEficiencia==='geral')ec=`<div class="etapas-row">${renderEtapaCards(cpe,epe)}</div>`;
-      else if(abaEficiencia==='unidade')ec=Object.entries(vpe).map(([e,vs])=>{const tpl=vs.reduce((s,v)=>s+v.quantity,0),cpee=ETAPAS.map((_,i)=>vs.reduce((s,v)=>s+(v.candidatesByStage[i]||0),0)),epee=ETAPAS.map((_,i)=>tpl>0?Math.round(cpee[i]/tpl*100):0);return`<div class="mb-14"><div class="subtitle">${e}</div><div class="etapas-row">${renderEtapaCards(cpee,epee)}</div></div>`}).join('');
-      else ec=Object.entries(vpt).map(([t,vs])=>{const tpl=vs.reduce((s,v)=>s+v.quantity,0),cpet=ETAPAS.map((_,i)=>vs.reduce((s,v)=>s+(v.candidatesByStage[i]||0),0)),epet=ETAPAS.map((_,i)=>tpl>0?Math.round(cpet[i]/tpl*100):0);return`<div class="mb-14"><div class="subtitle">${t}</div><div class="etapas-row">${renderEtapaCards(cpet,epet)}</div></div>`}).join('');
-      const tbs=Object.entries(vpe).map(([e,vs])=>`<div class="card"><div class="section-title">${e}</div><table><thead><tr><th style="min-width:160px">Vaga</th><th class="center" style="width:60px">Planejado</th><th class="center" style="width:75px">Candidatos</th><th class="center" style="width:40px">TQF</th><th class="center" style="width:60px">Eficiência</th>${ETAPAS.map((_,i)=>`<th class="etapa-col">E${i+1}</th>`).join('')}</tr></thead><tbody>${vs.map(v=>{const ef=v.quantity>0?Math.round(v.totalCandidates/v.quantity*100):0,tq=v.totalCandidates-v.quantity;return`<tr><td class="font-bold" style="font-size:10px">${v.title}</td><td class="center font-bold blue">${v.quantity}</td><td class="center font-bold blue">${v.totalCandidates}</td><td class="center font-bold ${tq>0?'green':tq<0?'red':''}">${tq}</td><td class="center"><span class="badge" style="background:${getEfBg(ef)};color:${getEfTxt(ef)}">${ef}%</span></td>${v.candidatesByStage.map(c=>`<td class="etapa-col text-gray">${c||0}</td>`).join('')}</tr>`}).join('')}</tbody></table></div>`).join('');
-      document.getElementById('dashboard').innerHTML=`<div class="grid-5"><div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">Total: ${vagas.length}</div></div><div class="kpi purple-bg"><div class="kpi-label">Total de Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">Em processo</div></div><div class="kpi green-bg"><div class="kpi-label">Integrados</div><div class="kpi-value green">${ti}</div><div class="kpi-sub">Finalizados</div></div><div class="kpi ${eg>=80?'green-bg':eg>=50?'yellow-bg':'red-bg'}"><div class="kpi-label">Eficiência Geral</div><div class="kpi-value ${eg>=80?'green':eg>=50?'yellow':'red'}">${eg}%</div><div class="kpi-sub">Taxa de conversão</div></div><div class="kpi ${tqf>=0?'green-bg':'red-bg'}"><div class="kpi-label">TQF (Faltam Concluir)</div><div class="kpi-value ${tqf>=0?'green':'red'}">${tqf}</div><div class="kpi-sub">Pessoas pendentes</div></div></div><div class="card"><div class="card-header"><div class="card-title">Eficiência por Etapa</div><div class="tabs"><button class="tab-btn ${abaEficiencia==='geral'?'active':''}" onclick="setAbaEficiencia('geral')">Geral</button><button class="tab-btn ${abaEficiencia==='unidade'?'active':''}" onclick="setAbaEficiencia('unidade')">Por Unidade</button><button class="tab-btn ${abaEficiencia==='vaga'?'active':''}" onclick="setAbaEficiencia('vaga')">Por Vaga</button></div></div>${ec}</div>${tbs}`;
+      
+      // Eficiência GERAL
+      let efGeral=`<div class="ef-section"><div class="ef-title">📊 Visão Geral - Todas as Etapas</div><div class="etapas-row">${renderEtapaCards(cpe,epe)}</div></div>`;
+      
+      // VISÃO CRUZADA: Cards por Função mostrando BA e RN lado a lado
+      const funcoes=[...new Set(vagas.map(v=>v.title))];
+      const estadosDisponiveis=['BA','RN'];
+      
+      let efCruzada=`<div class="ef-section"><div class="ef-title">🎯 Follow Up por Função e Unidade</div><div class="funcoes-grid">`;
+      
+      funcoes.forEach(func=>{
+        // Coletar dados de ambos estados primeiro
+        const dadosEstados=[];
+        estadosDisponiveis.forEach(est=>{
+          const vagaFuncEst=vagas.find(v=>v.title===func&&v.state===est);
+          if(!vagaFuncEst)return;
+          
+          const candPorEtapa=ETAPAS.map((_,i)=>({idx:i,nome:ETAPAS[i],qty:candidatos.filter(c=>c.positionId===vagaFuncEst.id&&c.currentStage===i).length}));
+          const etapasComCand=candPorEtapa.filter(e=>e.qty>0).sort((a,b)=>b.qty-a.qty); // Ordenar por quantidade DESC
+          const totalCand=candPorEtapa.reduce((a,b)=>a+b.qty,0);
+          const integrados=candPorEtapa[14]?.qty||0;
+          const emProcesso=totalCand-integrados;
+          const nomeEstado=est==='BA'?'Bahia':'Rio Grande do Norte';
+          
+          dadosEstados.push({est,nomeEstado,etapasComCand,totalCand,integrados,emProcesso});
+        });
+        
+        if(dadosEstados.length===0)return;
+        
+        // Calcular altura máxima de etapas para alinhar
+        const maxEtapas=Math.max(...dadosEstados.map(d=>d.etapasComCand.length));
+        
+        efCruzada+=`<div class="funcao-card">
+          <div class="funcao-header">${func}</div>
+          <div class="funcao-body-grid">`;
+        
+        dadosEstados.forEach(dados=>{
+          efCruzada+=`<div class="uf-col">
+            <div class="uf-header-box ${dados.est==='BA'?'uf-ba':'uf-rn'}">
+              <div class="uf-nome">${dados.nomeEstado}</div>
+              <div class="uf-total-num">${dados.totalCand} <span>candidatos</span></div>
+            </div>
+            <div class="etapas-lista" style="min-height:${maxEtapas*42}px">`;
+          
+          dados.etapasComCand.forEach(etapa=>{
+            const isAprovado=etapa.idx===14;
+            efCruzada+=`<div class="etapa-item ${isAprovado?'etapa-aprovado':''}">
+              <span class="etapa-item-qty">${etapa.qty}</span>
+              <span class="etapa-item-name">${etapa.nome}</span>
+            </div>`;
+          });
+          
+          efCruzada+=`</div>
+            <div class="uf-resumo-box">
+              <div class="resumo-processo"><span class="resumo-num">${dados.emProcesso}</span><span class="resumo-label">⏳ em processo</span></div>
+              <div class="resumo-aprovado"><span class="resumo-num">${dados.integrados}</span><span class="resumo-label">✅ aprovados</span></div>
+            </div>
+          </div>`;
+        });
+        
+        efCruzada+=`</div></div>`;
+      });
+      
+      efCruzada+=`</div></div>`;
+
+      const tbs=Object.entries(vpe).map(([e,vs])=>`<div class="card"><div class="section-title">${e}</div><table><thead><tr><th style="min-width:160px">Vaga</th><th class="center" style="width:70px">Planejado</th><th class="center" style="width:85px">Candidatos</th><th class="center" style="width:50px">TQF</th><th class="center" style="width:70px">Eficiência</th>${ETAPAS.map((_,i)=>`<th class="etapa-col">E${i+1}</th>`).join('')}</tr></thead><tbody>${vs.map(v=>{const ef=v.quantity>0?Math.round(v.totalCandidates/v.quantity*100):0,tq=v.totalCandidates-v.quantity;return`<tr><td class="font-bold" style="font-size:11px">${v.title}</td><td class="center font-bold blue">${v.quantity}</td><td class="center font-bold blue">${v.totalCandidates}</td><td class="center font-bold ${tq>0?'green':tq<0?'red':''}">${tq}</td><td class="center"><span class="badge" style="background:${getEfBg(ef)};color:${getEfTxt(ef)}">${ef}%</span></td>${v.candidatesByStage.map(c=>`<td class="etapa-col text-gray">${c||0}</td>`).join('')}</tr>`}).join('')}</tbody></table></div>`).join('');
+      
+      document.getElementById('dashboard').innerHTML=`
+        <div class="grid-5">
+          <div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">Total: ${vagas.length} vagas</div></div>
+          <div class="kpi purple-bg"><div class="kpi-label">Total de Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">Em processo</div></div>
+          <div class="kpi green-bg"><div class="kpi-label">Integrados</div><div class="kpi-value green">${ti}</div><div class="kpi-sub">Finalizados</div></div>
+          <div class="kpi ${eg>=80?'green-bg':eg>=50?'yellow-bg':'red-bg'}"><div class="kpi-label">Eficiência Geral</div><div class="kpi-value ${eg>=80?'green':eg>=50?'yellow':'red'}">${eg}%</div><div class="kpi-sub">Taxa de conversão</div></div>
+          <div class="kpi ${tqf>=0?'green-bg':'red-bg'}"><div class="kpi-label">TQF (Faltam Concluir)</div><div class="kpi-value ${tqf>=0?'green':'red'}">${tqf}</div><div class="kpi-sub">Pessoas pendentes</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Eficiência por Etapa</div>
+          ${efGeral}
+          ${efCruzada}
+        </div>
+        ${tbs}`;
     }
 
     function renderVagas(){
@@ -325,7 +424,7 @@
 
     function renderCandidatos(){
       const funcoes=[...new Set(vagas.map(v=>v.title))];
-      document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo Candidato</button><button class="btn btn-outline">📥 Importar</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar por nome..." id="searchCand" value="${filterSearch}" oninput="filterSearch=this.value;renderTableCandidatos()"><select id="filterEtapa" onchange="filterEtapa=this.value;renderTableCandidatos()"><option value="todos" ${filterEtapa==='todos'?'selected':''}>Todas as Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select><select id="filterEstadoCand" onchange="filterEstado=this.value;renderTableCandidatos()"><option value="todos" ${filterEstado==='todos'?'selected':''}>Todos os Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select id="filterFuncao" onchange="filterFuncao=this.value;renderTableCandidatos()"><option value="todos" ${filterFuncao==='todos'?'selected':''}>Todas as Funções</option>${funcoes.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th class="sortable" onclick="setSortCol('name')">Nome${getSortIcon('name')}</th><th class="sortable" onclick="setSortCol('vaga')">Vaga${getSortIcon('vaga')}</th><th class="sortable" onclick="setSortCol('etapa')">Etapa${getSortIcon('etapa')}</th><th class="center" style="width:260px">Ações</th></tr></thead><tbody id="tbodyCandidatos"></tbody></table></div>`;
+      document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo Candidato</button><button class="btn btn-outline">📥 Importar</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar por nome..." id="searchCand" value="${filterSearch}" oninput="filterSearch=this.value;renderTableCandidatos()"><select id="filterEtapa" onchange="filterEtapa=this.value;renderTableCandidatos()"><option value="todos" ${filterEtapa==='todos'?'selected':''}>Todas as Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select><select id="filterEstadoCand" onchange="filterEstado=this.value;renderTableCandidatos()"><option value="todos" ${filterEstado==='todos'?'selected':''}>Todos os Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select id="filterFuncao" onchange="filterFuncao=this.value;renderTableCandidatos()"><option value="todos" ${filterFuncao==='todos'?'selected':''}>Todas as Funções</option>${funcoes.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th class="sortable" onclick="setSortCol('name')">Nome${getSortIcon('name')}</th><th class="sortable" onclick="setSortCol('vaga')">Vaga${getSortIcon('vaga')}</th><th class="sortable" onclick="setSortCol('etapa')">Etapa${getSortIcon('etapa')}</th><th class="center" style="width:280px">Ações</th></tr></thead><tbody id="tbodyCandidatos"></tbody></table></div>`;
       renderTableCandidatos();
     }
 
@@ -338,7 +437,7 @@
                (filterFuncao==='todos'||(v&&v.title===filterFuncao));
       });
       f.sort((a,b)=>{let va,vb;const vA=vagas.find(v=>v.id===a.positionId),vB=vagas.find(v=>v.id===b.positionId);switch(sortCol){case'name':va=a.name.toLowerCase();vb=b.name.toLowerCase();break;case'vaga':va=vA?.title.toLowerCase()||'';vb=vB?.title.toLowerCase()||'';break;case'etapa':va=a.currentStage;vb=b.currentStage;break;default:va=a.name.toLowerCase();vb=b.name.toLowerCase()}if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0});
-      document.getElementById('tbodyCandidatos').innerHTML=f.slice(0,150).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ir=c.status==='rejected';return`<tr style="${ir?'background:#fef2f2':''}"><td>${c.name}</td><td class="text-gray">${v?.title||'N/A'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span></td><td><div class="actions">${!ir&&c.currentStage<14?`<button class="btn btn-primary btn-sm" onclick="avancarCandidato(${c.id})">Avançar</button>`:`<span style="width:60px"></span>`}<button class="btn btn-outline btn-sm" onclick="openModalEditarEtapa(${c.id})">Editar</button>${!ir?`<button class="btn btn-sm" style="background:#fff;border:1px solid #dc2626;color:#dc2626" onclick="openModalReprovar(${c.id})">Reprovar</button>`:`<span style="width:60px"></span>`}<button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('');
+      document.getElementById('tbodyCandidatos').innerHTML=f.slice(0,150).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ir=c.status==='rejected';return`<tr style="${ir?'background:#fef2f2':''}"><td>${c.name}</td><td class="text-gray">${v?.title||'N/A'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span></td><td><div class="actions">${!ir&&c.currentStage<14?`<button class="btn btn-primary btn-sm" onclick="avancarCandidato(${c.id})">Avançar</button>`:`<span style="width:65px"></span>`}<button class="btn btn-outline btn-sm" onclick="openModalEditarEtapa(${c.id})">Editar</button>${!ir?`<button class="btn btn-sm" style="background:#fff;border:1px solid #dc2626;color:#dc2626" onclick="openModalReprovar(${c.id})">Reprovar</button>`:`<span style="width:65px"></span>`}<button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('');
     }
 
     function render(){
@@ -348,17 +447,98 @@
     }
 
     function closeModal(){document.getElementById('modal').classList.add('hidden')}
-    function openModalVaga(id=null){const v=id?vagas.find(x=>x.id===id):null;document.getElementById('modal-title').textContent=v?'Editar Vaga':'Nova Vaga';document.getElementById('modal-content').innerHTML=`<div class="form-group"><input type="text" id="vagaTitle" placeholder="Nome da Vaga" value="${v?.title||''}"></div><div class="form-group"><select id="vagaState">${ESTADOS.map(e=>`<option value="${e}" ${v?.state===e?'selected':''}>${e}</option>`).join('')}</select></div><div class="form-group"><input type="number" id="vagaQty" placeholder="Quantidade" value="${v?.quantity||1}"></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
-    function saveVaga(id){const t=document.getElementById('vagaTitle').value,s=document.getElementById('vagaState').value,q=parseInt(document.getElementById('vagaQty').value)||1;if(!t)return alert('Preencha o nome');if(id){const v=vagas.find(x=>x.id===id);v.title=t;v.state=s;v.quantity=q}else vagas.push({id:Math.max(0,...vagas.map(v=>v.id))+1,title:t,state:s,quantity:q});closeModal();render()}
+    
+    function openModalVaga(id=null){
+      const v=id?vagas.find(x=>x.id===id):null;
+      document.getElementById('modal-title').textContent=v?'Editar Vaga':'Nova Vaga';
+      document.getElementById('modal-content').innerHTML=`
+        <div class="form-group"><label>Nome da Vaga</label><input type="text" id="vagaTitle" placeholder="Ex: Motorista Carreteiro" value="${v?.title||''}"></div>
+        <div class="form-group"><label>Estado</label><select id="vagaState">${ESTADOS.map(e=>`<option value="${e}" ${v?.state===e?'selected':''}>${e}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Quantidade</label><input type="number" id="vagaQty" placeholder="Quantidade de vagas" value="${v?.quantity||1}"></div>
+        <div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+    
+    function saveVaga(id){
+      const t=document.getElementById('vagaTitle').value.trim();
+      const s=document.getElementById('vagaState').value;
+      const q=parseInt(document.getElementById('vagaQty').value)||1;
+      if(!t){alert('Preencha o nome da vaga');return;}
+      if(id){
+        const v=vagas.find(x=>x.id===id);
+        v.title=t;v.state=s;v.quantity=q;
+      }else{
+        vagas.push({id:Math.max(0,...vagas.map(v=>v.id))+1,title:t,state:s,quantity:q});
+      }
+      closeModal();
+      render();
+    }
+    
     function deleteVaga(id){if(confirm('Deletar esta vaga?')){vagas=vagas.filter(v=>v.id!==id);candidatos=candidatos.filter(c=>c.positionId!==id);render()}}
-    function openModalCandidato(){document.getElementById('modal-title').textContent='Novo Candidato';document.getElementById('modal-content').innerHTML=`<div class="form-group"><input type="text" id="candName" placeholder="Nome"></div><div class="form-group"><select id="candVaga"><option value="">Selecione uma vaga</option>${vagas.map(v=>`<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
-    function saveCandidato(){const n=document.getElementById('candName').value,pi=parseInt(document.getElementById('candVaga').value);if(!n||!pi)return alert('Preencha nome e selecione vaga');candidatos.push({id:Math.max(0,...candidatos.map(c=>c.id))+1,name:n,positionId:pi,currentStage:0,status:'in_process'});closeModal();render()}
+    
+    function openModalCandidato(){
+      document.getElementById('modal-title').textContent='Novo Candidato';
+      document.getElementById('modal-content').innerHTML=`
+        <div class="form-group"><label>Nome Completo</label><input type="text" id="candName" placeholder="Digite o nome completo"></div>
+        <div class="form-group"><label>Vaga</label><select id="candVaga"><option value="">Selecione uma vaga</option>${vagas.map(v=>`<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Etapa Inicial</label><select id="candEtapa">${ETAPAS.map((e,i)=>`<option value="${i}">${i+1}. ${e}</option>`).join('')}</select></div>
+        <div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+    
+    function saveCandidato(){
+      const n=document.getElementById('candName').value.trim();
+      const pi=parseInt(document.getElementById('candVaga').value);
+      const etapa=parseInt(document.getElementById('candEtapa').value)||0;
+      if(!n){alert('Preencha o nome do candidato');return;}
+      if(!pi){alert('Selecione uma vaga');return;}
+      candidatos.push({id:nextId++,name:n,positionId:pi,currentStage:etapa,status:'in_process'});
+      closeModal();
+      render();
+      alert('Candidato salvo com sucesso!');
+    }
+    
     function avancarCandidato(id){const c=candidatos.find(x=>x.id===id);if(c&&c.currentStage<14)c.currentStage++;renderTableCandidatos()}
     function deleteCandidato(id){if(confirm('Deletar este candidato?')){candidatos=candidatos.filter(c=>c.id!==id);renderTableCandidatos()}}
-    function openModalReprovar(id){const c=candidatos.find(x=>x.id===id);document.getElementById('modal-title').textContent='Reprovar Candidato';document.getElementById('modal-content').innerHTML=`<p class="text-gray">Candidato: <strong>${c.name}</strong></p><div class="form-group"><textarea id="motivoRejeicao" placeholder="Motivo da reprovação" rows="4" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px"></textarea></div><div class="btn-group"><button class="btn btn-danger" style="flex:1" onclick="reprovarCandidato(${id})">Reprovar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
-    function reprovarCandidato(id){const m=document.getElementById('motivoRejeicao').value;if(!m.trim())return alert('Informe o motivo');const c=candidatos.find(x=>x.id===id);c.status='rejected';closeModal();renderTableCandidatos()}
-    function openModalEditarEtapa(id){const c=candidatos.find(x=>x.id===id);document.getElementById('modal-title').textContent='Editar Etapa';document.getElementById('modal-content').innerHTML=`<p class="text-gray">Candidato: <strong>${c.name}</strong></p><div class="form-group"><select id="novaEtapa">${ETAPAS.map((e,i)=>`<option value="${i}" ${c.currentStage===i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="salvarEtapa(${id})">Confirmar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
-    function salvarEtapa(id){const ne=parseInt(document.getElementById('novaEtapa').value),c=candidatos.find(x=>x.id===id);c.currentStage=ne;c.status='in_process';closeModal();renderTableCandidatos()}
+    
+    function openModalReprovar(id){
+      const c=candidatos.find(x=>x.id===id);
+      document.getElementById('modal-title').textContent='Reprovar Candidato';
+      document.getElementById('modal-content').innerHTML=`
+        <p class="text-gray" style="margin-bottom:16px">Candidato: <strong>${c.name}</strong></p>
+        <div class="form-group"><label>Motivo da Reprovação</label><textarea id="motivoRejeicao" placeholder="Descreva o motivo da reprovação" rows="4" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px"></textarea></div>
+        <div class="btn-group"><button class="btn btn-danger" style="flex:1" onclick="reprovarCandidato(${id})">Reprovar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+    
+    function reprovarCandidato(id){
+      const m=document.getElementById('motivoRejeicao').value;
+      if(!m.trim()){alert('Informe o motivo da reprovação');return;}
+      const c=candidatos.find(x=>x.id===id);
+      c.status='rejected';
+      closeModal();
+      renderTableCandidatos();
+    }
+    
+    function openModalEditarEtapa(id){
+      const c=candidatos.find(x=>x.id===id);
+      document.getElementById('modal-title').textContent='Editar Etapa';
+      document.getElementById('modal-content').innerHTML=`
+        <p class="text-gray" style="margin-bottom:16px">Candidato: <strong>${c.name}</strong></p>
+        <div class="form-group"><label>Nova Etapa</label><select id="novaEtapa">${ETAPAS.map((e,i)=>`<option value="${i}" ${c.currentStage===i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select></div>
+        <div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="salvarEtapa(${id})">Confirmar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+    
+    function salvarEtapa(id){
+      const ne=parseInt(document.getElementById('novaEtapa').value);
+      const c=candidatos.find(x=>x.id===id);
+      c.currentStage=ne;
+      c.status='in_process';
+      closeModal();
+      renderTableCandidatos();
+    }
+    
     document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
     render();
   </script>

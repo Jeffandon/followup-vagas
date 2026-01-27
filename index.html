@@ -49,11 +49,10 @@
     .btn-primary{background:#2563eb;color:#fff}
     .btn-outline{background:#fff;color:#374151;border:1px solid #d1d5db}
     .btn-danger{background:#dc2626;color:#fff}
-    .btn-sm{padding:4px 8px;font-size:11px;border-radius:3px}
-    .filters{display:grid;grid-template-columns:1fr 160px 160px auto;gap:10px;align-items:center}
-    .filters-4{grid-template-columns:1fr 160px 160px 160px}
+    .btn-sm{padding:4px 8px;font-size:11px;border-radius:3px;min-width:60px;text-align:center}
+    .filters{display:grid;grid-template-columns:1fr 160px 160px 160px;gap:10px;align-items:center}
     input,select{width:100%;padding:7px 10px;font-size:12px;border:1px solid #d1d5db;border-radius:5px;outline:none}
-    .actions{display:flex;justify-content:center;gap:3px;flex-wrap:wrap}
+    .actions{display:flex;justify-content:flex-end;gap:4px;min-width:250px}
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50}
     .modal{background:#fff;border-radius:8px;padding:20px;width:100%;max-width:380px;margin:16px}
     .modal-title{font-size:16px;font-weight:700;margin-bottom:16px}
@@ -68,9 +67,9 @@
 <body>
   <header class="header">
     <nav class="nav">
-      <button class="nav-btn active" onclick="showTab('dashboard')">Dashboard</button>
-      <button class="nav-btn" onclick="showTab('vagas')">Vagas</button>
-      <button class="nav-btn" onclick="showTab('candidatos')">Candidatos</button>
+      <button class="nav-btn active" id="nav-dashboard" onclick="showTab('dashboard')">Dashboard</button>
+      <button class="nav-btn" id="nav-vagas" onclick="showTab('vagas')">Vagas</button>
+      <button class="nav-btn" id="nav-candidatos" onclick="showTab('candidatos')">Candidatos</button>
     </nav>
   </header>
   <main class="main">
@@ -92,7 +91,6 @@
       {id:8,title:'Tecnico Em Seguranca Do Trabalho',state:'RN',quantity:5}
     ];
 
-    // DADOS REAIS DOS CANDIDATOS
     let candidatos = [
       // BAHIA
       {id:1,name:'Naylanda Rosario Silva De Melo',positionId:4,currentStage:13,status:'in_process'},
@@ -274,11 +272,25 @@
 
     const ETAPAS=['Abertura da Vaga','Captação','Triagem','Checagem Dados','Entrevista RH','Teste Prático','Proposta Benel','ASO','Análise de Docs','Enviar para DP','Apto para Integração Benel','Subir Doc. Portal','PT Cliente','Integração Cliente','Aprovado no Portal'];
     const ESTADOS=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+    
     let currentTab='dashboard',abaEficiencia='geral',sortCol='name',sortDir='asc';
+    // Filtros como variáveis globais para não perder valores
+    let filterSearch='',filterEtapa='todos',filterEstado='todos',filterFuncao='todos';
+    let filterSearchVaga='',filterEstadoVaga='todos';
 
-    function showTab(t){currentTab=t;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');document.getElementById('dashboard').classList.add('hidden');document.getElementById('vagas').classList.add('hidden');document.getElementById('candidatos').classList.add('hidden');document.getElementById(t).classList.remove('hidden');render()}
+    function showTab(t){
+      currentTab=t;
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('nav-'+t).classList.add('active');
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('vagas').classList.add('hidden');
+      document.getElementById('candidatos').classList.add('hidden');
+      document.getElementById(t).classList.remove('hidden');
+      render();
+    }
+    
     function setAbaEficiencia(a){abaEficiencia=a;render()}
-    function setSortCol(c){if(sortCol===c)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=c;sortDir='asc'}render()}
+    function setSortCol(c){if(sortCol===c)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=c;sortDir='asc'}renderTableCandidatos()}
     function getSortIcon(c){return sortCol===c?(sortDir==='asc'?' ↑':' ↓'):' ⇅'}
     function getVagasInfo(){return vagas.map(v=>({...v,totalCandidates:candidatos.filter(c=>c.positionId===v.id).length,candidatesByStage:ETAPAS.map((_,i)=>candidatos.filter(c=>c.positionId===v.id&&c.currentStage===i).length)}))}
     function getEfBg(e){return e>=100?'#dcfce7':e>=80?'#dcfce7':e>=50?'#fef9c3':'#fee2e2'}
@@ -301,28 +313,52 @@
 
     function renderVagas(){
       const vi=getVagasInfo();
-      document.getElementById('vagas').innerHTML=`<div class="page-header"><h1 class="page-title">Vagas</h1><div class="btn-group"><button class="btn btn-primary" onclick="openModalVaga()">+ Nova Vaga</button><button class="btn btn-outline">📥 Importar Vagas</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar por nome da vaga..." id="searchVaga" onkeyup="render()"><select id="filterEstadoVaga" onchange="render()"><option value="todos">Todos os Estados</option>${ESTADOS.map(e=>`<option value="${e}">${e}</option>`).join('')}</select><select><option>Ordenar por Nome</option></select><div class="btn-group"><button class="btn btn-outline">Visualizar Cards</button><button class="btn btn-primary">Visualizar Lista</button></div></div></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th class="center">Quantidade</th><th class="center">Candidatos</th><th class="center">Ações</th></tr></thead><tbody>${vi.filter(v=>{const s=document.getElementById('searchVaga')?.value?.toLowerCase()||'',e=document.getElementById('filterEstadoVaga')?.value||'todos';return v.title.toLowerCase().includes(s)&&(e==='todos'||v.state===e)}).map(v=>`<tr><td>${v.title}</td><td class="text-gray">${v.state}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${v.totalCandidates}</span></td><td class="center"><button class="btn btn-outline btn-sm" onclick="openModalVaga(${v.id})">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteVaga(${v.id})">Deletar</button></td></tr>`).join('')}</tbody></table></div>`;
+      document.getElementById('vagas').innerHTML=`<div class="page-header"><h1 class="page-title">Vagas</h1><div class="btn-group"><button class="btn btn-primary" onclick="openModalVaga()">+ Nova Vaga</button><button class="btn btn-outline">📥 Importar Vagas</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar por nome da vaga..." id="searchVaga" value="${filterSearchVaga}" oninput="filterSearchVaga=this.value;renderTableVagas()"><select id="filterEstadoVaga" onchange="filterEstadoVaga=this.value;renderTableVagas()"><option value="todos" ${filterEstadoVaga==='todos'?'selected':''}>Todos os Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstadoVaga===e?'selected':''}>${e}</option>`).join('')}</select><select><option>Ordenar por Nome</option></select><div class="btn-group"><button class="btn btn-outline">Cards</button><button class="btn btn-primary">Lista</button></div></div></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th class="center">Quantidade</th><th class="center">Candidatos</th><th class="center">Ações</th></tr></thead><tbody id="tbodyVagas"></tbody></table></div>`;
+      renderTableVagas();
+    }
+
+    function renderTableVagas(){
+      const vi=getVagasInfo();
+      const filtered=vi.filter(v=>v.title.toLowerCase().includes(filterSearchVaga.toLowerCase())&&(filterEstadoVaga==='todos'||v.state===filterEstadoVaga));
+      document.getElementById('tbodyVagas').innerHTML=filtered.map(v=>`<tr><td>${v.title}</td><td class="text-gray">${v.state}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${v.totalCandidates}</span></td><td class="center"><button class="btn btn-outline btn-sm" onclick="openModalVaga(${v.id})">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteVaga(${v.id})">Deletar</button></td></tr>`).join('');
     }
 
     function renderCandidatos(){
-      let f=candidatos.filter(c=>{const v=vagas.find(x=>x.id===c.positionId),s=document.getElementById('searchCand')?.value?.toLowerCase()||'',et=document.getElementById('filterEtapa')?.value||'todos',es=document.getElementById('filterEstadoCand')?.value||'todos',fu=document.getElementById('filterFuncao')?.value||'todos';return(c.name.toLowerCase().includes(s))&&(et==='todos'||c.currentStage===parseInt(et))&&(es==='todos'||(v&&v.state===es))&&(fu==='todos'||(v&&v.title===fu))});
-      f.sort((a,b)=>{let va,vb;const vA=vagas.find(v=>v.id===a.positionId),vB=vagas.find(v=>v.id===b.positionId);switch(sortCol){case'name':va=a.name.toLowerCase();vb=b.name.toLowerCase();break;case'vaga':va=vA?.title.toLowerCase()||'';vb=vB?.title.toLowerCase()||'';break;case'etapa':va=a.currentStage;vb=b.currentStage;break;default:va=a.name.toLowerCase();vb=b.name.toLowerCase()}if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0});
-      document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo Candidato</button><button class="btn btn-outline">📥 Importar Candidatos</button></div></div><div class="card"><div class="filters filters-4"><input type="text" placeholder="Buscar por nome..." id="searchCand" onkeyup="render()"><select id="filterEtapa" onchange="render()"><option value="todos">Todas as Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}">${i+1}. ${e}</option>`).join('')}</select><select id="filterEstadoCand" onchange="render()"><option value="todos">Todos os Estados</option>${ESTADOS.map(e=>`<option value="${e}">${e}</option>`).join('')}</select><select id="filterFuncao" onchange="render()"><option value="todos">Todas as Funções</option>${[...new Set(vagas.map(v=>v.title))].map(f=>`<option value="${f}">${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th class="sortable" onclick="setSortCol('name')">Nome${getSortIcon('name')}</th><th class="sortable" onclick="setSortCol('vaga')">Vaga${getSortIcon('vaga')}</th><th class="sortable" onclick="setSortCol('etapa')">Etapa${getSortIcon('etapa')}</th><th class="center">Ações</th></tr></thead><tbody>${f.slice(0,100).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ir=c.status==='rejected';return`<tr style="${ir?'background:#fef2f2':''}"><td>${c.name}</td><td class="text-gray">${v?.title||'N/A'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span></td><td><div class="actions">${!ir&&c.currentStage<14?`<button class="btn btn-primary btn-sm" onclick="avancarCandidato(${c.id})">Avancar</button>`:''}<button class="btn btn-outline btn-sm" onclick="openModalEditarEtapa(${c.id})">Editar</button>${!ir?`<button class="btn btn-sm" style="background:#fff;border:1px solid #dc2626;color:#dc2626" onclick="openModalReprovar(${c.id})">Reprovar</button>`:''}<button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('')}</tbody></table></div>`;
+      const funcoes=[...new Set(vagas.map(v=>v.title))];
+      document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo Candidato</button><button class="btn btn-outline">📥 Importar</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar por nome..." id="searchCand" value="${filterSearch}" oninput="filterSearch=this.value;renderTableCandidatos()"><select id="filterEtapa" onchange="filterEtapa=this.value;renderTableCandidatos()"><option value="todos" ${filterEtapa==='todos'?'selected':''}>Todas as Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select><select id="filterEstadoCand" onchange="filterEstado=this.value;renderTableCandidatos()"><option value="todos" ${filterEstado==='todos'?'selected':''}>Todos os Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select id="filterFuncao" onchange="filterFuncao=this.value;renderTableCandidatos()"><option value="todos" ${filterFuncao==='todos'?'selected':''}>Todas as Funções</option>${funcoes.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th class="sortable" onclick="setSortCol('name')">Nome${getSortIcon('name')}</th><th class="sortable" onclick="setSortCol('vaga')">Vaga${getSortIcon('vaga')}</th><th class="sortable" onclick="setSortCol('etapa')">Etapa${getSortIcon('etapa')}</th><th class="center" style="width:260px">Ações</th></tr></thead><tbody id="tbodyCandidatos"></tbody></table></div>`;
+      renderTableCandidatos();
     }
 
-    function render(){if(currentTab==='dashboard')renderDashboard();else if(currentTab==='vagas')renderVagas();else renderCandidatos()}
+    function renderTableCandidatos(){
+      let f=candidatos.filter(c=>{
+        const v=vagas.find(x=>x.id===c.positionId);
+        return c.name.toLowerCase().includes(filterSearch.toLowerCase()) &&
+               (filterEtapa==='todos'||c.currentStage===parseInt(filterEtapa)) &&
+               (filterEstado==='todos'||(v&&v.state===filterEstado)) &&
+               (filterFuncao==='todos'||(v&&v.title===filterFuncao));
+      });
+      f.sort((a,b)=>{let va,vb;const vA=vagas.find(v=>v.id===a.positionId),vB=vagas.find(v=>v.id===b.positionId);switch(sortCol){case'name':va=a.name.toLowerCase();vb=b.name.toLowerCase();break;case'vaga':va=vA?.title.toLowerCase()||'';vb=vB?.title.toLowerCase()||'';break;case'etapa':va=a.currentStage;vb=b.currentStage;break;default:va=a.name.toLowerCase();vb=b.name.toLowerCase()}if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0});
+      document.getElementById('tbodyCandidatos').innerHTML=f.slice(0,150).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ir=c.status==='rejected';return`<tr style="${ir?'background:#fef2f2':''}"><td>${c.name}</td><td class="text-gray">${v?.title||'N/A'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span></td><td><div class="actions">${!ir&&c.currentStage<14?`<button class="btn btn-primary btn-sm" onclick="avancarCandidato(${c.id})">Avançar</button>`:`<span style="width:60px"></span>`}<button class="btn btn-outline btn-sm" onclick="openModalEditarEtapa(${c.id})">Editar</button>${!ir?`<button class="btn btn-sm" style="background:#fff;border:1px solid #dc2626;color:#dc2626" onclick="openModalReprovar(${c.id})">Reprovar</button>`:`<span style="width:60px"></span>`}<button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('');
+    }
+
+    function render(){
+      if(currentTab==='dashboard')renderDashboard();
+      else if(currentTab==='vagas')renderVagas();
+      else renderCandidatos();
+    }
+
     function closeModal(){document.getElementById('modal').classList.add('hidden')}
     function openModalVaga(id=null){const v=id?vagas.find(x=>x.id===id):null;document.getElementById('modal-title').textContent=v?'Editar Vaga':'Nova Vaga';document.getElementById('modal-content').innerHTML=`<div class="form-group"><input type="text" id="vagaTitle" placeholder="Nome da Vaga" value="${v?.title||''}"></div><div class="form-group"><select id="vagaState">${ESTADOS.map(e=>`<option value="${e}" ${v?.state===e?'selected':''}>${e}</option>`).join('')}</select></div><div class="form-group"><input type="number" id="vagaQty" placeholder="Quantidade" value="${v?.quantity||1}"></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
     function saveVaga(id){const t=document.getElementById('vagaTitle').value,s=document.getElementById('vagaState').value,q=parseInt(document.getElementById('vagaQty').value)||1;if(!t)return alert('Preencha o nome');if(id){const v=vagas.find(x=>x.id===id);v.title=t;v.state=s;v.quantity=q}else vagas.push({id:Math.max(0,...vagas.map(v=>v.id))+1,title:t,state:s,quantity:q});closeModal();render()}
     function deleteVaga(id){if(confirm('Deletar esta vaga?')){vagas=vagas.filter(v=>v.id!==id);candidatos=candidatos.filter(c=>c.positionId!==id);render()}}
     function openModalCandidato(){document.getElementById('modal-title').textContent='Novo Candidato';document.getElementById('modal-content').innerHTML=`<div class="form-group"><input type="text" id="candName" placeholder="Nome"></div><div class="form-group"><select id="candVaga"><option value="">Selecione uma vaga</option>${vagas.map(v=>`<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
     function saveCandidato(){const n=document.getElementById('candName').value,pi=parseInt(document.getElementById('candVaga').value);if(!n||!pi)return alert('Preencha nome e selecione vaga');candidatos.push({id:Math.max(0,...candidatos.map(c=>c.id))+1,name:n,positionId:pi,currentStage:0,status:'in_process'});closeModal();render()}
-    function avancarCandidato(id){const c=candidatos.find(x=>x.id===id);if(c&&c.currentStage<14)c.currentStage++;render()}
-    function deleteCandidato(id){if(confirm('Deletar este candidato?')){candidatos=candidatos.filter(c=>c.id!==id);render()}}
+    function avancarCandidato(id){const c=candidatos.find(x=>x.id===id);if(c&&c.currentStage<14)c.currentStage++;renderTableCandidatos()}
+    function deleteCandidato(id){if(confirm('Deletar este candidato?')){candidatos=candidatos.filter(c=>c.id!==id);renderTableCandidatos()}}
     function openModalReprovar(id){const c=candidatos.find(x=>x.id===id);document.getElementById('modal-title').textContent='Reprovar Candidato';document.getElementById('modal-content').innerHTML=`<p class="text-gray">Candidato: <strong>${c.name}</strong></p><div class="form-group"><textarea id="motivoRejeicao" placeholder="Motivo da reprovação" rows="4" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px"></textarea></div><div class="btn-group"><button class="btn btn-danger" style="flex:1" onclick="reprovarCandidato(${id})">Reprovar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
-    function reprovarCandidato(id){const m=document.getElementById('motivoRejeicao').value;if(!m.trim())return alert('Informe o motivo');const c=candidatos.find(x=>x.id===id);c.status='rejected';closeModal();render()}
+    function reprovarCandidato(id){const m=document.getElementById('motivoRejeicao').value;if(!m.trim())return alert('Informe o motivo');const c=candidatos.find(x=>x.id===id);c.status='rejected';closeModal();renderTableCandidatos()}
     function openModalEditarEtapa(id){const c=candidatos.find(x=>x.id===id);document.getElementById('modal-title').textContent='Editar Etapa';document.getElementById('modal-content').innerHTML=`<p class="text-gray">Candidato: <strong>${c.name}</strong></p><div class="form-group"><select id="novaEtapa">${ETAPAS.map((e,i)=>`<option value="${i}" ${c.currentStage===i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="salvarEtapa(${id})">Confirmar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
-    function salvarEtapa(id){const ne=parseInt(document.getElementById('novaEtapa').value),c=candidatos.find(x=>x.id===id);c.currentStage=ne;c.status='in_process';closeModal();render()}
+    function salvarEtapa(id){const ne=parseInt(document.getElementById('novaEtapa').value),c=candidatos.find(x=>x.id===id);c.currentStage=ne;c.status='in_process';closeModal();renderTableCandidatos()}
     document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
     render();
   </script>

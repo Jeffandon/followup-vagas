@@ -240,7 +240,8 @@
         const maxH=Math.max(...dadosEstados.map(d=>d.comCand.length));
         efCruzada+=`<div class="funcao-card"><div class="funcao-header">${func}</div><div class="funcao-body-grid">`;
         dadosEstados.forEach(d=>{
-          efCruzada+=`<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est==='BA'?'Bahia':'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta: ${d.meta}</div></div><div class="etapas-lista" style="min-height:${maxH*38}px">`;
+          const faltam = d.meta - d.ok;
+          efCruzada+=`<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est==='BA'?'Bahia':'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta: ${d.meta}</div><div style="margin-top:4px;font-size:12px;font-weight:700;color:${faltam>0?'#dc2626':'#16a34a'}">${faltam>0?'Faltam p/ Meta: '+faltam:'✓ Meta atingida!'}</div></div><div class="etapas-lista" style="min-height:${maxH*38}px">`;
           d.comCand.forEach(e=>{
             efCruzada+=`<div class="etapa-item ${e.idx===14?'etapa-aprovado':''}" onclick="mostrarCandidatosEtapa(${d.vaga.id},${e.idx})"><span class="etapa-item-qty">${e.qty}</span><span class="etapa-item-name">${e.nome}</span></div>`;
           });

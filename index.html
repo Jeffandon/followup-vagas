@@ -245,7 +245,7 @@
           d.comCand.forEach(e=>{
             efCruzada+=`<div class="etapa-item ${e.idx===14?'etapa-aprovado':''}" onclick="mostrarCandidatosEtapa(${d.vaga.id},${e.idx})"><span class="etapa-item-qty">${e.qty}</span><span class="etapa-item-name">${e.nome}</span></div>`;
           });
-          efCruzada+=`</div><div class="uf-resumo-box"><div class="resumo-processo"><span class="resumo-num">${d.pend}</span><span class="resumo-label">⏳ pendentes</span></div><div class="resumo-aprovado"><span class="resumo-num">${d.ok}</span><span class="resumo-label">✅ concluídos</span></div></div></div>`;
+          efCruzada+=`</div><div class="uf-resumo-box"><div class="resumo-processo"><span class="resumo-num">${d.pend}</span><span class="resumo-label">⏳ em processo</span></div><div class="resumo-aprovado"><span class="resumo-num">${d.ok}</span><span class="resumo-label">✅ concluídos</span></div></div></div>`;
         });
         efCruzada+=`</div></div>`;
       });

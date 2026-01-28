@@ -128,7 +128,8 @@
       }
       return c;
     }
-    function candidatoOk(c) { return c.checklist && c.checklist[12] && c.checklist[13]; } // PT Cliente (13) e Integração (14)
+    // Concluído = Candidato na etapa 15 (Aprovado no Portal)
+    function candidatoOk(c) { return c.currentStage === 14; }
 
     // Carregar dados
     function carregarDados() {

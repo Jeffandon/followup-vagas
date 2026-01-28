@@ -226,8 +226,8 @@
           if(!vaga)return;
           const cands=candidatos.filter(c=>c.positionId===vaga.id);
           const porEtapa=ETAPAS.map((_,i)=>({idx:i,nome:ETAPAS[i],qty:cands.filter(c=>c.currentStage===i).length}));
-          // Ordenar por fase (índice decrescente: 14→0) em vez de quantidade
-          const comCand=porEtapa.filter(e=>e.qty>0).sort((a,b)=>b.idx-a.idx);
+          // Ordenar por fase (índice crescente: 0→14, de cima para baixo)
+          const comCand=porEtapa.filter(e=>e.qty>0).sort((a,b)=>a.idx-b.idx);
           const total=cands.length, ok=cands.filter(candidatoOk).length, pend=total-ok;
           const meta=vaga.quantity;
           dadosEstados.push({est,vaga,comCand,total,ok,pend,meta});
@@ -236,8 +236,7 @@
         const maxH=Math.max(...dadosEstados.map(d=>d.comCand.length));
         efCruzada+=`<div class="funcao-card"><div class="funcao-header">${func}</div><div class="funcao-body-grid">`;
         dadosEstados.forEach(d=>{
-          const metaColor=d.ok>=d.meta?'#16a34a':d.ok>=d.meta*0.7?'#ca8a04':'#dc2626';
-          efCruzada+=`<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est==='BA'?'Bahia':'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#64748b">Meta: <strong style="color:${metaColor}">${d.ok}/${d.meta}</strong> concluídos</div></div><div class="etapas-lista" style="min-height:${maxH*38}px">`;
+          efCruzada+=`<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est==='BA'?'Bahia':'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta: ${d.meta}</div></div><div class="etapas-lista" style="min-height:${maxH*38}px">`;
           d.comCand.forEach(e=>{
             efCruzada+=`<div class="etapa-item ${e.idx===14?'etapa-aprovado':''}" onclick="mostrarCandidatosEtapa(${d.vaga.id},${e.idx})"><span class="etapa-item-qty">${e.qty}</span><span class="etapa-item-name">${e.nome}</span></div>`;
           });
@@ -298,8 +297,50 @@
 
     function renderCandidatos(){
       const funcoes=[...new Set(vagas.map(v=>v.title))];
-      document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo</button></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar..." value="${filterSearch}" oninput="filterSearch=this.value;renderTableCand()"><select onchange="filterEtapa=this.value;renderTableCand()"><option value="todos">Todas Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select><select onchange="filterEstado=this.value;renderTableCand()"><option value="todos">Todos Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select onchange="filterFuncao=this.value;renderTableCand()"><option value="todos">Todas Funções</option>${funcoes.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th onclick="sortCol='name';sortDir=sortDir==='asc'?'desc':'asc';renderTableCand()" style="cursor:pointer">Nome</th><th>Vaga</th><th>Etapas</th><th class="center" style="width:200px">Ações</th></tr></thead><tbody id="tbodyCand"></tbody></table></div>`;
+      document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-success" onclick="exportarExcel()">📊 Exportar Excel</button><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar..." value="${filterSearch}" oninput="filterSearch=this.value;renderTableCand()"><select onchange="filterEtapa=this.value;renderTableCand()"><option value="todos">Todas Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select><select onchange="filterEstado=this.value;renderTableCand()"><option value="todos">Todos Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select onchange="filterFuncao=this.value;renderTableCand()"><option value="todos">Todas Funções</option>${funcoes.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th onclick="sortCol='name';sortDir=sortDir==='asc'?'desc':'asc';renderTableCand()" style="cursor:pointer">Nome</th><th>Vaga</th><th>Etapas</th><th class="center" style="width:200px">Ações</th></tr></thead><tbody id="tbodyCand"></tbody></table></div>`;
       renderTableCand();
+    }
+
+    function exportarExcel(){
+      // Preparar dados
+      let dados = candidatos.map(c => {
+        const v = vagas.find(x => x.id === c.positionId);
+        return {
+          nome: c.name,
+          funcao: v?.title || 'N/A',
+          etapa: ETAPAS[c.currentStage] || 'N/A',
+          estado: v?.state === 'BA' ? 'Bahia' : v?.state === 'RN' ? 'Rio Grande do Norte' : 'N/A',
+          status: candidatoOk(c) ? 'Concluído' : 'Pendente'
+        };
+      });
+      
+      // Aplicar filtros atuais
+      dados = dados.filter(d => {
+        const matchSearch = d.nome.toLowerCase().includes(filterSearch.toLowerCase());
+        const matchEstado = filterEstado === 'todos' || (filterEstado === 'BA' && d.estado === 'Bahia') || (filterEstado === 'RN' && d.estado === 'Rio Grande do Norte');
+        const matchFuncao = filterFuncao === 'todos' || d.funcao === filterFuncao;
+        return matchSearch && matchEstado && matchFuncao;
+      });
+      
+      // Ordenar por nome
+      dados.sort((a, b) => a.nome.localeCompare(b.nome));
+      
+      // Criar CSV (compatível com Excel)
+      const sep = ';'; // Separador que Excel BR reconhece melhor
+      let csv = '\uFEFF'; // BOM para UTF-8
+      csv += ['Nome', 'Função/Vaga', 'Etapa Atual', 'Estado', 'Status'].join(sep) + '\n';
+      dados.forEach(d => {
+        csv += [d.nome, d.funcao, d.etapa, d.estado, d.status].join(sep) + '\n';
+      });
+      
+      // Download
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `candidatos_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      
+      alert('✅ Arquivo exportado!\\n\\nDica: Abra no Excel e os dados estarão separados em colunas.');
     }
 
     function renderTableCand(){

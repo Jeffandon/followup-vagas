@@ -206,11 +206,14 @@
 
     function renderDashboard() {
       const vi=getVagasInfo(), tp=vagas.reduce((s,v)=>s+v.quantity,0), tc=candidatos.length;
-      const okTotal = candidatos.filter(candidatoOk).length, pendTotal = tc - okTotal;
+      const okTotal = candidatos.filter(candidatoOk).length;
+      const pendTotal = tp - okTotal; // Pendentes = Meta - Concluídos
       const candBA = candidatos.filter(c=>vagas.find(v=>v.id===c.positionId)?.state==='BA');
       const candRN = candidatos.filter(c=>vagas.find(v=>v.id===c.positionId)?.state==='RN');
+      const metaBA = vagas.filter(v=>v.state==='BA').reduce((s,v)=>s+v.quantity,0);
+      const metaRN = vagas.filter(v=>v.state==='RN').reduce((s,v)=>s+v.quantity,0);
       const okBA = candBA.filter(candidatoOk).length, okRN = candRN.filter(candidatoOk).length;
-      const pendBA = candBA.length - okBA, pendRN = candRN.length - okRN;
+      const pendBA = metaBA - okBA, pendRN = metaRN - okRN; // Pendentes por estado = Meta estado - Concluídos estado
       const eg = tp>0 ? Math.round(okTotal/tp*100) : 0;
 
       const cpe=ETAPAS.map((_,i)=>candidatos.filter(c=>c.currentStage===i).length);
@@ -251,7 +254,7 @@
           <div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">${vagas.length} tipos de vaga</div></div>
           <div class="kpi purple-bg"><div class="kpi-label">Total Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">BA: ${candBA.length} | RN: ${candRN.length}</div></div>
           <div class="kpi green-bg"><div class="kpi-label">Concluídos (PT+Integ)</div><div class="kpi-value green">${okTotal}</div><div class="kpi-sub">BA: ${okBA} | RN: ${okRN}</div></div>
-          <div class="kpi ${pendTotal>0?'yellow-bg':'green-bg'}"><div class="kpi-label">Pendentes</div><div class="kpi-value ${pendTotal>0?'yellow':'green'}">${pendTotal}</div><div class="kpi-sub">BA: ${pendBA} | RN: ${pendRN}</div></div>
+          <div class="kpi ${pendTotal>0?'yellow-bg':'green-bg'}"><div class="kpi-label">Faltam p/ Meta</div><div class="kpi-value ${pendTotal>0?'yellow':'green'}">${pendTotal}</div><div class="kpi-sub">BA: ${pendBA} | RN: ${pendRN}</div></div>
           <div class="kpi ${eg>=80?'green-bg':eg>=50?'yellow-bg':'red-bg'}"><div class="kpi-label">Eficiência</div><div class="kpi-value ${eg>=80?'green':eg>=50?'yellow':'red'}">${eg}%</div><div class="kpi-sub">Meta: ${tp}</div></div>
         </div>
         <div class="card"><div class="card-title">Eficiência por Etapa</div>${efGeral}${efCruzada}</div>`;
@@ -346,7 +349,7 @@
     function renderTableCand(){
       let f=candidatos.filter(c=>{const v=vagas.find(x=>x.id===c.positionId);return c.name.toLowerCase().includes(filterSearch.toLowerCase())&&(filterEtapa==='todos'||c.currentStage===parseInt(filterEtapa))&&(filterEstado==='todos'||(v&&v.state===filterEstado))&&(filterFuncao==='todos'||(v&&v.title===filterFuncao));});
       f.sort((a,b)=>{const va=a.name.toLowerCase(),vb=b.name.toLowerCase();return sortDir==='asc'?(va<vb?-1:1):(va>vb?-1:1);});
-      document.getElementById('tbodyCand').innerHTML=f.slice(0,200).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ok=candidatoOk(c),m=c.checklist?c.checklist.filter(x=>x).length:0;return`<tr style="${ok?'background:#f0fdf4':''}"><td>${c.name}${ok?' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>':''}</td><td class="text-gray">${v?.title||'-'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${m}/15</span></td><td><div class="actions"><button class="btn btn-primary btn-sm" onclick="openChecklist(${c.id})">Checklist</button><button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('');
+      document.getElementById('tbodyCand').innerHTML=f.slice(0,200).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ok=candidatoOk(c),m=c.checklist?c.checklist.filter(x=>x).length:0;return`<tr style="${ok?'background:#f0fdf4':''}"><td>${c.name}${ok?' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>':''}</td><td class="text-gray">${v?.title||'-'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span> <span style="color:#9ca3af;font-size:11px">(${m}/15)</span></td><td><div class="actions"><button class="btn btn-primary btn-sm" onclick="openChecklist(${c.id})">Checklist</button><button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('');
     }
 
     function render(){if(currentTab==='dashboard')renderDashboard();else if(currentTab==='vagas')renderVagas();else renderCandidatos();}

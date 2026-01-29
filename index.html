@@ -11,7 +11,7 @@
 </head>
 <body>
 <div id="login-screen" class="login-container"><div class="login-box"><h1 class="login-title">🎯 Follow Up de Vagas</h1><p class="login-subtitle">Entre com suas credenciais</p><div id="login-error" class="login-error hidden"></div><div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com"></div><div class="form-group"><label>Senha</label><input type="password" id="login-password" placeholder="••••••••"></div><button class="btn btn-primary" style="width:100%;padding:12px;font-size:15px" id="btnLogin">Entrar</button></div></div>
-<div id="app-screen" class="hidden"><header class="header"><nav class="nav"><button class="nav-btn active" id="nav-dashboard">Dashboard</button><button class="nav-btn" id="nav-vagas">Vagas</button><button class="nav-btn" id="nav-candidatos">Candidatos</button></nav><div class="header-actions"><span class="user-info" id="user-email"></span><button class="btn btn-outline btn-sm" id="btnLogout">Sair</button></div></header><main class="main"><div id="loading" class="loading"><div class="spinner"></div>Carregando dados...</div><div id="dashboard" class="hidden"></div><div id="vagas" class="hidden"></div><div id="candidatos" class="hidden"></div></main></div>
+<div id="app-screen" class="hidden"><header class="header"><nav class="nav"><button class="nav-btn active" id="nav-dashboard">Dashboard</button><button class="nav-btn" id="nav-vagas">Vagas</button><button class="nav-btn" id="nav-candidatos">Candidatos</button></nav><div class="header-actions"><button class="btn btn-success btn-sm" id="btnRefresh">🔄 Atualizar</button><span class="user-info" id="user-email"></span><button class="btn btn-outline btn-sm" id="btnLogout">Sair</button></div></header><main class="main"><div id="loading" class="loading"><div class="spinner"></div>Carregando dados...</div><div id="dashboard" class="hidden"></div><div id="vagas" class="hidden"></div><div id="candidatos" class="hidden"></div></main></div>
 <div id="modal" class="modal-overlay hidden"><div class="modal"><h2 class="modal-title" id="modal-title"></h2><div id="modal-content"></div></div></div>
 <script>
 (function(){
@@ -41,6 +41,24 @@ document.getElementById('btnLogout').onclick=async function(){
   document.getElementById('app-screen').classList.add('hidden');
   document.getElementById('login-screen').classList.remove('hidden');
 };
+
+document.getElementById('btnRefresh').onclick=async function(){
+  this.textContent='⏳ Atualizando...';
+  this.disabled=true;
+  await loadData();
+  render();
+  this.textContent='🔄 Atualizar';
+  this.disabled=false;
+  showToast('✅ Dados atualizados!');
+};
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:20px;right:20px;background:#16a34a;color:#fff;padding:12px 24px;border-radius:8px;font-weight:500;z-index:9999;animation:fadeIn .3s';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
 
 document.getElementById('login-password').onkeypress=function(e){if(e.key==='Enter')document.getElementById('btnLogin').click();};
 
@@ -152,9 +170,9 @@ function openCheck(id){
   document.getElementById('closeCheck').onclick=function(){closeModal();render();};
 }
 
-async function toggleEt(id,idx){const c=candidatos.find(x=>x.id===id);c.checklist[idx]=!c.checklist[idx];let l=-1;for(let i=14;i>=0;i--)if(c.checklist[i]){l=i;break;}c.currentStage=l>=0?l:0;await sb.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openCheck(id);}
-async function markAll(id){const c=candidatos.find(x=>x.id===id);c.checklist=Array(15).fill(true);c.currentStage=14;await sb.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openCheck(id);}
-async function clearAll(id){const c=candidatos.find(x=>x.id===id);c.checklist=Array(15).fill(false);c.currentStage=0;await sb.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openCheck(id);}
+async function toggleEt(id,idx){const c=candidatos.find(x=>x.id===id);c.checklist[idx]=!c.checklist[idx];let l=-1;for(let i=14;i>=0;i--)if(c.checklist[i]){l=i;break;}c.currentStage=l>=0?l:0;await sb.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openCheck(id);showToast('✅ Etapa atualizada!');}
+async function markAll(id){const c=candidatos.find(x=>x.id===id);c.checklist=Array(15).fill(true);c.currentStage=14;await sb.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openCheck(id);showToast('✅ Todas etapas marcadas!');}
+async function clearAll(id){const c=candidatos.find(x=>x.id===id);c.checklist=Array(15).fill(false);c.currentStage=0;await sb.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openCheck(id);showToast('✅ Etapas limpas!');}
 
 function renderVagas(){
   let h=`<div class="page-header"><h1 class="page-title">Vagas</h1><button class="btn btn-primary" id="newVaga">+ Nova</button></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th class="center">Meta</th><th class="center">Cands</th><th class="center">Ações</th></tr></thead><tbody>`;
@@ -163,7 +181,7 @@ function renderVagas(){
   document.getElementById('vagas').innerHTML=h;
   document.getElementById('newVaga').onclick=function(){openVagaModal();};
   document.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=function(){openVagaModal(+this.dataset.edit);};});
-  document.querySelectorAll('[data-del]').forEach(b=>{b.onclick=async function(){if(!confirm('Deletar?'))return;const id=+this.dataset.del;await sb.from('candidatos').delete().eq('position_id',id);await sb.from('vagas').delete().eq('id',id);vagas=vagas.filter(v=>v.id!==id);candidatos=candidatos.filter(c=>c.positionId!==id);render();};});
+  document.querySelectorAll('[data-del]').forEach(b=>{b.onclick=async function(){if(!confirm('Deletar vaga e todos candidatos dela?'))return;const id=+this.dataset.del;await sb.from('candidatos').delete().eq('position_id',id);await sb.from('vagas').delete().eq('id',id);vagas=vagas.filter(v=>v.id!==id);candidatos=candidatos.filter(c=>c.positionId!==id);render();showToast('🗑️ Vaga excluída!');};});
 }
 
 function openVagaModal(id){
@@ -175,8 +193,8 @@ function openVagaModal(id){
   document.getElementById('saveVaga').onclick=async function(){
     const t=document.getElementById('vTitle').value.trim(),s=document.getElementById('vState').value,q=parseInt(document.getElementById('vQty').value)||1;
     if(!t){alert('Preencha');return;}
-    if(id){await sb.from('vagas').update({title:t,state:s,quantity:q}).eq('id',id);const vv=vagas.find(x=>x.id===id);vv.title=t;vv.state=s;vv.quantity=q;}
-    else{const{data}=await sb.from('vagas').insert({title:t,state:s,quantity:q}).select();if(data)vagas.push(data[0]);}
+    if(id){await sb.from('vagas').update({title:t,state:s,quantity:q}).eq('id',id);const vv=vagas.find(x=>x.id===id);vv.title=t;vv.state=s;vv.quantity=q;showToast('✅ Vaga atualizada!');}
+    else{const{data}=await sb.from('vagas').insert({title:t,state:s,quantity:q}).select();if(data){vagas.push(data[0]);showToast('✅ Vaga criada!');}}
     closeModal();render();
   };
 }
@@ -202,7 +220,7 @@ function renderTbl(){
   f.slice(0,200).forEach(c=>{const v=vagas.find(x=>x.id===c.positionId),ok=isOk(c),m=c.checklist?c.checklist.filter(x=>x).length:0;h+=`<tr style="${ok?'background:#f0fdf4':''}"><td>${c.name}${ok?' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>':''}</td><td class="text-gray">${v?.title||'-'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}.${ETAPAS[c.currentStage]}</span> <span style="color:#9ca3af;font-size:11px">(${m}/15)</span></td><td><div class="actions"><button class="btn btn-primary btn-sm" data-check="${c.id}">Check</button><button class="btn btn-danger btn-sm" data-delc="${c.id}">Del</button></div></td></tr>`;});
   document.getElementById('tbCand').innerHTML=h;
   document.querySelectorAll('[data-check]').forEach(b=>{b.onclick=function(){openCheck(+this.dataset.check);};});
-  document.querySelectorAll('[data-delc]').forEach(b=>{b.onclick=async function(){if(!confirm('Deletar?'))return;const id=+this.dataset.delc;await sb.from('candidatos').delete().eq('id',id);candidatos=candidatos.filter(c=>c.id!==id);renderTbl();};});
+  document.querySelectorAll('[data-delc]').forEach(b=>{b.onclick=async function(){if(!confirm('Deletar?'))return;const id=+this.dataset.delc;await sb.from('candidatos').delete().eq('id',id);candidatos=candidatos.filter(c=>c.id!==id);renderTbl();showToast('🗑️ Candidato excluído!');};});
 }
 
 function openCandModal(){
@@ -215,7 +233,7 @@ function openCandModal(){
     if(!n){alert('Preencha');return;}if(!p){alert('Selecione vaga');return;}
     const ch=Array(15).fill(false);for(let i=0;i<=s;i++)ch[i]=true;
     const{data}=await sb.from('candidatos').insert({name:n,position_id:p,current_stage:s,status:'in_process',checklist:ch}).select();
-    if(data)candidatos.push({...data[0],positionId:data[0].position_id,currentStage:data[0].current_stage});
+    if(data){candidatos.push({...data[0],positionId:data[0].position_id,currentStage:data[0].current_stage});showToast('✅ Candidato adicionado!');}
     closeModal();render();
   };
 }

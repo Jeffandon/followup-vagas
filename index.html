@@ -149,10 +149,23 @@ function showCandEtapa(vid,eidx){
   const vg=vagas.find(v=>v.id===vid);
   const cs=candidatos.filter(c=>c.positionId===vid&&c.currentStage===eidx);
   document.getElementById('modal-title').textContent=ETAPAS[eidx];
-  document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga:<strong style="color:#1e40af">${vg.title}</strong>-${vg.state}</div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong></div></div><div style="max-height:350px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th class="center">Ação</th></tr></thead><tbody>${cs.map((c,i)=>`<tr><td>${i+1}</td><td>${c.name}</td><td class="center"><button class="btn btn-primary btn-sm" data-id="${c.id}">Checklist</button></td></tr>`).join('')}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
+  document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga:<strong style="color:#1e40af">${vg.title}</strong> - ${vg.state}</div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong> candidatos</div></div><div style="max-height:350px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th class="center">Ação</th></tr></thead><tbody>${cs.map((c,i)=>`<tr><td>${i+1}</td><td>${c.name}</td><td class="center"><button class="btn btn-primary btn-sm" data-id="${c.id}">Checklist</button></td></tr>`).join('')}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" id="exportEtapaVagaBtn">📊 Exportar Excel</button><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
   document.getElementById('modal').classList.remove('hidden');
   document.getElementById('closeModalBtn').onclick=closeModal;
+  document.getElementById('exportEtapaVagaBtn').onclick=function(){exportEtapaVaga(vg,eidx,cs);};
   document.querySelectorAll('#modal-content .btn-primary').forEach(b=>{b.onclick=function(){closeModal();setTimeout(()=>openCheck(+this.dataset.id),100);};});
+}
+
+function exportEtapaVaga(vg,eidx,cs){
+  let csv='\uFEFF'+'#;Nome;Função;Estado;Etapa\n';
+  cs.forEach((c,i)=>{
+    csv+=`${i+1};${c.name};${vg.title};${vg.state};${ETAPAS[eidx]}\n`;
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`${vg.title.replace(/\s+/g,'_')}_${vg.state}_etapa_${eidx+1}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('📊 Excel exportado!');
 }
 
 function showCandEtapaGeral(eidx){
@@ -163,10 +176,24 @@ function showCandEtapaGeral(eidx){
     const vg=vagas.find(v=>v.id===c.positionId);
     tbody+=`<tr><td>${i+1}</td><td>${c.name}</td><td>${vg?.title||'-'}</td><td>${vg?.state||'-'}</td><td class="center"><button class="btn btn-primary btn-sm" data-id="${c.id}">Checklist</button></td></tr>`;
   });
-  document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Etapa:<strong style="color:#1e40af">${eidx+1}. ${ETAPAS[eidx]}</strong></div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong> candidatos</div></div><div style="max-height:400px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th>Função</th><th>Estado</th><th class="center">Ação</th></tr></thead><tbody>${tbody}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato nesta etapa</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
+  document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Etapa:<strong style="color:#1e40af">${eidx+1}. ${ETAPAS[eidx]}</strong></div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong> candidatos</div></div><div style="max-height:400px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th>Função</th><th>Estado</th><th class="center">Ação</th></tr></thead><tbody>${tbody}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato nesta etapa</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" id="exportEtapaBtn">📊 Exportar Excel</button><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
   document.getElementById('modal').classList.remove('hidden');
   document.getElementById('closeModalBtn').onclick=closeModal;
+  document.getElementById('exportEtapaBtn').onclick=function(){exportEtapaGeral(eidx,cs);};
   document.querySelectorAll('#modal-content .btn-primary').forEach(b=>{b.onclick=function(){closeModal();setTimeout(()=>openCheck(+this.dataset.id),100);};});
+}
+
+function exportEtapaGeral(eidx,cs){
+  let csv='\uFEFF'+'#;Nome;Função;Estado;Etapa\n';
+  cs.forEach((c,i)=>{
+    const vg=vagas.find(v=>v.id===c.positionId);
+    csv+=`${i+1};${c.name};${vg?.title||'N/A'};${vg?.state||'N/A'};${ETAPAS[eidx]}\n`;
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`etapa_${eidx+1}_${ETAPAS[eidx].replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('📊 Excel exportado!');
 }
 
 function openCheck(id){

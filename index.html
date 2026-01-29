@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Follow Up de Vagas</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:system-ui,-apple-system,sans-serif;background:#f8f9fa;min-height:100vh}
@@ -11,7 +12,8 @@
     .nav{display:flex}
     .nav-btn{padding:16px 24px;font-size:15px;font-weight:500;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;color:#6b7280}
     .nav-btn.active{color:#2563eb;border-bottom-color:#2563eb}
-    .header-actions{display:flex;gap:8px;padding:10px 0}
+    .header-actions{display:flex;gap:8px;padding:10px 0;align-items:center}
+    .user-info{font-size:12px;color:#6b7280;margin-right:10px}
     .main{padding:16px;max-width:100%}
     .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
     .kpi{border-radius:8px;padding:16px;border:1px solid #e5e7eb}
@@ -19,18 +21,14 @@
     .kpi-value{font-size:32px;font-weight:700}
     .kpi-sub{font-size:12px;color:#9ca3af;margin-top:2px}
     .card{background:#fff;border-radius:8px;border:1px solid #e5e7eb;padding:16px;margin-bottom:16px}
-    .card-title{font-weight:600;font-size:15px;color:#374151;margin-bottom:12px}
     .etapas-row{display:flex;gap:3px}
     .etapa-card{flex:1;text-align:center;padding:6px 2px;background:#f9fafb;border-radius:4px;border:1px solid #e5e7eb}
     .etapa-name{font-size:9px;color:#6b7280;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .etapa-qty{font-size:14px;font-weight:700;color:#111827}
     .etapa-ef{font-size:11px;font-weight:600;border-radius:2px;padding:1px 3px}
-    .section-title{font-weight:700;font-size:16px;color:#111827;margin-bottom:12px}
     table{width:100%;border-collapse:collapse;font-size:12px}
-    th{padding:8px 4px;text-align:left;font-weight:600;color:#6b7280;border-bottom:2px solid #e5e7eb;white-space:nowrap}
+    th{padding:8px 4px;text-align:left;font-weight:600;color:#6b7280;border-bottom:2px solid #e5e7eb}
     th.center{text-align:center}
-    th.sortable{cursor:pointer}
-    th.sortable:hover{color:#2563eb}
     td{padding:10px 4px;border-bottom:1px solid #f3f4f6}
     td.center{text-align:center}
     tr:nth-child(even){background:#f9fafb}
@@ -45,12 +43,11 @@
     .btn-primary{background:#2563eb;color:#fff}
     .btn-outline{background:#fff;color:#374151;border:1px solid #d1d5db}
     .btn-success{background:#16a34a;color:#fff}
-    .btn-warning{background:#f59e0b;color:#fff}
     .btn-danger{background:#dc2626;color:#fff}
-    .btn-sm{padding:5px 10px;font-size:12px;border-radius:4px;min-width:65px;text-align:center}
+    .btn-sm{padding:5px 10px;font-size:12px;border-radius:4px;min-width:65px}
     .filters{display:grid;grid-template-columns:1fr 170px 170px 170px;gap:12px;align-items:center}
     input,select{width:100%;padding:8px 12px;font-size:13px;border:1px solid #d1d5db;border-radius:5px;outline:none}
-    .actions{display:flex;justify-content:flex-end;gap:5px;min-width:270px}
+    .actions{display:flex;justify-content:flex-end;gap:5px;min-width:200px}
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50}
     .modal{background:#fff;border-radius:8px;padding:24px;width:100%;max-width:500px;margin:16px;max-height:90vh;overflow-y:auto}
     .modal-title{font-size:18px;font-weight:700;margin-bottom:20px}
@@ -58,16 +55,10 @@
     .form-group label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px}
     .hidden{display:none}
     .text-gray{color:#6b7280}
-    .font-bold{font-weight:700}
-    .mb-8{margin-bottom:8px}
-    .etapa-col{width:26px;text-align:center;font-size:11px;padding:8px 2px!important}
-    .ef-section{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e5e7eb}
-    .ef-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-    .ef-title{font-weight:700;font-size:14px;color:#2563eb;margin-bottom:10px}
     .funcoes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-    .funcao-card{background:#fff;border:2px solid #e2e8f0;border-radius:10px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+    .funcao-card{background:#fff;border:2px solid #e2e8f0;border-radius:10px;overflow:hidden}
     .funcao-header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:12px 16px;font-weight:700;font-size:14px;text-align:center}
-    .funcao-body-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    .funcao-body-grid{display:grid;grid-template-columns:1fr 1fr}
     .uf-col{padding:12px;border-right:1px solid #e2e8f0;display:flex;flex-direction:column}
     .uf-col:last-child{border-right:none}
     .uf-header-box{padding:10px;border-radius:8px;margin-bottom:10px;text-align:center}
@@ -76,304 +67,303 @@
     .uf-nome{font-weight:700;font-size:14px;color:#1e293b}
     .uf-total-num{font-size:20px;font-weight:700;color:#1e40af;margin-top:2px}
     .uf-total-num span{font-size:12px;font-weight:400;color:#64748b}
-    .etapas-lista{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
-    .etapa-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;transition:all 0.2s;cursor:pointer}
-    .etapa-item:hover{background:#e0e7ff;border-color:#818cf8;transform:scale(1.02)}
+    .etapas-lista{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;flex:1}
+    .etapa-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;cursor:pointer}
+    .etapa-item:hover{background:#e0e7ff;border-color:#818cf8}
     .etapa-item-qty{background:#3b82f6;color:#fff;font-weight:700;font-size:13px;min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
     .etapa-item-name{font-size:12px;color:#334155;font-weight:500;flex:1}
     .etapa-aprovado{background:#f0fdf4;border-color:#86efac}
     .etapa-aprovado .etapa-item-qty{background:#16a34a}
     .etapa-aprovado .etapa-item-name{color:#16a34a;font-weight:600}
     .uf-resumo-box{display:flex;justify-content:space-around;padding:10px;background:#f1f5f9;border-radius:8px;margin-top:auto}
-    .resumo-processo,.resumo-aprovado{text-align:center}
     .resumo-num{display:block;font-weight:700;font-size:20px}
     .resumo-label{font-size:11px;color:#64748b}
     .resumo-processo .resumo-num{color:#f59e0b}
     .resumo-aprovado .resumo-num{color:#16a34a}
+    .ef-section{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e5e7eb}
+    .ef-section:last-child{border-bottom:none}
+    .ef-title{font-weight:700;font-size:14px;color:#2563eb;margin-bottom:10px}
+    .login-container{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e40af,#3b82f6)}
+    .login-box{background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);width:100%;max-width:400px}
+    .login-title{font-size:24px;font-weight:700;color:#1e293b;margin-bottom:8px;text-align:center}
+    .login-subtitle{font-size:14px;color:#64748b;margin-bottom:24px;text-align:center}
+    .login-error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:10px;border-radius:6px;margin-bottom:16px;font-size:13px}
+    .loading{text-align:center;padding:40px;color:#6b7280}
+    .spinner{border:3px solid #e5e7eb;border-top:3px solid #2563eb;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto 16px}
+    @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
-  <header class="header">
-    <nav class="nav">
-      <button class="nav-btn active" id="nav-dashboard" onclick="showTab('dashboard')">Dashboard</button>
-      <button class="nav-btn" id="nav-vagas" onclick="showTab('vagas')">Vagas</button>
-      <button class="nav-btn" id="nav-candidatos" onclick="showTab('candidatos')">Candidatos</button>
-    </nav>
-    <div class="header-actions">
-      <button class="btn btn-success btn-sm" onclick="exportarDados()">📥 Exportar</button>
-      <button class="btn btn-warning btn-sm" onclick="abrirImportar()">📤 Importar</button>
+  <div id="login-screen" class="login-container">
+    <div class="login-box">
+      <h1 class="login-title">🎯 Follow Up de Vagas</h1>
+      <p class="login-subtitle">Entre com suas credenciais</p>
+      <div id="login-error" class="login-error hidden"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="login-password" placeholder="••••••••"></div>
+      <button class="btn btn-primary" style="width:100%;padding:12px;font-size:15px" onclick="fazerLogin()">Entrar</button>
     </div>
-  </header>
-  <main class="main">
-    <div id="dashboard"></div>
-    <div id="vagas" class="hidden"></div>
-    <div id="candidatos" class="hidden"></div>
-  </main>
+  </div>
+
+  <div id="app-screen" class="hidden">
+    <header class="header">
+      <nav class="nav">
+        <button class="nav-btn active" id="nav-dashboard" onclick="showTab('dashboard')">Dashboard</button>
+        <button class="nav-btn" id="nav-vagas" onclick="showTab('vagas')">Vagas</button>
+        <button class="nav-btn" id="nav-candidatos" onclick="showTab('candidatos')">Candidatos</button>
+      </nav>
+      <div class="header-actions">
+        <span class="user-info" id="user-email"></span>
+        <button class="btn btn-outline btn-sm" onclick="fazerLogout()">Sair</button>
+      </div>
+    </header>
+    <main class="main">
+      <div id="loading" class="loading"><div class="spinner"></div>Carregando dados...</div>
+      <div id="dashboard" class="hidden"></div>
+      <div id="vagas" class="hidden"></div>
+      <div id="candidatos" class="hidden"></div>
+    </main>
+  </div>
+
   <div id="modal" class="modal-overlay hidden"><div class="modal"><h2 class="modal-title" id="modal-title"></h2><div id="modal-content"></div></div></div>
 
   <script>
-    // DADOS DO USUÁRIO (exportados em 2026-01-28)
-    const DADOS_INICIAIS = { vagas: [{"id": 1, "title": "Ajudante De Motorista", "state": "BA", "quantity": 32}, {"id": 2, "title": "Motorista Carreteiro", "state": "BA", "quantity": 30}, {"id": 3, "title": "Motorista Truck", "state": "BA", "quantity": 7}, {"id": 4, "title": "Tecnico Em Seguranca Do Trabalho", "state": "BA", "quantity": 5}, {"id": 5, "title": "Ajudante De Motorista", "state": "RN", "quantity": 28}, {"id": 6, "title": "Motorista Carreteiro", "state": "RN", "quantity": 22}, {"id": 7, "title": "Motorista Truck", "state": "RN", "quantity": 6}, {"id": 8, "title": "Tecnico Em Seguranca Do Trabalho", "state": "RN", "quantity": 5}], candidatos: [{"id": 1, "name": "Naylanda Rosario Silva De Melo", "positionId": 4, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 2, "name": "Luan Henrique Alaman De Souza", "positionId": 4, "currentStage": 12, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, false, false]}, {"id": 5, "name": "Valter Cassio De Oliveira Santos", "positionId": 2, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 9, "name": "Frankney Araujo Almeida", "positionId": 2, "currentStage": 8, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, false, false, false, false, false, false]}, {"id": 11, "name": "Cristovaldo Da Silva Oliveira", "positionId": 2, "currentStage": 4, "status": "in_process", "checklist": [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false]}, {"id": 13, "name": "Jailson De Jesus De Brito", "positionId": 2, "currentStage": 7, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, false, false, false, false, false, false, false]}, {"id": 14, "name": "Danilo Santos Ferreira", "positionId": 1, "currentStage": 7, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, false, false, false, false, false, false, false]}, {"id": 15, "name": "Roque Bispo Serafim", "positionId": 1, "currentStage": 9, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, false, false, false, false, false]}, {"id": 16, "name": "Uilson Nascimento Dos Santos", "positionId": 1, "currentStage": 6, "status": "in_process", "checklist": [true, true, true, true, true, true, true, false, false, false, false, false, false, false, false]}, {"id": 17, "name": "Luciano Dos Santos", "positionId": 1, "currentStage": 9, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, false, false, false, false, false]}, {"id": 18, "name": "Nilton Cerqueira Moreira", "positionId": 1, "currentStage": 8, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, false, false, false, false, false, false]}, {"id": 19, "name": "Pedro Paulo Araujo Ribeiro", "positionId": 1, "currentStage": 7, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, false, false, false, false, false, false, false]}, {"id": 20, "name": "Mauricio Conceição Da Cruz", "positionId": 1, "currentStage": 9, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, false, false, false, false, false]}, {"id": 21, "name": "Augusto Gomes Dos Santos", "positionId": 2, "currentStage": 7, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, false, false, false, false, false, false, false]}, {"id": 22, "name": "Alcimar Dos Santos Ferreira", "positionId": 2, "currentStage": 7, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, false, false, false, false, false, false, false]}, {"id": 23, "name": "José Ronaldo Reis Pereira", "positionId": 2, "currentStage": 7, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, false, false, false, false, false, false, false]}, {"id": 24, "name": "Alex Santana De Oliveira", "positionId": 3, "currentStage": 7, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, false, false, false, false, false, false, false]}, {"id": 25, "name": "Antonio Jorge Dos Santos Coutinho", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 26, "name": "Deumar Gomes Do Lago", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 27, "name": "Lindete Souza De Jesus", "positionId": 4, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 28, "name": "Jamille De Jesus Pinto", "positionId": 4, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 29, "name": "Romualdo Souza Cristo", "positionId": 3, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 30, "name": "Lucas De Almeida Silva", "positionId": 3, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 31, "name": "Djalma Dos Santos", "positionId": 3, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 32, "name": "Manoel De Jesus Nunes Junior", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 33, "name": "Thiago Marinho Dos Santos", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 34, "name": "Sergio Araujo Dos Santos", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 35, "name": "Rodrigo Barreto Da Silva", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 36, "name": "Renan Lima Dos Santos", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 37, "name": "Melquisedeque Araujo Do Lago", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 38, "name": "Marcos Silva Matos", "positionId": 2, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 39, "name": "Marcos De Santana Barroso", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 40, "name": "Lucas Fontes Dos Santos", "positionId": 2, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 41, "name": "Josevaldo Santos De Jesus", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 42, "name": "Ademir Ferreira Reis", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 43, "name": "Joao Alex Washington Silva Bonfim", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 44, "name": "Jailson Reis Santos", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 45, "name": "Gilson De Jesus Fernandes", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 46, "name": "Alex Rodrigues Soares Lopes", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 47, "name": "Edvaldo Gomes Dos Santos", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 48, "name": "Edicarlos Ferreira Chagas", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 49, "name": "Claudio William Da Silva Natali", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 50, "name": "Cesar Ferreira Cerqueira", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 51, "name": "Rafael Da Silva Reis", "positionId": 4, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 52, "name": "Gilmario De Lima Vasconcellos", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 53, "name": "Erivaldo Da Hora Ferreira", "positionId": 2, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 54, "name": "Paulo Ricardo Machado De Morais", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 55, "name": "Leandro Do Carmo Santos", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 56, "name": "Erasmo Jorge Santana Da Silva", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 57, "name": "Anderson Lima Anunciacao", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 58, "name": "Weverton Santana Oliveira", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 59, "name": "Uellington Santana De Jesus", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 60, "name": "Tiago Dos Santos", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 61, "name": "Matheus De Oliveira Santana", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 62, "name": "Joaquim Henrique Nascimento De Jesus", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 63, "name": "Jair De Jesus Dos Santos", "positionId": 1, "currentStage": 13, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, true, true, false]}, {"id": 64, "name": "Jailson De Almeida Borges", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 65, "name": "Ivenilson Souza De Jesus", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 66, "name": "Fabio Brandao Trindade", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 67, "name": "Emerson Conceicao Pereira", "positionId": 1, "currentStage": 14, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 68, "name": "Eduardo Santos Gaspar", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 69, "name": "Edmundo Dos Santos Silva", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 70, "name": "Edmilson Santos De Santana", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 71, "name": "Edmilson Dos Santos Bispo", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 72, "name": "Anderson Santos De Andrade", "positionId": 2, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 73, "name": "Daniel Dos Santos Ferreira", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 74, "name": "Carlos Alexandre Santana Santa Rosa", "positionId": 1, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 75, "name": "Antonio Marcos Alexandre Dos Santos", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 76, "name": "Antonio Carlos Rocha Simoes", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 77, "name": "Adilson De Jesus Barbosa", "positionId": 1, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 78, "name": "Anderson John Da Silva Lopes", "positionId": 8, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 79, "name": "Jose Leonardo", "positionId": 5, "currentStage": 10, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, false, false, false]}, {"id": 80, "name": "Carlos Antonio Cavalcante", "positionId": 5, "currentStage": 10, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, false, false, false]}, {"id": 81, "name": "Cleudo Rocha Da Silva", "positionId": 6, "currentStage": 14, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, true, false, true]}, {"id": 82, "name": "Antonio Francikleber Candido Dos Santos", "positionId": 5, "currentStage": 10, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, false, false, false]}, {"id": 83, "name": "Ivanio Cabral", "positionId": 6, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, false, true, false]}, {"id": 84, "name": "Isaac Da Silva Dantas", "positionId": 6, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, false, true, false]}, {"id": 86, "name": "Emanuella Fernandes De Queiroz Souza", "positionId": 8, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, true, true, false]}, {"id": 87, "name": "Francisco Eguinaldo Ventura Da Silva", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 88, "name": "Zaira Pereira De Paiva", "positionId": 8, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 89, "name": "Gladyson Tertulino De Moura", "positionId": 8, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 90, "name": "Flavio Filgueira", "positionId": 8, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 91, "name": "Sangil Pereira Da Silva", "positionId": 7, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 92, "name": "Ronaldo Adriano Silva Oliveira", "positionId": 7, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 93, "name": "Kleber Wagner Bezerra De Oliveira", "positionId": 7, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 94, "name": "Jocelino Moura De Souza", "positionId": 7, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 95, "name": "Germario Castro De Medeiros", "positionId": 7, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 96, "name": "Francisco Alcivan Lopes", "positionId": 7, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 97, "name": "Samuel Nascimento De Melo", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 98, "name": "Oseias Alves De Oliveira", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 99, "name": "Marcus Vinicius Fernandes Costa", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 100, "name": "Josinaldo Dantas De Medeiros", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 101, "name": "Joseilson Da Fonseca Filgueira", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 102, "name": "Joao Batista Bezerra De Andrade", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 103, "name": "Jean Carlos Simao Da Silva", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 104, "name": "Gilney Carlos De Medeiros", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 105, "name": "Geilson Rodrigues De Meneses", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 106, "name": "Francisco Roberto Da Silva", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 107, "name": "Carlos Rodrigo Varela", "positionId": 5, "currentStage": 14, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 108, "name": "Francisco Alex De Paulo Silva", "positionId": 5, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 109, "name": "Anderson Alves Dos Santos Santos", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 110, "name": "Antonio Marcos Dos Santos", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 111, "name": "Antonio Radamis De Almeida", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 112, "name": "Antonio Ronilson Da Silva Oliveira", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 113, "name": "Benedito Gislan Vieira De Lima", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 114, "name": "Bruno Martins Da Silva", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 115, "name": "Emerson Rodrigo Mendes", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 116, "name": "Escolastico Pinheiro De Morais Neto", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 117, "name": "Francisco De Assis De Souza", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 118, "name": "Gilcimar Luiz Da Silva", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 119, "name": "Helio Ruarth Morais Penha", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 120, "name": "Jose Hellenilton Gomes De Oliveira", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 121, "name": "Jose Vanderli Da Silva", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 122, "name": "Lair Nascimento De Paiva Junior", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 123, "name": "Leonardo Morais De Freitas", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 124, "name": "Marivaldo Ribeiro Silva", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 125, "name": "Mosaniel Mateus Faustino Gondim", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 126, "name": "Oziel Antonio De Freitas", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 127, "name": "Paulo Henrique De Sousa Bandeira", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 128, "name": "Reginaldo Filho Verissimo", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 129, "name": "Willyan Rodrigues Fernandes", "positionId": 5, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 130, "name": "Alexsandro Alves De Melo Melo", "positionId": 6, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, false]}, {"id": 131, "name": "Geanatan Araujo Batista De Oliveira", "positionId": 6, "currentStage": 13, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, false, true, false]}, {"id": 132, "name": "Jorge Luiz Freire De Souza", "positionId": 6, "currentStage": 14, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 133, "name": "Alberto Adelino Dos Santos Santos", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 134, "name": "Antonio Clovis Bezerra Bezerra", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 135, "name": "Carlos Eduardo De Oliveira Santiago", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 136, "name": "Evanildo Ferreira De Almeida", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 137, "name": "Flaviano Rouge Varela Mendes", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 138, "name": "Francisco De Assis Barros", "positionId": 6, "currentStage": 14, "status": "approved", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 139, "name": "Alex Paim Dos Santos", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 140, "name": "Caio Porceno Conceição", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 141, "name": "Cleres Santos De Jesus", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 143, "name": "Dhonatas Dos Santos Silva", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 144, "name": "Dicson Allan Santos Da Silva", "positionId": 3, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 145, "name": "Elivan Santana Oliveira", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 146, "name": "Enivaldo Alves Dos Reis Junior", "positionId": 1, "currentStage": 9, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, false, false, false, false, false]}, {"id": 147, "name": "Fabio Dos Santos Coelho", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 148, "name": "Gilvan Carlos Ribeiro Das Virgens", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 149, "name": "Ivson Souza De Jesus", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 150, "name": "João Nilton Gusmão Bastos", "positionId": 2, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 151, "name": "Jorge Santos Silva", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 152, "name": "Jose Luiz Souza Lima", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 153, "name": "José Raimundo Dos Santos Pereira", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 154, "name": "Joseilton Santos De Jesus", "positionId": 3, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 155, "name": "Lenilton Vasconcelos Dos Santos", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 156, "name": "Luiz Claudio De Jesus Dos Santos", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 157, "name": "Magno Henrique De Jesus Carvalho", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 158, "name": "Marcio Batista De Santana", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 159, "name": "Marcos Leal Dos Santos", "positionId": 3, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 160, "name": "Osmar Cordeiro Dos Santos", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 161, "name": "Reinaldo De Jesus", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 162, "name": "Robson Nascimento Das Virgens", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 163, "name": "Romario De Jesus Marins", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 164, "name": "Thiago Alves Da Conceição", "positionId": 3, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 165, "name": "Uanderson Ferreira Dos Santos", "positionId": 1, "currentStage": 6, "status": "in_process", "checklist": [true, true, true, true, true, true, true, false, false, false, false, false, false, false, false]}, {"id": 166, "name": "Vanderson Chaves Pereira", "positionId": 2, "currentStage": 5, "status": "in_process", "checklist": [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false]}, {"id": 167, "name": "Vinicius Carvalho Da Silva", "positionId": 1, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 168, "name": "Andrelino José Da Silva", "positionId": 5, "currentStage": 12, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, false, false]}, {"id": 170, "name": "Vladiano Saraiva De Freitas", "positionId": 6, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 171, "name": "Izidório Neto De Oliveira", "positionId": 7, "currentStage": 3, "status": "in_process", "checklist": [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]}, {"id": 173, "name": "Jackson de Azevedo", "positionId": 6, "currentStage": 10, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, false, false, false, false]}, {"id": 174, "name": "Crispim Abade Cardoso", "positionId": 2, "currentStage": 14, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}, {"id": 175, "name": "Josenaldo Alves Fernandes", "positionId": 5, "currentStage": 14, "status": "in_process", "checklist": [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]}], nextId: 176 };
-
-    // Funções de checklist
-    function criarChecklist() { return [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]; }
-    function migrarCandidato(c) {
-      if (!c.checklist) {
-        c.checklist = criarChecklist();
-        for (let i = 0; i <= c.currentStage; i++) c.checklist[i] = true;
-      }
-      return c;
-    }
-    // Concluído = Candidato na etapa 15 (Aprovado no Portal)
-    function candidatoOk(c) { return c.currentStage === 14; }
-
-    // Carregar dados
-    function carregarDados() {
-      const saved = localStorage.getItem('followup_dados_v2');
-      if (saved) {
-        try {
-          const dados = JSON.parse(saved);
-          dados.candidatos = dados.candidatos.map(migrarCandidato);
-          return dados;
-        } catch(e) { console.error(e); }
-      }
-      const dados = JSON.parse(JSON.stringify(DADOS_INICIAIS));
-      dados.candidatos = dados.candidatos.map(migrarCandidato);
-      return dados;
-    }
-
-    function salvarDados() {
-      localStorage.setItem('followup_dados_v2', JSON.stringify({ vagas, candidatos, nextId }));
-    }
-
-    function exportarDados() {
-      const dados = { vagas, candidatos, nextId, exportadoEm: new Date().toISOString() };
-      const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-      a.download = `followup_dados_${new Date().toISOString().slice(0,10)}.json`; a.click();
-      alert('✅ Dados exportados! Guarde este arquivo.');
-    }
-
-    function abrirImportar() {
-      document.getElementById('modal-title').textContent = 'Importar Dados';
-      document.getElementById('modal-content').innerHTML = `
-        <div style="background:#fefce8;border:1px solid #fde047;padding:12px;border-radius:6px;margin-bottom:12px;color:#a16207;font-size:13px">⚠️ Isso vai substituir TODOS os dados atuais!</div>
-        <div class="form-group"><label>Arquivo JSON:</label><input type="file" id="arquivoImport" accept=".json" style="padding:10px;border:2px dashed #d1d5db;width:100%;border-radius:8px"></div>
-        <div class="btn-group"><button class="btn btn-warning" style="flex:1" onclick="importarDados()">Importar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
-      document.getElementById('modal').classList.remove('hidden');
-      setTimeout(() => {
-        document.getElementById('arquivoImport').onchange = function(e) {
-          const reader = new FileReader();
-          reader.onload = (ev) => { window._importJson = ev.target.result; };
-          reader.readAsText(e.target.files[0]);
-        };
-      }, 100);
-    }
-
-    function importarDados() {
-      try {
-        const dados = JSON.parse(window._importJson);
-        vagas = dados.vagas; candidatos = dados.candidatos.map(migrarCandidato);
-        nextId = dados.nextId || Math.max(0, ...candidatos.map(c => c.id)) + 1;
-        salvarDados(); closeModal(); render();
-        alert('✅ Importado! ' + candidatos.length + ' candidatos.');
-      } catch(e) { alert('❌ Erro: JSON inválido'); }
-    }
-
-    let dadosCarregados = carregarDados();
-    let vagas = dadosCarregados.vagas;
-    let candidatos = dadosCarregados.candidatos;
-    let nextId = dadosCarregados.nextId || 174;
+    const SUPABASE_URL = 'https://jocusweupkmzaqxkczjy.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvY3Vzd2V1cGttemFxeGtjemp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NDM3NDAsImV4cCI6MjA4NTIxOTc0MH0.wlSR8teEYnOVornAC0NU0CWHlg_1wrLlXSjvtWo47tU';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const ETAPAS=['Abertura da Vaga','Captação','Triagem','Checagem Dados','Entrevista RH','Teste Prático','Proposta Benel','ASO','Docs pasta DP','Enviar para DP','Apto para Integração','Subir Doc. Portal','PT Cliente','Integração Cliente','Aprovado no Portal'];
     const ESTADOS=['BA','RN'];
-    let currentTab='dashboard',sortCol='name',sortDir='asc';
-    let filterSearch='',filterEtapa='todos',filterEstado='todos',filterFuncao='todos';
+    let vagas=[], candidatos=[], currentTab='dashboard';
+    let filterSearch='',filterEtapa='todos',filterEstado='todos',filterFuncao='todos',sortDir='asc';
+
+    async function verificarSessao() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) mostrarApp(session.user);
+    }
+
+    async function fazerLogin() {
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      if (!email || !password) { mostrarErroLogin('Preencha email e senha'); return; }
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { mostrarErroLogin('Email ou senha incorretos'); return; }
+      mostrarApp(data.user);
+    }
+
+    async function fazerLogout() {
+      await supabase.auth.signOut();
+      document.getElementById('app-screen').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    function mostrarErroLogin(msg) {
+      const el = document.getElementById('login-error');
+      el.textContent = msg; el.classList.remove('hidden');
+    }
+
+    async function mostrarApp(user) {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('hidden');
+      document.getElementById('user-email').textContent = user.email;
+      document.getElementById('loading').classList.remove('hidden');
+      await carregarDados();
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      render();
+    }
+
+    async function carregarDados() {
+      const { data: v } = await supabase.from('vagas').select('*').order('id');
+      const { data: c } = await supabase.from('candidatos').select('*').order('id');
+      vagas = v || [];
+      candidatos = (c || []).map(x => ({...x, positionId: x.position_id, currentStage: x.current_stage, checklist: x.checklist || Array(15).fill(false)}));
+    }
+
+    function candidatoOk(c) { return c.currentStage === 14; }
 
     function showTab(t) {
-      currentTab=t;
-      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-      document.getElementById('nav-'+t).classList.add('active');
-      ['dashboard','vagas','candidatos'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+      currentTab = t;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('nav-' + t).classList.add('active');
+      ['dashboard','vagas','candidatos'].forEach(x => document.getElementById(x).classList.add('hidden'));
       document.getElementById(t).classList.remove('hidden');
       render();
     }
 
-    function getVagasInfo() { return vagas.map(v=>({...v,totalCandidates:candidatos.filter(c=>c.positionId===v.id).length,candidatesByStage:ETAPAS.map((_,i)=>candidatos.filter(c=>c.positionId===v.id&&c.currentStage===i).length)})); }
+    function render() {
+      if (currentTab === 'dashboard') renderDashboard();
+      else if (currentTab === 'vagas') renderVagas();
+      else renderCandidatos();
+    }
 
     function renderDashboard() {
-      const vi=getVagasInfo(), tp=vagas.reduce((s,v)=>s+v.quantity,0), tc=candidatos.length;
-      const okTotal = candidatos.filter(candidatoOk).length;
-      const pendTotal = tp - okTotal; // Pendentes = Meta - Concluídos
-      const candBA = candidatos.filter(c=>vagas.find(v=>v.id===c.positionId)?.state==='BA');
-      const candRN = candidatos.filter(c=>vagas.find(v=>v.id===c.positionId)?.state==='RN');
-      const metaBA = vagas.filter(v=>v.state==='BA').reduce((s,v)=>s+v.quantity,0);
-      const metaRN = vagas.filter(v=>v.state==='RN').reduce((s,v)=>s+v.quantity,0);
+      const tp = vagas.reduce((s,v) => s + v.quantity, 0), tc = candidatos.length;
+      const okTotal = candidatos.filter(candidatoOk).length, pendTotal = tp - okTotal;
+      const candBA = candidatos.filter(c => vagas.find(v => v.id === c.positionId)?.state === 'BA');
+      const candRN = candidatos.filter(c => vagas.find(v => v.id === c.positionId)?.state === 'RN');
+      const metaBA = vagas.filter(v => v.state === 'BA').reduce((s,v) => s + v.quantity, 0);
+      const metaRN = vagas.filter(v => v.state === 'RN').reduce((s,v) => s + v.quantity, 0);
       const okBA = candBA.filter(candidatoOk).length, okRN = candRN.filter(candidatoOk).length;
-      const pendBA = metaBA - okBA, pendRN = metaRN - okRN; // Pendentes por estado = Meta estado - Concluídos estado
-      const eg = tp>0 ? Math.round(okTotal/tp*100) : 0;
+      const pendBA = metaBA - okBA, pendRN = metaRN - okRN;
+      const eg = tp > 0 ? Math.round(okTotal / tp * 100) : 0;
 
-      const cpe=ETAPAS.map((_,i)=>candidatos.filter(c=>c.currentStage===i).length);
-      const epe=ETAPAS.map((_,i)=>tp>0?Math.round(cpe[i]/tp*100):0);
-      const efGeral=`<div class="ef-section"><div class="ef-title">📊 Visão Geral</div><div class="etapas-row">${ETAPAS.map((et,i)=>`<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty">${cpe[i]||'-'}</div><div class="etapa-ef" style="background:${cpe[i]>0?(epe[i]>=50?'#dcfce7':'#fef9c3'):'transparent'};color:${cpe[i]>0?(epe[i]>=50?'#16a34a':'#ca8a04'):'#9ca3af'}">${epe[i]}%</div></div>`).join('')}</div></div>`;
+      const cpe = ETAPAS.map((_, i) => candidatos.filter(c => c.currentStage === i).length);
+      const epe = ETAPAS.map((_, i) => tp > 0 ? Math.round(cpe[i] / tp * 100) : 0);
+      const efGeral = `<div class="ef-section"><div class="ef-title">📊 Visão Geral</div><div class="etapas-row">${ETAPAS.map((et, i) => `<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty">${cpe[i] || '-'}</div><div class="etapa-ef" style="background:${cpe[i] > 0 ? (epe[i] >= 50 ? '#dcfce7' : '#fef9c3') : 'transparent'};color:${cpe[i] > 0 ? (epe[i] >= 50 ? '#16a34a' : '#ca8a04') : '#9ca3af'}">${epe[i]}%</div></div>`).join('')}</div></div>`;
 
-      const funcoes=[...new Set(vagas.map(v=>v.title))];
-      let efCruzada=`<div class="ef-section"><div class="ef-title">🎯 Follow Up por Função e Unidade</div><div class="funcoes-grid">`;
-      funcoes.forEach(func=>{
-        const dadosEstados=[];
-        ['BA','RN'].forEach(est=>{
-          const vaga=vagas.find(v=>v.title===func&&v.state===est);
-          if(!vaga)return;
-          const cands=candidatos.filter(c=>c.positionId===vaga.id);
-          const porEtapa=ETAPAS.map((_,i)=>({idx:i,nome:ETAPAS[i],qty:cands.filter(c=>c.currentStage===i).length}));
-          // Ordenar por fase (índice crescente: 0→14, de cima para baixo)
-          const comCand=porEtapa.filter(e=>e.qty>0).sort((a,b)=>a.idx-b.idx);
-          const total=cands.length, ok=cands.filter(candidatoOk).length, pend=total-ok;
-          const meta=vaga.quantity;
-          dadosEstados.push({est,vaga,comCand,total,ok,pend,meta});
+      const funcoes = [...new Set(vagas.map(v => v.title))];
+      let efCruzada = `<div class="ef-section"><div class="ef-title">🎯 Follow Up por Função e Unidade</div><div class="funcoes-grid">`;
+      funcoes.forEach(func => {
+        const dadosEstados = [];
+        ['BA', 'RN'].forEach(est => {
+          const vaga = vagas.find(v => v.title === func && v.state === est);
+          if (!vaga) return;
+          const cands = candidatos.filter(c => c.positionId === vaga.id);
+          const porEtapa = ETAPAS.map((_, i) => ({ idx: i, nome: ETAPAS[i], qty: cands.filter(c => c.currentStage === i).length }));
+          const comCand = porEtapa.filter(e => e.qty > 0).sort((a, b) => a.idx - b.idx);
+          const total = cands.length, ok = cands.filter(candidatoOk).length, pend = total - ok, meta = vaga.quantity;
+          dadosEstados.push({ est, vaga, comCand, total, ok, pend, meta });
         });
-        if(!dadosEstados.length)return;
-        const maxH=Math.max(...dadosEstados.map(d=>d.comCand.length));
-        efCruzada+=`<div class="funcao-card"><div class="funcao-header">${func}</div><div class="funcao-body-grid">`;
-        dadosEstados.forEach(d=>{
+        if (!dadosEstados.length) return;
+        const maxH = Math.max(...dadosEstados.map(d => d.comCand.length));
+        efCruzada += `<div class="funcao-card"><div class="funcao-header">${func}</div><div class="funcao-body-grid">`;
+        dadosEstados.forEach(d => {
           const faltam = d.meta - d.ok;
-          efCruzada+=`<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est==='BA'?'Bahia':'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta: ${d.meta}</div><div style="margin-top:4px;font-size:12px;font-weight:700;color:${faltam>0?'#dc2626':'#16a34a'}">${faltam>0?'Faltam p/ Meta: '+faltam:'✓ Meta atingida!'}</div></div><div class="etapas-lista" style="min-height:${maxH*38}px">`;
-          d.comCand.forEach(e=>{
-            efCruzada+=`<div class="etapa-item ${e.idx===14?'etapa-aprovado':''}" onclick="mostrarCandidatosEtapa(${d.vaga.id},${e.idx})"><span class="etapa-item-qty">${e.qty}</span><span class="etapa-item-name">${e.nome}</span></div>`;
-          });
-          efCruzada+=`</div><div class="uf-resumo-box"><div class="resumo-processo"><span class="resumo-num">${d.pend}</span><span class="resumo-label">⏳ em processo</span></div><div class="resumo-aprovado"><span class="resumo-num">${d.ok}</span><span class="resumo-label">✅ concluídos</span></div></div></div>`;
+          efCruzada += `<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est === 'BA' ? 'Bahia' : 'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta: ${d.meta}</div><div style="margin-top:4px;font-size:12px;font-weight:700;color:${faltam > 0 ? '#dc2626' : '#16a34a'}">${faltam > 0 ? 'Faltam p/ Meta: ' + faltam : '✓ Meta atingida!'}</div></div><div class="etapas-lista" style="min-height:${maxH * 38}px">`;
+          d.comCand.forEach(e => { efCruzada += `<div class="etapa-item ${e.idx === 14 ? 'etapa-aprovado' : ''}" onclick="mostrarCandidatosEtapa(${d.vaga.id},${e.idx})"><span class="etapa-item-qty">${e.qty}</span><span class="etapa-item-name">${e.nome}</span></div>`; });
+          efCruzada += `</div><div class="uf-resumo-box"><div class="resumo-processo"><span class="resumo-num">${d.pend}</span><span class="resumo-label">⏳ em processo</span></div><div class="resumo-aprovado"><span class="resumo-num">${d.ok}</span><span class="resumo-label">✅ concluídos</span></div></div></div>`;
         });
-        efCruzada+=`</div></div>`;
+        efCruzada += `</div></div>`;
       });
-      efCruzada+=`</div></div>`;
+      efCruzada += `</div></div>`;
 
-      document.getElementById('dashboard').innerHTML=`
+      document.getElementById('dashboard').innerHTML = `
         <div class="grid-5">
           <div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">${vagas.length} tipos de vaga</div></div>
           <div class="kpi purple-bg"><div class="kpi-label">Total Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">BA: ${candBA.length} | RN: ${candRN.length}</div></div>
-          <div class="kpi green-bg"><div class="kpi-label">Concluídos (PT+Integ)</div><div class="kpi-value green">${okTotal}</div><div class="kpi-sub">BA: ${okBA} | RN: ${okRN}</div></div>
-          <div class="kpi ${pendTotal>0?'yellow-bg':'green-bg'}"><div class="kpi-label">Faltam p/ Meta</div><div class="kpi-value ${pendTotal>0?'yellow':'green'}">${pendTotal}</div><div class="kpi-sub">BA: ${pendBA} | RN: ${pendRN}</div></div>
-          <div class="kpi ${eg>=80?'green-bg':eg>=50?'yellow-bg':'red-bg'}"><div class="kpi-label">Eficiência</div><div class="kpi-value ${eg>=80?'green':eg>=50?'yellow':'red'}">${eg}%</div><div class="kpi-sub">Meta: ${tp}</div></div>
+          <div class="kpi green-bg"><div class="kpi-label">Concluídos</div><div class="kpi-value green">${okTotal}</div><div class="kpi-sub">BA: ${okBA} | RN: ${okRN}</div></div>
+          <div class="kpi ${pendTotal > 0 ? 'yellow-bg' : 'green-bg'}"><div class="kpi-label">Faltam p/ Meta</div><div class="kpi-value ${pendTotal > 0 ? 'yellow' : 'green'}">${pendTotal}</div><div class="kpi-sub">BA: ${pendBA} | RN: ${pendRN}</div></div>
+          <div class="kpi ${eg >= 80 ? 'green-bg' : eg >= 50 ? 'yellow-bg' : 'red-bg'}"><div class="kpi-label">Eficiência</div><div class="kpi-value ${eg >= 80 ? 'green' : eg >= 50 ? 'yellow' : 'red'}">${eg}%</div><div class="kpi-sub">Meta: ${tp}</div></div>
         </div>
-        <div class="card"><div class="card-title">Eficiência por Etapa</div>${efGeral}${efCruzada}</div>`;
+        <div class="card">${efGeral}${efCruzada}</div>`;
     }
 
     function mostrarCandidatosEtapa(positionId, etapaIdx) {
-      const vaga=vagas.find(v=>v.id===positionId);
-      const cands=candidatos.filter(c=>c.positionId===positionId&&c.currentStage===etapaIdx);
-      document.getElementById('modal-title').textContent=ETAPAS[etapaIdx];
-      document.getElementById('modal-content').innerHTML=`
-        <div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga: <strong style="color:#1e40af">${vaga.title}</strong> - ${vaga.state==='BA'?'Bahia':'RN'}</div><div style="font-size:13px;color:#64748b">Total: <strong style="color:#16a34a">${cands.length}</strong></div></div>
-        <div style="max-height:350px;overflow-y:auto">${cands.length?`<table style="width:100%;font-size:12px"><thead><tr style="background:#f8fafc"><th style="padding:8px;text-align:left">#</th><th style="padding:8px;text-align:left">Nome</th><th style="padding:8px;text-align:center">Status</th><th style="padding:8px;text-align:center">Ação</th></tr></thead><tbody>${cands.map((c,i)=>{const ok=candidatoOk(c),m=c.checklist?c.checklist.filter(x=>x).length:0;return`<tr style="${ok?'background:#f0fdf4':''}"><td style="padding:8px">${i+1}</td><td style="padding:8px;font-weight:500">${c.name}</td><td style="padding:8px;text-align:center">${ok?'<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:10px;font-size:10px">✓ OK</span>':`<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:10px;font-size:10px">${m}/15</span>`}</td><td style="padding:8px;text-align:center"><button class="btn btn-primary btn-sm" onclick="closeModal();setTimeout(()=>openChecklist(${c.id}),100)" style="font-size:11px;padding:4px 8px">Checklist</button></td></tr>`}).join('')}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato</p>'}</div>
-        <div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Fechar</button></div>`;
+      const vaga = vagas.find(v => v.id === positionId);
+      const cands = candidatos.filter(c => c.positionId === positionId && c.currentStage === etapaIdx);
+      document.getElementById('modal-title').textContent = ETAPAS[etapaIdx];
+      document.getElementById('modal-content').innerHTML = `<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga: <strong style="color:#1e40af">${vaga.title}</strong> - ${vaga.state === 'BA' ? 'Bahia' : 'RN'}</div><div style="font-size:13px;color:#64748b">Total: <strong style="color:#16a34a">${cands.length}</strong></div></div><div style="max-height:350px;overflow-y:auto">${cands.length ? `<table><thead><tr><th>#</th><th>Nome</th><th class="center">Ação</th></tr></thead><tbody>${cands.map((c, i) => `<tr><td>${i + 1}</td><td>${c.name}</td><td class="center"><button class="btn btn-primary btn-sm" onclick="closeModal();setTimeout(()=>openChecklist(${c.id}),100)">Checklist</button></td></tr>`).join('')}</tbody></table>` : '<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Fechar</button></div>`;
       document.getElementById('modal').classList.remove('hidden');
     }
 
     function openChecklist(id) {
-      const c=candidatos.find(x=>x.id===id);
-      const v=vagas.find(x=>x.id===c.positionId);
-      if(!c.checklist){c.checklist=criarChecklist();for(let i=0;i<=c.currentStage;i++)c.checklist[i]=true;}
-      const ok=candidatoOk(c);
-      document.getElementById('modal-title').textContent='Checklist de Etapas';
-      document.getElementById('modal-content').innerHTML=`
-        <div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px">
-          <div style="font-size:14px;font-weight:600;color:#1e293b">${c.name}</div>
-          <div style="font-size:12px;color:#64748b">${v?.title||'N/A'} - ${v?.state==='BA'?'Bahia':'RN'}</div>
-          <div style="margin-top:8px">${ok?'<span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">✅ CONCLUÍDO</span>':'<span style="background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">⏳ PENDENTE</span>'}</div>
-        </div>
-        <div style="max-height:320px;overflow-y:auto">${ETAPAS.map((et,i)=>{const chk=c.checklist[i],obr=i===12||i===13;return`<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:4px;background:${chk?'#f0fdf4':'#fff'};border:1px solid ${chk?'#86efac':'#e2e8f0'};border-radius:6px;cursor:pointer"><input type="checkbox" ${chk?'checked':''} onchange="toggleEtapa(${id},${i})" style="width:18px;height:18px"><span style="flex:1;font-size:13px;color:${chk?'#16a34a':'#334155'};font-weight:${chk?'600':'400'}">${i+1}. ${et}</span>${obr?'<span style="background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600">OBRIGATÓRIO</span>':''}${chk?'<span style="color:#16a34a">✓</span>':''}</label>`}).join('')}</div>
-        <div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" onclick="marcarTodas(${id})">✓ Todas</button><button class="btn btn-outline" style="flex:1" onclick="desmarcarTodas(${id})">✗ Limpar</button></div>
-        <div class="btn-group" style="margin-top:8px"><button class="btn btn-primary" style="flex:1" onclick="closeModal();render()">Fechar</button></div>`;
+      const c = candidatos.find(x => x.id === id), v = vagas.find(x => x.id === c.positionId);
+      if (!c.checklist) c.checklist = Array(15).fill(false);
+      const ok = candidatoOk(c);
+      document.getElementById('modal-title').textContent = 'Checklist de Etapas';
+      document.getElementById('modal-content').innerHTML = `<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:14px;font-weight:600">${c.name}</div><div style="font-size:12px;color:#64748b">${v?.title || 'N/A'} - ${v?.state === 'BA' ? 'Bahia' : 'RN'}</div><div style="margin-top:8px">${ok ? '<span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">✅ CONCLUÍDO</span>' : '<span style="background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">⏳ EM PROCESSO</span>'}</div></div><div style="max-height:320px;overflow-y:auto">${ETAPAS.map((et, i) => { const chk = c.checklist[i]; return `<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:4px;background:${chk ? '#f0fdf4' : '#fff'};border:1px solid ${chk ? '#86efac' : '#e2e8f0'};border-radius:6px;cursor:pointer"><input type="checkbox" ${chk ? 'checked' : ''} onchange="toggleEtapa(${id},${i})" style="width:18px;height:18px"><span style="flex:1;font-size:13px;color:${chk ? '#16a34a' : '#334155'};font-weight:${chk ? '600' : '400'}">${i + 1}. ${et}</span>${chk ? '<span style="color:#16a34a">✓</span>' : ''}</label>`; }).join('')}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" onclick="marcarTodas(${id})">✓ Todas</button><button class="btn btn-outline" style="flex:1" onclick="desmarcarTodas(${id})">✗ Limpar</button></div><div class="btn-group" style="margin-top:8px"><button class="btn btn-primary" style="flex:1" onclick="closeModal();render()">Fechar</button></div>`;
       document.getElementById('modal').classList.remove('hidden');
     }
 
-    function toggleEtapa(id,idx){const c=candidatos.find(x=>x.id===id);c.checklist[idx]=!c.checklist[idx];let last=-1;for(let i=14;i>=0;i--)if(c.checklist[i]){last=i;break;}c.currentStage=last>=0?last:0;salvarDados();openChecklist(id);}
-    function marcarTodas(id){const c=candidatos.find(x=>x.id===id);c.checklist=[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true];c.currentStage=14;salvarDados();openChecklist(id);}
-    function desmarcarTodas(id){const c=candidatos.find(x=>x.id===id);c.checklist=criarChecklist();c.currentStage=0;salvarDados();openChecklist(id);}
-
-    function renderVagas(){
-      const vi=getVagasInfo();
-      document.getElementById('vagas').innerHTML=`<div class="page-header"><h1 class="page-title">Vagas</h1><button class="btn btn-primary" onclick="openModalVaga()">+ Nova Vaga</button></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th class="center">Qtd</th><th class="center">Candidatos</th><th class="center">Ações</th></tr></thead><tbody>${vi.map(v=>`<tr><td>${v.title}</td><td>${v.state}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${v.totalCandidates}</span></td><td class="center"><button class="btn btn-outline btn-sm" onclick="openModalVaga(${v.id})">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteVaga(${v.id})">Deletar</button></td></tr>`).join('')}</tbody></table></div>`;
+    async function toggleEtapa(id, idx) {
+      const c = candidatos.find(x => x.id === id);
+      c.checklist[idx] = !c.checklist[idx];
+      let last = -1; for (let i = 14; i >= 0; i--) if (c.checklist[i]) { last = i; break; }
+      c.currentStage = last >= 0 ? last : 0;
+      await supabase.from('candidatos').update({ checklist: c.checklist, current_stage: c.currentStage }).eq('id', id);
+      openChecklist(id);
     }
 
-    function renderCandidatos(){
-      const funcoes=[...new Set(vagas.map(v=>v.title))];
-      document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-success" onclick="exportarExcel()">📊 Exportar Excel</button><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar..." value="${filterSearch}" oninput="filterSearch=this.value;renderTableCand()"><select onchange="filterEtapa=this.value;renderTableCand()"><option value="todos">Todas Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select><select onchange="filterEstado=this.value;renderTableCand()"><option value="todos">Todos Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select onchange="filterFuncao=this.value;renderTableCand()"><option value="todos">Todas Funções</option>${funcoes.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th onclick="sortCol='name';sortDir=sortDir==='asc'?'desc':'asc';renderTableCand()" style="cursor:pointer">Nome</th><th>Vaga</th><th>Etapas</th><th class="center" style="width:200px">Ações</th></tr></thead><tbody id="tbodyCand"></tbody></table></div>`;
+    async function marcarTodas(id) {
+      const c = candidatos.find(x => x.id === id);
+      c.checklist = Array(15).fill(true); c.currentStage = 14;
+      await supabase.from('candidatos').update({ checklist: c.checklist, current_stage: c.currentStage }).eq('id', id);
+      openChecklist(id);
+    }
+
+    async function desmarcarTodas(id) {
+      const c = candidatos.find(x => x.id === id);
+      c.checklist = Array(15).fill(false); c.currentStage = 0;
+      await supabase.from('candidatos').update({ checklist: c.checklist, current_stage: c.currentStage }).eq('id', id);
+      openChecklist(id);
+    }
+
+    function renderVagas() {
+      document.getElementById('vagas').innerHTML = `<div class="page-header"><h1 class="page-title">Vagas</h1><button class="btn btn-primary" onclick="openModalVaga()">+ Nova Vaga</button></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th class="center">Meta</th><th class="center">Candidatos</th><th class="center">Ações</th></tr></thead><tbody>${vagas.map(v => `<tr><td>${v.title}</td><td>${v.state}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${candidatos.filter(c => c.positionId === v.id).length}</span></td><td class="center"><button class="btn btn-outline btn-sm" onclick="openModalVaga(${v.id})">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteVaga(${v.id})">Deletar</button></td></tr>`).join('')}</tbody></table></div>`;
+    }
+
+    function renderCandidatos() {
+      const funcoes = [...new Set(vagas.map(v => v.title))];
+      document.getElementById('candidatos').innerHTML = `<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-success" onclick="exportarExcel()">📊 Excel</button><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar..." value="${filterSearch}" oninput="filterSearch=this.value;renderTableCand()"><select onchange="filterEtapa=this.value;renderTableCand()"><option value="todos">Todas Etapas</option>${ETAPAS.map((e, i) => `<option value="${i}" ${filterEtapa == i ? 'selected' : ''}>${i + 1}. ${e}</option>`).join('')}</select><select onchange="filterEstado=this.value;renderTableCand()"><option value="todos">Todos Estados</option>${ESTADOS.map(e => `<option value="${e}" ${filterEstado === e ? 'selected' : ''}>${e}</option>`).join('')}</select><select onchange="filterFuncao=this.value;renderTableCand()"><option value="todos">Todas Funções</option>${funcoes.map(f => `<option value="${f}" ${filterFuncao === f ? 'selected' : ''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th style="cursor:pointer" onclick="sortDir=sortDir==='asc'?'desc':'asc';renderTableCand()">Nome</th><th>Vaga</th><th>Etapa</th><th class="center">Ações</th></tr></thead><tbody id="tbodyCand"></tbody></table></div>`;
       renderTableCand();
     }
 
-    function exportarExcel(){
-      // Preparar dados
-      let dados = candidatos.map(c => {
-        const v = vagas.find(x => x.id === c.positionId);
-        return {
-          nome: c.name,
-          funcao: v?.title || 'N/A',
-          etapa: ETAPAS[c.currentStage] || 'N/A',
-          estado: v?.state === 'BA' ? 'Bahia' : v?.state === 'RN' ? 'Rio Grande do Norte' : 'N/A',
-          status: candidatoOk(c) ? 'Concluído' : 'Pendente'
-        };
-      });
-      
-      // Aplicar filtros atuais
-      dados = dados.filter(d => {
-        const matchSearch = d.nome.toLowerCase().includes(filterSearch.toLowerCase());
-        const matchEstado = filterEstado === 'todos' || (filterEstado === 'BA' && d.estado === 'Bahia') || (filterEstado === 'RN' && d.estado === 'Rio Grande do Norte');
-        const matchFuncao = filterFuncao === 'todos' || d.funcao === filterFuncao;
-        return matchSearch && matchEstado && matchFuncao;
-      });
-      
-      // Ordenar por nome
+    function renderTableCand() {
+      let f = candidatos.filter(c => { const v = vagas.find(x => x.id === c.positionId); return c.name.toLowerCase().includes(filterSearch.toLowerCase()) && (filterEtapa === 'todos' || c.currentStage === parseInt(filterEtapa)) && (filterEstado === 'todos' || (v && v.state === filterEstado)) && (filterFuncao === 'todos' || (v && v.title === filterFuncao)); });
+      f.sort((a, b) => sortDir === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+      document.getElementById('tbodyCand').innerHTML = f.slice(0, 200).map(c => { const v = vagas.find(x => x.id === c.positionId), ok = candidatoOk(c), m = c.checklist ? c.checklist.filter(x => x).length : 0; return `<tr style="${ok ? 'background:#f0fdf4' : ''}"><td>${c.name}${ok ? ' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>' : ''}</td><td class="text-gray">${v?.title || '-'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage + 1}. ${ETAPAS[c.currentStage]}</span> <span style="color:#9ca3af;font-size:11px">(${m}/15)</span></td><td><div class="actions"><button class="btn btn-primary btn-sm" onclick="openChecklist(${c.id})">Checklist</button><button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`; }).join('');
+    }
+
+    function exportarExcel() {
+      let dados = candidatos.map(c => { const v = vagas.find(x => x.id === c.positionId); return { nome: c.name, funcao: v?.title || 'N/A', etapa: ETAPAS[c.currentStage] || 'N/A', estado: v?.state === 'BA' ? 'Bahia' : 'Rio Grande do Norte', status: candidatoOk(c) ? 'Concluído' : 'Em processo' }; });
+      dados = dados.filter(d => d.nome.toLowerCase().includes(filterSearch.toLowerCase()) && (filterEstado === 'todos' || (filterEstado === 'BA' && d.estado === 'Bahia') || (filterEstado === 'RN' && d.estado === 'Rio Grande do Norte')) && (filterFuncao === 'todos' || d.funcao === filterFuncao));
       dados.sort((a, b) => a.nome.localeCompare(b.nome));
-      
-      // Criar CSV (compatível com Excel)
-      const sep = ';'; // Separador que Excel BR reconhece melhor
-      let csv = '\uFEFF'; // BOM para UTF-8
-      csv += ['Nome', 'Função/Vaga', 'Etapa Atual', 'Estado', 'Status'].join(sep) + '\n';
-      dados.forEach(d => {
-        csv += [d.nome, d.funcao, d.etapa, d.estado, d.status].join(sep) + '\n';
-      });
-      
-      // Download
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `candidatos_${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
-      
-      alert('✅ Arquivo exportado!\\n\\nDica: Abra no Excel e os dados estarão separados em colunas.');
+      let csv = '\uFEFF' + ['Nome', 'Função', 'Etapa', 'Estado', 'Status'].join(';') + '\n';
+      dados.forEach(d => { csv += [d.nome, d.funcao, d.etapa, d.estado, d.status].join(';') + '\n'; });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `candidatos_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
     }
 
-    function renderTableCand(){
-      let f=candidatos.filter(c=>{const v=vagas.find(x=>x.id===c.positionId);return c.name.toLowerCase().includes(filterSearch.toLowerCase())&&(filterEtapa==='todos'||c.currentStage===parseInt(filterEtapa))&&(filterEstado==='todos'||(v&&v.state===filterEstado))&&(filterFuncao==='todos'||(v&&v.title===filterFuncao));});
-      f.sort((a,b)=>{const va=a.name.toLowerCase(),vb=b.name.toLowerCase();return sortDir==='asc'?(va<vb?-1:1):(va>vb?-1:1);});
-      document.getElementById('tbodyCand').innerHTML=f.slice(0,200).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ok=candidatoOk(c),m=c.checklist?c.checklist.filter(x=>x).length:0;return`<tr style="${ok?'background:#f0fdf4':''}"><td>${c.name}${ok?' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>':''}</td><td class="text-gray">${v?.title||'-'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span> <span style="color:#9ca3af;font-size:11px">(${m}/15)</span></td><td><div class="actions"><button class="btn btn-primary btn-sm" onclick="openChecklist(${c.id})">Checklist</button><button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('');
-    }
+    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
-    function render(){if(currentTab==='dashboard')renderDashboard();else if(currentTab==='vagas')renderVagas();else renderCandidatos();}
-    function closeModal(){document.getElementById('modal').classList.add('hidden');}
-
-    function openModalVaga(id=null){
-      const v=id?vagas.find(x=>x.id===id):null;
-      document.getElementById('modal-title').textContent=v?'Editar Vaga':'Nova Vaga';
-      document.getElementById('modal-content').innerHTML=`<div class="form-group"><label>Nome</label><input type="text" id="vagaTitle" value="${v?.title||''}"></div><div class="form-group"><label>Estado</label><select id="vagaState">${ESTADOS.map(e=>`<option value="${e}" ${v?.state===e?'selected':''}>${e}</option>`).join('')}</select></div><div class="form-group"><label>Quantidade</label><input type="number" id="vagaQty" value="${v?.quantity||1}"></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
+    function openModalVaga(id = null) {
+      const v = id ? vagas.find(x => x.id === id) : null;
+      document.getElementById('modal-title').textContent = v ? 'Editar Vaga' : 'Nova Vaga';
+      document.getElementById('modal-content').innerHTML = `<div class="form-group"><label>Nome</label><input type="text" id="vagaTitle" value="${v?.title || ''}"></div><div class="form-group"><label>Estado</label><select id="vagaState">${ESTADOS.map(e => `<option value="${e}" ${v?.state === e ? 'selected' : ''}>${e}</option>`).join('')}</select></div><div class="form-group"><label>Meta</label><input type="number" id="vagaQty" value="${v?.quantity || 1}"></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
       document.getElementById('modal').classList.remove('hidden');
     }
 
-    function saveVaga(id){const t=document.getElementById('vagaTitle').value.trim(),s=document.getElementById('vagaState').value,q=parseInt(document.getElementById('vagaQty').value)||1;if(!t){alert('Preencha o nome');return;}if(id){const v=vagas.find(x=>x.id===id);v.title=t;v.state=s;v.quantity=q;}else{vagas.push({id:Math.max(0,...vagas.map(v=>v.id))+1,title:t,state:s,quantity:q});}salvarDados();closeModal();render();}
-    function deleteVaga(id){if(confirm('Deletar vaga e candidatos?')){vagas=vagas.filter(v=>v.id!==id);candidatos=candidatos.filter(c=>c.positionId!==id);salvarDados();render();}}
+    async function saveVaga(id) {
+      const title = document.getElementById('vagaTitle').value.trim(), state = document.getElementById('vagaState').value, quantity = parseInt(document.getElementById('vagaQty').value) || 1;
+      if (!title) { alert('Preencha o nome'); return; }
+      if (id) { await supabase.from('vagas').update({ title, state, quantity }).eq('id', id); const v = vagas.find(x => x.id === id); v.title = title; v.state = state; v.quantity = quantity; }
+      else { const { data } = await supabase.from('vagas').insert({ title, state, quantity }).select(); if (data) vagas.push(data[0]); }
+      closeModal(); render();
+    }
 
-    function openModalCandidato(){
-      document.getElementById('modal-title').textContent='Novo Candidato';
-      document.getElementById('modal-content').innerHTML=`<div class="form-group"><label>Nome</label><input type="text" id="candName"></div><div class="form-group"><label>Vaga</label><select id="candVaga"><option value="">Selecione</option>${vagas.map(v=>`<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div><div class="form-group"><label>Etapa Inicial</label><select id="candEtapa">${ETAPAS.map((e,i)=>`<option value="${i}">${i+1}. ${e}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
+    async function deleteVaga(id) {
+      if (!confirm('Deletar vaga e candidatos?')) return;
+      await supabase.from('candidatos').delete().eq('position_id', id);
+      await supabase.from('vagas').delete().eq('id', id);
+      vagas = vagas.filter(v => v.id !== id); candidatos = candidatos.filter(c => c.positionId !== id); render();
+    }
+
+    function openModalCandidato() {
+      document.getElementById('modal-title').textContent = 'Novo Candidato';
+      document.getElementById('modal-content').innerHTML = `<div class="form-group"><label>Nome</label><input type="text" id="candName"></div><div class="form-group"><label>Vaga</label><select id="candVaga"><option value="">Selecione</option>${vagas.map(v => `<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div><div class="form-group"><label>Etapa</label><select id="candEtapa">${ETAPAS.map((e, i) => `<option value="${i}">${i + 1}. ${e}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
       document.getElementById('modal').classList.remove('hidden');
     }
 
-    function saveCandidato(){const n=document.getElementById('candName').value.trim(),p=parseInt(document.getElementById('candVaga').value),e=parseInt(document.getElementById('candEtapa').value)||0;if(!n){alert('Preencha o nome');return;}if(!p){alert('Selecione vaga');return;}const chk=criarChecklist();for(let i=0;i<=e;i++)chk[i]=true;candidatos.push({id:nextId++,name:n,positionId:p,currentStage:e,status:'in_process',checklist:chk});salvarDados();closeModal();render();}
-    function deleteCandidato(id){if(confirm('Deletar?')){candidatos=candidatos.filter(c=>c.id!==id);salvarDados();renderTableCand();}}
+    async function saveCandidato() {
+      const name = document.getElementById('candName').value.trim(), position_id = parseInt(document.getElementById('candVaga').value), current_stage = parseInt(document.getElementById('candEtapa').value) || 0;
+      if (!name) { alert('Preencha o nome'); return; }
+      if (!position_id) { alert('Selecione uma vaga'); return; }
+      const checklist = Array(15).fill(false); for (let i = 0; i <= current_stage; i++) checklist[i] = true;
+      const { data } = await supabase.from('candidatos').insert({ name, position_id, current_stage, status: 'in_process', checklist }).select();
+      if (data) candidatos.push({ ...data[0], positionId: data[0].position_id, currentStage: data[0].current_stage });
+      closeModal(); render();
+    }
 
-    document.getElementById('modal').onclick=function(e){if(e.target===this)closeModal();};
-    render();
+    async function deleteCandidato(id) {
+      if (!confirm('Deletar?')) return;
+      await supabase.from('candidatos').delete().eq('id', id);
+      candidatos = candidatos.filter(c => c.id !== id); renderTableCand();
+    }
+
+    document.getElementById('modal').onclick = function(e) { if (e.target === this) closeModal(); };
+    document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') fazerLogin(); });
+    verificarSessao();
   </script>
 </body>
 </html>

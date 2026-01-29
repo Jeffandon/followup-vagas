@@ -104,7 +104,6 @@
       <button class="btn btn-primary" style="width:100%;padding:12px;font-size:15px" onclick="fazerLogin()">Entrar</button>
     </div>
   </div>
-
   <div id="app-screen" class="hidden">
     <header class="header">
       <nav class="nav">
@@ -124,245 +123,43 @@
       <div id="candidatos" class="hidden"></div>
     </main>
   </div>
-
   <div id="modal" class="modal-overlay hidden"><div class="modal"><h2 class="modal-title" id="modal-title"></h2><div id="modal-content"></div></div></div>
-
   <script>
-    const SUPABASE_URL = 'https://jocusweupkmzaqxkczjy.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvY3Vzd2V1cGttemFxeGtjemp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NDM3NDAsImV4cCI6MjA4NTIxOTc0MH0.wlSR8teEYnOVornAC0NU0CWHlg_1wrLlXSjvtWo47tU';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    const SUPABASE_URL='https://jocusweupkmzaqxkczjy.supabase.co';
+    const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvY3Vzd2V1cGttemFxeGtjemp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NDM3NDAsImV4cCI6MjA4NTIxOTc0MH0.wlSR8teEYnOVornAC0NU0CWHlg_1wrLlXSjvtWo47tU';
+    const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
     const ETAPAS=['Abertura da Vaga','Captação','Triagem','Checagem Dados','Entrevista RH','Teste Prático','Proposta Benel','ASO','Docs pasta DP','Enviar para DP','Apto para Integração','Subir Doc. Portal','PT Cliente','Integração Cliente','Aprovado no Portal'];
     const ESTADOS=['BA','RN'];
-    let vagas=[], candidatos=[], currentTab='dashboard';
+    let vagas=[],candidatos=[],currentTab='dashboard';
     let filterSearch='',filterEtapa='todos',filterEstado='todos',filterFuncao='todos',sortDir='asc';
-
-    async function verificarSessao() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) mostrarApp(session.user);
-    }
-
-    async function fazerLogin() {
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-      if (!email || !password) { mostrarErroLogin('Preencha email e senha'); return; }
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) { mostrarErroLogin('Email ou senha incorretos'); return; }
-      mostrarApp(data.user);
-    }
-
-    async function fazerLogout() {
-      await supabase.auth.signOut();
-      document.getElementById('app-screen').classList.add('hidden');
-      document.getElementById('login-screen').classList.remove('hidden');
-    }
-
-    function mostrarErroLogin(msg) {
-      const el = document.getElementById('login-error');
-      el.textContent = msg; el.classList.remove('hidden');
-    }
-
-    async function mostrarApp(user) {
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('app-screen').classList.remove('hidden');
-      document.getElementById('user-email').textContent = user.email;
-      document.getElementById('loading').classList.remove('hidden');
-      await carregarDados();
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('dashboard').classList.remove('hidden');
-      render();
-    }
-
-    async function carregarDados() {
-      const { data: v } = await supabase.from('vagas').select('*').order('id');
-      const { data: c } = await supabase.from('candidatos').select('*').order('id');
-      vagas = v || [];
-      candidatos = (c || []).map(x => ({...x, positionId: x.position_id, currentStage: x.current_stage, checklist: x.checklist || Array(15).fill(false)}));
-    }
-
-    function candidatoOk(c) { return c.currentStage === 14; }
-
-    function showTab(t) {
-      currentTab = t;
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('nav-' + t).classList.add('active');
-      ['dashboard','vagas','candidatos'].forEach(x => document.getElementById(x).classList.add('hidden'));
-      document.getElementById(t).classList.remove('hidden');
-      render();
-    }
-
-    function render() {
-      if (currentTab === 'dashboard') renderDashboard();
-      else if (currentTab === 'vagas') renderVagas();
-      else renderCandidatos();
-    }
-
-    function renderDashboard() {
-      const tp = vagas.reduce((s,v) => s + v.quantity, 0), tc = candidatos.length;
-      const okTotal = candidatos.filter(candidatoOk).length, pendTotal = tp - okTotal;
-      const candBA = candidatos.filter(c => vagas.find(v => v.id === c.positionId)?.state === 'BA');
-      const candRN = candidatos.filter(c => vagas.find(v => v.id === c.positionId)?.state === 'RN');
-      const metaBA = vagas.filter(v => v.state === 'BA').reduce((s,v) => s + v.quantity, 0);
-      const metaRN = vagas.filter(v => v.state === 'RN').reduce((s,v) => s + v.quantity, 0);
-      const okBA = candBA.filter(candidatoOk).length, okRN = candRN.filter(candidatoOk).length;
-      const pendBA = metaBA - okBA, pendRN = metaRN - okRN;
-      const eg = tp > 0 ? Math.round(okTotal / tp * 100) : 0;
-
-      const cpe = ETAPAS.map((_, i) => candidatos.filter(c => c.currentStage === i).length);
-      const epe = ETAPAS.map((_, i) => tp > 0 ? Math.round(cpe[i] / tp * 100) : 0);
-      const efGeral = `<div class="ef-section"><div class="ef-title">📊 Visão Geral</div><div class="etapas-row">${ETAPAS.map((et, i) => `<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty">${cpe[i] || '-'}</div><div class="etapa-ef" style="background:${cpe[i] > 0 ? (epe[i] >= 50 ? '#dcfce7' : '#fef9c3') : 'transparent'};color:${cpe[i] > 0 ? (epe[i] >= 50 ? '#16a34a' : '#ca8a04') : '#9ca3af'}">${epe[i]}%</div></div>`).join('')}</div></div>`;
-
-      const funcoes = [...new Set(vagas.map(v => v.title))];
-      let efCruzada = `<div class="ef-section"><div class="ef-title">🎯 Follow Up por Função e Unidade</div><div class="funcoes-grid">`;
-      funcoes.forEach(func => {
-        const dadosEstados = [];
-        ['BA', 'RN'].forEach(est => {
-          const vaga = vagas.find(v => v.title === func && v.state === est);
-          if (!vaga) return;
-          const cands = candidatos.filter(c => c.positionId === vaga.id);
-          const porEtapa = ETAPAS.map((_, i) => ({ idx: i, nome: ETAPAS[i], qty: cands.filter(c => c.currentStage === i).length }));
-          const comCand = porEtapa.filter(e => e.qty > 0).sort((a, b) => a.idx - b.idx);
-          const total = cands.length, ok = cands.filter(candidatoOk).length, pend = total - ok, meta = vaga.quantity;
-          dadosEstados.push({ est, vaga, comCand, total, ok, pend, meta });
-        });
-        if (!dadosEstados.length) return;
-        const maxH = Math.max(...dadosEstados.map(d => d.comCand.length));
-        efCruzada += `<div class="funcao-card"><div class="funcao-header">${func}</div><div class="funcao-body-grid">`;
-        dadosEstados.forEach(d => {
-          const faltam = d.meta - d.ok;
-          efCruzada += `<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est === 'BA' ? 'Bahia' : 'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta: ${d.meta}</div><div style="margin-top:4px;font-size:12px;font-weight:700;color:${faltam > 0 ? '#dc2626' : '#16a34a'}">${faltam > 0 ? 'Faltam p/ Meta: ' + faltam : '✓ Meta atingida!'}</div></div><div class="etapas-lista" style="min-height:${maxH * 38}px">`;
-          d.comCand.forEach(e => { efCruzada += `<div class="etapa-item ${e.idx === 14 ? 'etapa-aprovado' : ''}" onclick="mostrarCandidatosEtapa(${d.vaga.id},${e.idx})"><span class="etapa-item-qty">${e.qty}</span><span class="etapa-item-name">${e.nome}</span></div>`; });
-          efCruzada += `</div><div class="uf-resumo-box"><div class="resumo-processo"><span class="resumo-num">${d.pend}</span><span class="resumo-label">⏳ em processo</span></div><div class="resumo-aprovado"><span class="resumo-num">${d.ok}</span><span class="resumo-label">✅ concluídos</span></div></div></div>`;
-        });
-        efCruzada += `</div></div>`;
-      });
-      efCruzada += `</div></div>`;
-
-      document.getElementById('dashboard').innerHTML = `
-        <div class="grid-5">
-          <div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">${vagas.length} tipos de vaga</div></div>
-          <div class="kpi purple-bg"><div class="kpi-label">Total Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">BA: ${candBA.length} | RN: ${candRN.length}</div></div>
-          <div class="kpi green-bg"><div class="kpi-label">Concluídos</div><div class="kpi-value green">${okTotal}</div><div class="kpi-sub">BA: ${okBA} | RN: ${okRN}</div></div>
-          <div class="kpi ${pendTotal > 0 ? 'yellow-bg' : 'green-bg'}"><div class="kpi-label">Faltam p/ Meta</div><div class="kpi-value ${pendTotal > 0 ? 'yellow' : 'green'}">${pendTotal}</div><div class="kpi-sub">BA: ${pendBA} | RN: ${pendRN}</div></div>
-          <div class="kpi ${eg >= 80 ? 'green-bg' : eg >= 50 ? 'yellow-bg' : 'red-bg'}"><div class="kpi-label">Eficiência</div><div class="kpi-value ${eg >= 80 ? 'green' : eg >= 50 ? 'yellow' : 'red'}">${eg}%</div><div class="kpi-sub">Meta: ${tp}</div></div>
-        </div>
-        <div class="card">${efGeral}${efCruzada}</div>`;
-    }
-
-    function mostrarCandidatosEtapa(positionId, etapaIdx) {
-      const vaga = vagas.find(v => v.id === positionId);
-      const cands = candidatos.filter(c => c.positionId === positionId && c.currentStage === etapaIdx);
-      document.getElementById('modal-title').textContent = ETAPAS[etapaIdx];
-      document.getElementById('modal-content').innerHTML = `<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga: <strong style="color:#1e40af">${vaga.title}</strong> - ${vaga.state === 'BA' ? 'Bahia' : 'RN'}</div><div style="font-size:13px;color:#64748b">Total: <strong style="color:#16a34a">${cands.length}</strong></div></div><div style="max-height:350px;overflow-y:auto">${cands.length ? `<table><thead><tr><th>#</th><th>Nome</th><th class="center">Ação</th></tr></thead><tbody>${cands.map((c, i) => `<tr><td>${i + 1}</td><td>${c.name}</td><td class="center"><button class="btn btn-primary btn-sm" onclick="closeModal();setTimeout(()=>openChecklist(${c.id}),100)">Checklist</button></td></tr>`).join('')}</tbody></table>` : '<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Fechar</button></div>`;
-      document.getElementById('modal').classList.remove('hidden');
-    }
-
-    function openChecklist(id) {
-      const c = candidatos.find(x => x.id === id), v = vagas.find(x => x.id === c.positionId);
-      if (!c.checklist) c.checklist = Array(15).fill(false);
-      const ok = candidatoOk(c);
-      document.getElementById('modal-title').textContent = 'Checklist de Etapas';
-      document.getElementById('modal-content').innerHTML = `<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:14px;font-weight:600">${c.name}</div><div style="font-size:12px;color:#64748b">${v?.title || 'N/A'} - ${v?.state === 'BA' ? 'Bahia' : 'RN'}</div><div style="margin-top:8px">${ok ? '<span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">✅ CONCLUÍDO</span>' : '<span style="background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">⏳ EM PROCESSO</span>'}</div></div><div style="max-height:320px;overflow-y:auto">${ETAPAS.map((et, i) => { const chk = c.checklist[i]; return `<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:4px;background:${chk ? '#f0fdf4' : '#fff'};border:1px solid ${chk ? '#86efac' : '#e2e8f0'};border-radius:6px;cursor:pointer"><input type="checkbox" ${chk ? 'checked' : ''} onchange="toggleEtapa(${id},${i})" style="width:18px;height:18px"><span style="flex:1;font-size:13px;color:${chk ? '#16a34a' : '#334155'};font-weight:${chk ? '600' : '400'}">${i + 1}. ${et}</span>${chk ? '<span style="color:#16a34a">✓</span>' : ''}</label>`; }).join('')}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" onclick="marcarTodas(${id})">✓ Todas</button><button class="btn btn-outline" style="flex:1" onclick="desmarcarTodas(${id})">✗ Limpar</button></div><div class="btn-group" style="margin-top:8px"><button class="btn btn-primary" style="flex:1" onclick="closeModal();render()">Fechar</button></div>`;
-      document.getElementById('modal').classList.remove('hidden');
-    }
-
-    async function toggleEtapa(id, idx) {
-      const c = candidatos.find(x => x.id === id);
-      c.checklist[idx] = !c.checklist[idx];
-      let last = -1; for (let i = 14; i >= 0; i--) if (c.checklist[i]) { last = i; break; }
-      c.currentStage = last >= 0 ? last : 0;
-      await supabase.from('candidatos').update({ checklist: c.checklist, current_stage: c.currentStage }).eq('id', id);
-      openChecklist(id);
-    }
-
-    async function marcarTodas(id) {
-      const c = candidatos.find(x => x.id === id);
-      c.checklist = Array(15).fill(true); c.currentStage = 14;
-      await supabase.from('candidatos').update({ checklist: c.checklist, current_stage: c.currentStage }).eq('id', id);
-      openChecklist(id);
-    }
-
-    async function desmarcarTodas(id) {
-      const c = candidatos.find(x => x.id === id);
-      c.checklist = Array(15).fill(false); c.currentStage = 0;
-      await supabase.from('candidatos').update({ checklist: c.checklist, current_stage: c.currentStage }).eq('id', id);
-      openChecklist(id);
-    }
-
-    function renderVagas() {
-      document.getElementById('vagas').innerHTML = `<div class="page-header"><h1 class="page-title">Vagas</h1><button class="btn btn-primary" onclick="openModalVaga()">+ Nova Vaga</button></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th class="center">Meta</th><th class="center">Candidatos</th><th class="center">Ações</th></tr></thead><tbody>${vagas.map(v => `<tr><td>${v.title}</td><td>${v.state}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${candidatos.filter(c => c.positionId === v.id).length}</span></td><td class="center"><button class="btn btn-outline btn-sm" onclick="openModalVaga(${v.id})">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteVaga(${v.id})">Deletar</button></td></tr>`).join('')}</tbody></table></div>`;
-    }
-
-    function renderCandidatos() {
-      const funcoes = [...new Set(vagas.map(v => v.title))];
-      document.getElementById('candidatos').innerHTML = `<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-success" onclick="exportarExcel()">📊 Excel</button><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar..." value="${filterSearch}" oninput="filterSearch=this.value;renderTableCand()"><select onchange="filterEtapa=this.value;renderTableCand()"><option value="todos">Todas Etapas</option>${ETAPAS.map((e, i) => `<option value="${i}" ${filterEtapa == i ? 'selected' : ''}>${i + 1}. ${e}</option>`).join('')}</select><select onchange="filterEstado=this.value;renderTableCand()"><option value="todos">Todos Estados</option>${ESTADOS.map(e => `<option value="${e}" ${filterEstado === e ? 'selected' : ''}>${e}</option>`).join('')}</select><select onchange="filterFuncao=this.value;renderTableCand()"><option value="todos">Todas Funções</option>${funcoes.map(f => `<option value="${f}" ${filterFuncao === f ? 'selected' : ''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th style="cursor:pointer" onclick="sortDir=sortDir==='asc'?'desc':'asc';renderTableCand()">Nome</th><th>Vaga</th><th>Etapa</th><th class="center">Ações</th></tr></thead><tbody id="tbodyCand"></tbody></table></div>`;
-      renderTableCand();
-    }
-
-    function renderTableCand() {
-      let f = candidatos.filter(c => { const v = vagas.find(x => x.id === c.positionId); return c.name.toLowerCase().includes(filterSearch.toLowerCase()) && (filterEtapa === 'todos' || c.currentStage === parseInt(filterEtapa)) && (filterEstado === 'todos' || (v && v.state === filterEstado)) && (filterFuncao === 'todos' || (v && v.title === filterFuncao)); });
-      f.sort((a, b) => sortDir === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
-      document.getElementById('tbodyCand').innerHTML = f.slice(0, 200).map(c => { const v = vagas.find(x => x.id === c.positionId), ok = candidatoOk(c), m = c.checklist ? c.checklist.filter(x => x).length : 0; return `<tr style="${ok ? 'background:#f0fdf4' : ''}"><td>${c.name}${ok ? ' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>' : ''}</td><td class="text-gray">${v?.title || '-'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage + 1}. ${ETAPAS[c.currentStage]}</span> <span style="color:#9ca3af;font-size:11px">(${m}/15)</span></td><td><div class="actions"><button class="btn btn-primary btn-sm" onclick="openChecklist(${c.id})">Checklist</button><button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`; }).join('');
-    }
-
-    function exportarExcel() {
-      let dados = candidatos.map(c => { const v = vagas.find(x => x.id === c.positionId); return { nome: c.name, funcao: v?.title || 'N/A', etapa: ETAPAS[c.currentStage] || 'N/A', estado: v?.state === 'BA' ? 'Bahia' : 'Rio Grande do Norte', status: candidatoOk(c) ? 'Concluído' : 'Em processo' }; });
-      dados = dados.filter(d => d.nome.toLowerCase().includes(filterSearch.toLowerCase()) && (filterEstado === 'todos' || (filterEstado === 'BA' && d.estado === 'Bahia') || (filterEstado === 'RN' && d.estado === 'Rio Grande do Norte')) && (filterFuncao === 'todos' || d.funcao === filterFuncao));
-      dados.sort((a, b) => a.nome.localeCompare(b.nome));
-      let csv = '\uFEFF' + ['Nome', 'Função', 'Etapa', 'Estado', 'Status'].join(';') + '\n';
-      dados.forEach(d => { csv += [d.nome, d.funcao, d.etapa, d.estado, d.status].join(';') + '\n'; });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-      a.download = `candidatos_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
-    }
-
-    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
-
-    function openModalVaga(id = null) {
-      const v = id ? vagas.find(x => x.id === id) : null;
-      document.getElementById('modal-title').textContent = v ? 'Editar Vaga' : 'Nova Vaga';
-      document.getElementById('modal-content').innerHTML = `<div class="form-group"><label>Nome</label><input type="text" id="vagaTitle" value="${v?.title || ''}"></div><div class="form-group"><label>Estado</label><select id="vagaState">${ESTADOS.map(e => `<option value="${e}" ${v?.state === e ? 'selected' : ''}>${e}</option>`).join('')}</select></div><div class="form-group"><label>Meta</label><input type="number" id="vagaQty" value="${v?.quantity || 1}"></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
-      document.getElementById('modal').classList.remove('hidden');
-    }
-
-    async function saveVaga(id) {
-      const title = document.getElementById('vagaTitle').value.trim(), state = document.getElementById('vagaState').value, quantity = parseInt(document.getElementById('vagaQty').value) || 1;
-      if (!title) { alert('Preencha o nome'); return; }
-      if (id) { await supabase.from('vagas').update({ title, state, quantity }).eq('id', id); const v = vagas.find(x => x.id === id); v.title = title; v.state = state; v.quantity = quantity; }
-      else { const { data } = await supabase.from('vagas').insert({ title, state, quantity }).select(); if (data) vagas.push(data[0]); }
-      closeModal(); render();
-    }
-
-    async function deleteVaga(id) {
-      if (!confirm('Deletar vaga e candidatos?')) return;
-      await supabase.from('candidatos').delete().eq('position_id', id);
-      await supabase.from('vagas').delete().eq('id', id);
-      vagas = vagas.filter(v => v.id !== id); candidatos = candidatos.filter(c => c.positionId !== id); render();
-    }
-
-    function openModalCandidato() {
-      document.getElementById('modal-title').textContent = 'Novo Candidato';
-      document.getElementById('modal-content').innerHTML = `<div class="form-group"><label>Nome</label><input type="text" id="candName"></div><div class="form-group"><label>Vaga</label><select id="candVaga"><option value="">Selecione</option>${vagas.map(v => `<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div><div class="form-group"><label>Etapa</label><select id="candEtapa">${ETAPAS.map((e, i) => `<option value="${i}">${i + 1}. ${e}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;
-      document.getElementById('modal').classList.remove('hidden');
-    }
-
-    async function saveCandidato() {
-      const name = document.getElementById('candName').value.trim(), position_id = parseInt(document.getElementById('candVaga').value), current_stage = parseInt(document.getElementById('candEtapa').value) || 0;
-      if (!name) { alert('Preencha o nome'); return; }
-      if (!position_id) { alert('Selecione uma vaga'); return; }
-      const checklist = Array(15).fill(false); for (let i = 0; i <= current_stage; i++) checklist[i] = true;
-      const { data } = await supabase.from('candidatos').insert({ name, position_id, current_stage, status: 'in_process', checklist }).select();
-      if (data) candidatos.push({ ...data[0], positionId: data[0].position_id, currentStage: data[0].current_stage });
-      closeModal(); render();
-    }
-
-    async function deleteCandidato(id) {
-      if (!confirm('Deletar?')) return;
-      await supabase.from('candidatos').delete().eq('id', id);
-      candidatos = candidatos.filter(c => c.id !== id); renderTableCand();
-    }
-
-    document.getElementById('modal').onclick = function(e) { if (e.target === this) closeModal(); };
-    document.getElementById('login-password').addEventListener('keypress', e => { if (e.key === 'Enter') fazerLogin(); });
+    async function verificarSessao(){const{data:{session}}=await supabase.auth.getSession();if(session)mostrarApp(session.user)}
+    async function fazerLogin(){const email=document.getElementById('login-email').value;const password=document.getElementById('login-password').value;if(!email||!password){mostrarErroLogin('Preencha email e senha');return}const{data,error}=await supabase.auth.signInWithPassword({email,password});if(error){mostrarErroLogin('Email ou senha incorretos');return}mostrarApp(data.user)}
+    async function fazerLogout(){await supabase.auth.signOut();document.getElementById('app-screen').classList.add('hidden');document.getElementById('login-screen').classList.remove('hidden')}
+    function mostrarErroLogin(msg){const el=document.getElementById('login-error');el.textContent=msg;el.classList.remove('hidden')}
+    async function mostrarApp(user){document.getElementById('login-screen').classList.add('hidden');document.getElementById('app-screen').classList.remove('hidden');document.getElementById('user-email').textContent=user.email;document.getElementById('loading').classList.remove('hidden');await carregarDados();document.getElementById('loading').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden');render()}
+    async function carregarDados(){const{data:v}=await supabase.from('vagas').select('*').order('id');const{data:c}=await supabase.from('candidatos').select('*').order('id');vagas=v||[];candidatos=(c||[]).map(x=>({...x,positionId:x.position_id,currentStage:x.current_stage,checklist:x.checklist||Array(15).fill(false)}))}
+    function candidatoOk(c){return c.currentStage===14}
+    function showTab(t){currentTab=t;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('nav-'+t).classList.add('active');['dashboard','vagas','candidatos'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(t).classList.remove('hidden');render()}
+    function render(){if(currentTab==='dashboard')renderDashboard();else if(currentTab==='vagas')renderVagas();else renderCandidatos()}
+    function renderDashboard(){const tp=vagas.reduce((s,v)=>s+v.quantity,0),tc=candidatos.length;const okTotal=candidatos.filter(candidatoOk).length,pendTotal=tp-okTotal;const candBA=candidatos.filter(c=>vagas.find(v=>v.id===c.positionId)?.state==='BA');const candRN=candidatos.filter(c=>vagas.find(v=>v.id===c.positionId)?.state==='RN');const metaBA=vagas.filter(v=>v.state==='BA').reduce((s,v)=>s+v.quantity,0);const metaRN=vagas.filter(v=>v.state==='RN').reduce((s,v)=>s+v.quantity,0);const okBA=candBA.filter(candidatoOk).length,okRN=candRN.filter(candidatoOk).length;const pendBA=metaBA-okBA,pendRN=metaRN-okRN;const eg=tp>0?Math.round(okTotal/tp*100):0;const cpe=ETAPAS.map((_,i)=>candidatos.filter(c=>c.currentStage===i).length);const epe=ETAPAS.map((_,i)=>tp>0?Math.round(cpe[i]/tp*100):0);const efGeral=`<div class="ef-section"><div class="ef-title">📊 Visão Geral</div><div class="etapas-row">${ETAPAS.map((et,i)=>`<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty">${cpe[i]||'-'}</div><div class="etapa-ef" style="background:${cpe[i]>0?(epe[i]>=50?'#dcfce7':'#fef9c3'):'transparent'};color:${cpe[i]>0?(epe[i]>=50?'#16a34a':'#ca8a04'):'#9ca3af'}">${epe[i]}%</div></div>`).join('')}</div></div>`;const funcoes=[...new Set(vagas.map(v=>v.title))];let efCruzada=`<div class="ef-section"><div class="ef-title">🎯 Follow Up por Função e Unidade</div><div class="funcoes-grid">`;funcoes.forEach(func=>{const dadosEstados=[];['BA','RN'].forEach(est=>{const vaga=vagas.find(v=>v.title===func&&v.state===est);if(!vaga)return;const cands=candidatos.filter(c=>c.positionId===vaga.id);const porEtapa=ETAPAS.map((_,i)=>({idx:i,nome:ETAPAS[i],qty:cands.filter(c=>c.currentStage===i).length}));const comCand=porEtapa.filter(e=>e.qty>0).sort((a,b)=>a.idx-b.idx);const total=cands.length,ok=cands.filter(candidatoOk).length,pend=total-ok,meta=vaga.quantity;dadosEstados.push({est,vaga,comCand,total,ok,pend,meta})});if(!dadosEstados.length)return;const maxH=Math.max(...dadosEstados.map(d=>d.comCand.length));efCruzada+=`<div class="funcao-card"><div class="funcao-header">${func}</div><div class="funcao-body-grid">`;dadosEstados.forEach(d=>{const faltam=d.meta-d.ok;efCruzada+=`<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est==='BA'?'Bahia':'Rio Grande do Norte'}</div><div class="uf-total-num">${d.total} <span>candidatos</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta: ${d.meta}</div><div style="margin-top:4px;font-size:12px;font-weight:700;color:${faltam>0?'#dc2626':'#16a34a'}">${faltam>0?'Faltam p/ Meta: '+faltam:'✓ Meta atingida!'}</div></div><div class="etapas-lista" style="min-height:${maxH*38}px">`;d.comCand.forEach(e=>{efCruzada+=`<div class="etapa-item ${e.idx===14?'etapa-aprovado':''}" onclick="mostrarCandidatosEtapa(${d.vaga.id},${e.idx})"><span class="etapa-item-qty">${e.qty}</span><span class="etapa-item-name">${e.nome}</span></div>`});efCruzada+=`</div><div class="uf-resumo-box"><div class="resumo-processo"><span class="resumo-num">${d.pend}</span><span class="resumo-label">⏳ em processo</span></div><div class="resumo-aprovado"><span class="resumo-num">${d.ok}</span><span class="resumo-label">✅ concluídos</span></div></div></div>`});efCruzada+=`</div></div>`});efCruzada+=`</div></div>`;document.getElementById('dashboard').innerHTML=`<div class="grid-5"><div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">${vagas.length} tipos de vaga</div></div><div class="kpi purple-bg"><div class="kpi-label">Total Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">BA: ${candBA.length} | RN: ${candRN.length}</div></div><div class="kpi green-bg"><div class="kpi-label">Concluídos</div><div class="kpi-value green">${okTotal}</div><div class="kpi-sub">BA: ${okBA} | RN: ${okRN}</div></div><div class="kpi ${pendTotal>0?'yellow-bg':'green-bg'}"><div class="kpi-label">Faltam p/ Meta</div><div class="kpi-value ${pendTotal>0?'yellow':'green'}">${pendTotal}</div><div class="kpi-sub">BA: ${pendBA} | RN: ${pendRN}</div></div><div class="kpi ${eg>=80?'green-bg':eg>=50?'yellow-bg':'red-bg'}"><div class="kpi-label">Eficiência</div><div class="kpi-value ${eg>=80?'green':eg>=50?'yellow':'red'}">${eg}%</div><div class="kpi-sub">Meta: ${tp}</div></div></div><div class="card">${efGeral}${efCruzada}</div>`}
+    function mostrarCandidatosEtapa(positionId,etapaIdx){const vaga=vagas.find(v=>v.id===positionId);const cands=candidatos.filter(c=>c.positionId===positionId&&c.currentStage===etapaIdx);document.getElementById('modal-title').textContent=ETAPAS[etapaIdx];document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga: <strong style="color:#1e40af">${vaga.title}</strong> - ${vaga.state==='BA'?'Bahia':'RN'}</div><div style="font-size:13px;color:#64748b">Total: <strong style="color:#16a34a">${cands.length}</strong></div></div><div style="max-height:350px;overflow-y:auto">${cands.length?`<table><thead><tr><th>#</th><th>Nome</th><th class="center">Ação</th></tr></thead><tbody>${cands.map((c,i)=>`<tr><td>${i+1}</td><td>${c.name}</td><td class="center"><button class="btn btn-primary btn-sm" onclick="closeModal();setTimeout(()=>openChecklist(${c.id}),100)">Checklist</button></td></tr>`).join('')}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Fechar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
+    function openChecklist(id){const c=candidatos.find(x=>x.id===id),v=vagas.find(x=>x.id===c.positionId);if(!c.checklist)c.checklist=Array(15).fill(false);const ok=candidatoOk(c);document.getElementById('modal-title').textContent='Checklist de Etapas';document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:14px;font-weight:600">${c.name}</div><div style="font-size:12px;color:#64748b">${v?.title||'N/A'} - ${v?.state==='BA'?'Bahia':'RN'}</div><div style="margin-top:8px">${ok?'<span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">✅ CONCLUÍDO</span>':'<span style="background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">⏳ EM PROCESSO</span>'}</div></div><div style="max-height:320px;overflow-y:auto">${ETAPAS.map((et,i)=>{const chk=c.checklist[i];return`<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:4px;background:${chk?'#f0fdf4':'#fff'};border:1px solid ${chk?'#86efac':'#e2e8f0'};border-radius:6px;cursor:pointer"><input type="checkbox" ${chk?'checked':''} onchange="toggleEtapa(${id},${i})" style="width:18px;height:18px"><span style="flex:1;font-size:13px;color:${chk?'#16a34a':'#334155'};font-weight:${chk?'600':'400'}">${i+1}. ${et}</span>${chk?'<span style="color:#16a34a">✓</span>':''}</label>`}).join('')}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" onclick="marcarTodas(${id})">✓ Todas</button><button class="btn btn-outline" style="flex:1" onclick="desmarcarTodas(${id})">✗ Limpar</button></div><div class="btn-group" style="margin-top:8px"><button class="btn btn-primary" style="flex:1" onclick="closeModal();render()">Fechar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
+    async function toggleEtapa(id,idx){const c=candidatos.find(x=>x.id===id);c.checklist[idx]=!c.checklist[idx];let last=-1;for(let i=14;i>=0;i--)if(c.checklist[i]){last=i;break}c.currentStage=last>=0?last:0;await supabase.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openChecklist(id)}
+    async function marcarTodas(id){const c=candidatos.find(x=>x.id===id);c.checklist=Array(15).fill(true);c.currentStage=14;await supabase.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openChecklist(id)}
+    async function desmarcarTodas(id){const c=candidatos.find(x=>x.id===id);c.checklist=Array(15).fill(false);c.currentStage=0;await supabase.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);openChecklist(id)}
+    function renderVagas(){document.getElementById('vagas').innerHTML=`<div class="page-header"><h1 class="page-title">Vagas</h1><button class="btn btn-primary" onclick="openModalVaga()">+ Nova Vaga</button></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th class="center">Meta</th><th class="center">Candidatos</th><th class="center">Ações</th></tr></thead><tbody>${vagas.map(v=>`<tr><td>${v.title}</td><td>${v.state}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${candidatos.filter(c=>c.positionId===v.id).length}</span></td><td class="center"><button class="btn btn-outline btn-sm" onclick="openModalVaga(${v.id})">Editar</button> <button class="btn btn-danger btn-sm" onclick="deleteVaga(${v.id})">Deletar</button></td></tr>`).join('')}</tbody></table></div>`}
+    function renderCandidatos(){const funcoes=[...new Set(vagas.map(v=>v.title))];document.getElementById('candidatos').innerHTML=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-success" onclick="exportarExcel()">📊 Excel</button><button class="btn btn-primary" onclick="openModalCandidato()">+ Novo</button></div></div><div class="card"><div class="filters"><input type="text" placeholder="Buscar..." value="${filterSearch}" oninput="filterSearch=this.value;renderTableCand()"><select onchange="filterEtapa=this.value;renderTableCand()"><option value="todos">Todas Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}. ${e}</option>`).join('')}</select><select onchange="filterEstado=this.value;renderTableCand()"><option value="todos">Todos Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select onchange="filterFuncao=this.value;renderTableCand()"><option value="todos">Todas Funções</option>${funcoes.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th style="cursor:pointer" onclick="sortDir=sortDir==='asc'?'desc':'asc';renderTableCand()">Nome</th><th>Vaga</th><th>Etapa</th><th class="center">Ações</th></tr></thead><tbody id="tbodyCand"></tbody></table></div>`;renderTableCand()}
+    function renderTableCand(){let f=candidatos.filter(c=>{const v=vagas.find(x=>x.id===c.positionId);return c.name.toLowerCase().includes(filterSearch.toLowerCase())&&(filterEtapa==='todos'||c.currentStage===parseInt(filterEtapa))&&(filterEstado==='todos'||(v&&v.state===filterEstado))&&(filterFuncao==='todos'||(v&&v.title===filterFuncao))});f.sort((a,b)=>sortDir==='asc'?a.name.localeCompare(b.name):b.name.localeCompare(a.name));document.getElementById('tbodyCand').innerHTML=f.slice(0,200).map(c=>{const v=vagas.find(x=>x.id===c.positionId),ok=candidatoOk(c),m=c.checklist?c.checklist.filter(x=>x).length:0;return`<tr style="${ok?'background:#f0fdf4':''}"><td>${c.name}${ok?' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>':''}</td><td class="text-gray">${v?.title||'-'}</td><td><span class="badge" style="background:#dbeafe;color:#1d4ed8">${c.currentStage+1}. ${ETAPAS[c.currentStage]}</span> <span style="color:#9ca3af;font-size:11px">(${m}/15)</span></td><td><div class="actions"><button class="btn btn-primary btn-sm" onclick="openChecklist(${c.id})">Checklist</button><button class="btn btn-danger btn-sm" onclick="deleteCandidato(${c.id})">Deletar</button></div></td></tr>`}).join('')}
+    function exportarExcel(){let dados=candidatos.map(c=>{const v=vagas.find(x=>x.id===c.positionId);return{nome:c.name,funcao:v?.title||'N/A',etapa:ETAPAS[c.currentStage]||'N/A',estado:v?.state==='BA'?'Bahia':'Rio Grande do Norte',status:candidatoOk(c)?'Concluído':'Em processo'}});dados=dados.filter(d=>d.nome.toLowerCase().includes(filterSearch.toLowerCase())&&(filterEstado==='todos'||(filterEstado==='BA'&&d.estado==='Bahia')||(filterEstado==='RN'&&d.estado==='Rio Grande do Norte'))&&(filterFuncao==='todos'||d.funcao===filterFuncao));dados.sort((a,b)=>a.nome.localeCompare(b.nome));let csv='\uFEFF'+['Nome','Função','Etapa','Estado','Status'].join(';')+'\n';dados.forEach(d=>{csv+=[d.nome,d.funcao,d.etapa,d.estado,d.status].join(';')+'\n'});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download=`candidatos_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
+    function closeModal(){document.getElementById('modal').classList.add('hidden')}
+    function openModalVaga(id=null){const v=id?vagas.find(x=>x.id===id):null;document.getElementById('modal-title').textContent=v?'Editar Vaga':'Nova Vaga';document.getElementById('modal-content').innerHTML=`<div class="form-group"><label>Nome</label><input type="text" id="vagaTitle" value="${v?.title||''}"></div><div class="form-group"><label>Estado</label><select id="vagaState">${ESTADOS.map(e=>`<option value="${e}" ${v?.state===e?'selected':''}>${e}</option>`).join('')}</select></div><div class="form-group"><label>Meta</label><input type="number" id="vagaQty" value="${v?.quantity||1}"></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveVaga(${id})">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
+    async function saveVaga(id){const title=document.getElementById('vagaTitle').value.trim(),state=document.getElementById('vagaState').value,quantity=parseInt(document.getElementById('vagaQty').value)||1;if(!title){alert('Preencha o nome');return}if(id){await supabase.from('vagas').update({title,state,quantity}).eq('id',id);const v=vagas.find(x=>x.id===id);v.title=title;v.state=state;v.quantity=quantity}else{const{data}=await supabase.from('vagas').insert({title,state,quantity}).select();if(data)vagas.push(data[0])}closeModal();render()}
+    async function deleteVaga(id){if(!confirm('Deletar vaga e candidatos?'))return;await supabase.from('candidatos').delete().eq('position_id',id);await supabase.from('vagas').delete().eq('id',id);vagas=vagas.filter(v=>v.id!==id);candidatos=candidatos.filter(c=>c.positionId!==id);render()}
+    function openModalCandidato(){document.getElementById('modal-title').textContent='Novo Candidato';document.getElementById('modal-content').innerHTML=`<div class="form-group"><label>Nome</label><input type="text" id="candName"></div><div class="form-group"><label>Vaga</label><select id="candVaga"><option value="">Selecione</option>${vagas.map(v=>`<option value="${v.id}">${v.title} - ${v.state}</option>`).join('')}</select></div><div class="form-group"><label>Etapa</label><select id="candEtapa">${ETAPAS.map((e,i)=>`<option value="${i}">${i+1}. ${e}</option>`).join('')}</select></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" onclick="saveCandidato()">Salvar</button><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancelar</button></div>`;document.getElementById('modal').classList.remove('hidden')}
+    async function saveCandidato(){const name=document.getElementById('candName').value.trim(),position_id=parseInt(document.getElementById('candVaga').value),current_stage=parseInt(document.getElementById('candEtapa').value)||0;if(!name){alert('Preencha o nome');return}if(!position_id){alert('Selecione uma vaga');return}const checklist=Array(15).fill(false);for(let i=0;i<=current_stage;i++)checklist[i]=true;const{data}=await supabase.from('candidatos').insert({name,position_id,current_stage,status:'in_process',checklist}).select();if(data)candidatos.push({...data[0],positionId:data[0].position_id,currentStage:data[0].current_stage});closeModal();render()}
+    async function deleteCandidato(id){if(!confirm('Deletar?'))return;await supabase.from('candidatos').delete().eq('id',id);candidatos=candidatos.filter(c=>c.id!==id);renderTableCand()}
+    document.getElementById('modal').onclick=function(e){if(e.target===this)closeModal()};
+    document.getElementById('login-password').addEventListener('keypress',e=>{if(e.key==='Enter')fazerLogin()});
     verificarSessao();
   </script>
 </body>

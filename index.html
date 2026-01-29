@@ -116,7 +116,7 @@ function renderDash(){
   const cpe=ETAPAS.map((_,i)=>candidatos.filter(c=>c.currentStage===i).length);
   const epe=ETAPAS.map((_,i)=>tp>0?Math.round(cpe[i]/tp*100):0);
   let h=`<div class="grid-5"><div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">${vagas.length} tipos</div></div><div class="kpi purple-bg"><div class="kpi-label">Total Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">BA:${cBA.length}|RN:${cRN.length}</div></div><div class="kpi green-bg"><div class="kpi-label">Concluídos</div><div class="kpi-value green">${okT}</div><div class="kpi-sub">BA:${oBA}|RN:${oRN}</div></div><div class="kpi ${pT>0?'yellow-bg':'green-bg'}"><div class="kpi-label">Faltam p/ Meta</div><div class="kpi-value ${pT>0?'yellow':'green'}">${pT}</div><div class="kpi-sub">BA:${pBA}|RN:${pRN}</div></div><div class="kpi ${eg>=80?'green-bg':eg>=50?'yellow-bg':'red-bg'}"><div class="kpi-label">Eficiência</div><div class="kpi-value ${eg>=80?'green':eg>=50?'yellow':'red'}">${eg}%</div></div></div>`;
-  h+=`<div class="card"><div class="ef-section"><div class="ef-title">📊 Visão Geral</div><div class="etapas-row">${ETAPAS.map((et,i)=>`<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty">${cpe[i]||'-'}</div><div class="etapa-ef" style="background:${cpe[i]>0?(epe[i]>=50?'#dcfce7':'#fef9c3'):'transparent'};color:${cpe[i]>0?(epe[i]>=50?'#16a34a':'#ca8a04'):'#9ca3af'}">${epe[i]}%</div></div>`).join('')}</div></div>`;
+  h+=`<div class="card"><div class="ef-section"><div class="ef-title">📊 Visão Geral</div><div class="etapas-row">${ETAPAS.map((et,i)=>`<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty ${cpe[i]>0?'etapa-clicavel':''}" data-etapa-geral="${i}" style="${cpe[i]>0?'cursor:pointer;text-decoration:underline':''}">${cpe[i]||'-'}</div><div class="etapa-ef" style="background:${cpe[i]>0?(epe[i]>=50?'#dcfce7':'#fef9c3'):'transparent'};color:${cpe[i]>0?(epe[i]>=50?'#16a34a':'#ca8a04'):'#9ca3af'}">${epe[i]}%</div></div>`).join('')}</div></div>`;
   const funcs=[...new Set(vagas.map(v=>v.title))];
   h+=`<div class="ef-section"><div class="ef-title">🎯 Follow Up por Função</div><div class="funcoes-grid">`;
   funcs.forEach(func=>{
@@ -142,6 +142,7 @@ function renderDash(){
   h+=`</div></div></div>`;
   document.getElementById('dashboard').innerHTML=h;
   document.querySelectorAll('.etapa-item').forEach(el=>{el.onclick=function(){showCandEtapa(+this.dataset.vaga,+this.dataset.etapa);};});
+  document.querySelectorAll('[data-etapa-geral]').forEach(el=>{el.onclick=function(){const idx=+this.dataset.etapaGeral;showCandEtapaGeral(idx);};});
 }
 
 function showCandEtapa(vid,eidx){
@@ -149,6 +150,20 @@ function showCandEtapa(vid,eidx){
   const cs=candidatos.filter(c=>c.positionId===vid&&c.currentStage===eidx);
   document.getElementById('modal-title').textContent=ETAPAS[eidx];
   document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga:<strong style="color:#1e40af">${vg.title}</strong>-${vg.state}</div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong></div></div><div style="max-height:350px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th class="center">Ação</th></tr></thead><tbody>${cs.map((c,i)=>`<tr><td>${i+1}</td><td>${c.name}</td><td class="center"><button class="btn btn-primary btn-sm" data-id="${c.id}">Checklist</button></td></tr>`).join('')}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
+  document.getElementById('modal').classList.remove('hidden');
+  document.getElementById('closeModalBtn').onclick=closeModal;
+  document.querySelectorAll('#modal-content .btn-primary').forEach(b=>{b.onclick=function(){closeModal();setTimeout(()=>openCheck(+this.dataset.id),100);};});
+}
+
+function showCandEtapaGeral(eidx){
+  const cs=candidatos.filter(c=>c.currentStage===eidx);
+  document.getElementById('modal-title').textContent=ETAPAS[eidx];
+  let tbody='';
+  cs.forEach((c,i)=>{
+    const vg=vagas.find(v=>v.id===c.positionId);
+    tbody+=`<tr><td>${i+1}</td><td>${c.name}</td><td>${vg?.title||'-'}</td><td>${vg?.state||'-'}</td><td class="center"><button class="btn btn-primary btn-sm" data-id="${c.id}">Checklist</button></td></tr>`;
+  });
+  document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Etapa:<strong style="color:#1e40af">${eidx+1}. ${ETAPAS[eidx]}</strong></div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong> candidatos</div></div><div style="max-height:400px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th>Função</th><th>Estado</th><th class="center">Ação</th></tr></thead><tbody>${tbody}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum candidato nesta etapa</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
   document.getElementById('modal').classList.remove('hidden');
   document.getElementById('closeModalBtn').onclick=closeModal;
   document.querySelectorAll('#modal-content .btn-primary').forEach(b=>{b.onclick=function(){closeModal();setTimeout(()=>openCheck(+this.dataset.id),100);};});

@@ -1,379 +1,539 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Follow Up de Vagas</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Avaliação DISC</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#f8f9fa;min-height:100vh}.header{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 24px;display:flex;justify-content:space-between;align-items:center}.nav{display:flex}.nav-btn{padding:16px 24px;font-size:15px;font-weight:500;background:0 0;border:none;border-bottom:2px solid transparent;cursor:pointer;color:#6b7280}.nav-btn.active{color:#2563eb;border-bottom-color:#2563eb}.header-actions{display:flex;gap:8px;padding:10px 0;align-items:center}.user-info{font-size:12px;color:#6b7280;margin-right:10px}.main{padding:16px}.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}.kpi{border-radius:8px;padding:16px;border:1px solid #e5e7eb}.kpi-label{font-size:13px;color:#6b7280;margin-bottom:4px}.kpi-value{font-size:32px;font-weight:700}.kpi-sub{font-size:12px;color:#9ca3af;margin-top:2px}.card{background:#fff;border-radius:8px;border:1px solid #e5e7eb;padding:16px;margin-bottom:16px}.etapas-row{display:flex;gap:3px}.etapa-card{flex:1;text-align:center;padding:6px 2px;background:#f9fafb;border-radius:4px;border:1px solid #e5e7eb}.etapa-name{font-size:9px;color:#6b7280;margin-bottom:2px}.etapa-qty{font-size:14px;font-weight:700;color:#111827}.etapa-ef{font-size:11px;font-weight:600;border-radius:2px;padding:1px 3px}table{width:100%;border-collapse:collapse;font-size:12px}th{padding:8px 4px;text-align:left;font-weight:600;color:#6b7280;border-bottom:2px solid #e5e7eb}th.center{text-align:center}td{padding:10px 4px;border-bottom:1px solid #f3f4f6}td.center{text-align:center}tr:nth-child(even){background:#f9fafb}.badge{padding:3px 8px;border-radius:4px;font-weight:700;font-size:11px}.badge-pill{border-radius:20px;padding:3px 12px;font-weight:500}.blue-bg{background:#eff6ff}.purple-bg{background:#faf5ff}.green-bg{background:#f0fdf4}.red-bg{background:#fef2f2}.yellow-bg{background:#fefce8}.blue{color:#2563eb}.purple{color:#9333ea}.green{color:#16a34a}.red{color:#dc2626}.yellow{color:#ca8a04}.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.page-title{font-size:20px;font-weight:700}.btn-group{display:flex;gap:6px}.btn{padding:8px 16px;font-size:13px;font-weight:500;border-radius:5px;border:none;cursor:pointer}.btn-primary{background:#2563eb;color:#fff}.btn-outline{background:#fff;color:#374151;border:1px solid #d1d5db}.btn-success{background:#16a34a;color:#fff}.btn-danger{background:#dc2626;color:#fff}.btn-wehandle{background:#7c3aed;color:#fff}.btn-sm{padding:5px 10px;font-size:12px;border-radius:4px;min-width:65px}.filters{display:grid;grid-template-columns:1fr 150px 150px 150px 150px;gap:12px}input,select{width:100%;padding:8px 12px;font-size:13px;border:1px solid #d1d5db;border-radius:5px;outline:0}.actions{display:flex;justify-content:flex-end;gap:5px;min-width:200px}.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50}.modal{background:#fff;border-radius:8px;padding:24px;width:100%;max-width:560px;margin:16px;max-height:90vh;overflow-y:auto}.modal-title{font-size:18px;font-weight:700;margin-bottom:20px}.form-group{margin-bottom:14px}.form-group label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:5px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.section-divider{font-size:12px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;padding-bottom:6px;border-bottom:2px solid #ede9fe}.required::after{content:" *";color:#dc2626}.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:10px;margin-bottom:16px;font-size:12px;color:#1e40af}.hidden{display:none!important}.text-gray{color:#6b7280}.funcoes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:stretch}.funcao-card{background:#fff;border:2px solid #e2e8f0;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}.funcao-header{background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;padding:12px 16px;font-weight:700;font-size:14px;text-align:center}.funcao-body-grid{display:flex;flex:1}.uf-col{flex:1;padding:12px;border-right:1px solid #e2e8f0;display:flex;flex-direction:column}.uf-col:last-child{border-right:none}.uf-header-box{padding:10px;border-radius:8px;margin-bottom:10px;text-align:center}.uf-header-box.uf-ba{background:#fef3c7;border:1px solid #fcd34d}.uf-header-box.uf-rn{background:#dbeafe;border:1px solid #93c5fd}.uf-nome{font-weight:700;font-size:14px;color:#1e293b}.uf-total-num{font-size:20px;font-weight:700;color:#1e40af;margin-top:2px}.uf-total-num span{font-size:12px;font-weight:400;color:#64748b}.etapas-lista{flex:1;display:flex;flex-direction:column;gap:5px;margin-bottom:10px}.etapa-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f8fafc;border-radius:6px;border:1px solid #e2e8f0;cursor:pointer}.etapa-item:hover{background:#e0e7ff;border-color:#818cf8}.etapa-item-qty{background:#3b82f6;color:#fff;font-weight:700;font-size:13px;min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}.etapa-item-name{font-size:12px;color:#334155;font-weight:500;flex:1}.etapa-aprovado{background:#f0fdf4;border-color:#86efac}.etapa-aprovado .etapa-item-qty{background:#16a34a}.etapa-aprovado .etapa-item-name{color:#16a34a;font-weight:600}.uf-resumo-box{display:flex;justify-content:space-around;padding:10px;background:#f1f5f9;border-radius:8px;margin-top:auto}.resumo-num{display:block;font-weight:700;font-size:20px}.resumo-label{font-size:11px;color:#64748b}.resumo-processo .resumo-num{color:#f59e0b}.resumo-aprovado .resumo-num{color:#16a34a}.ef-section{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e5e7eb}.ef-section:last-child{border-bottom:none}.ef-title{font-weight:700;font-size:14px;color:#2563eb;margin-bottom:10px}.login-container{position:fixed;top:0;left:0;right:0;bottom:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e40af,#3b82f6);z-index:9999}.login-box{background:#fff;padding:40px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.2);width:100%;max-width:400px}.login-title{font-size:24px;font-weight:700;color:#1e293b;margin-bottom:8px;text-align:center}.login-subtitle{font-size:14px;color:#64748b;margin-bottom:24px;text-align:center}.login-error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:10px;border-radius:6px;margin-bottom:16px;font-size:13px}.loading{text-align:center;padding:40px;color:#6b7280}.spinner{border:3px solid #e5e7eb;border-top:3px solid #2563eb;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:0 auto 16px}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.contrato-filter{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.contrato-filter label{font-weight:600;color:#374151;white-space:nowrap}.contrato-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;padding:24px 16px}
+
+/* ── FORM & ADMIN (tudo que some na impressão) ── */
+.app-wrap{max-width:700px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px}
+.card{background:#fff;border-radius:20px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden}
+.hdr{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;padding:28px 32px;text-align:center}
+.hdr h1{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px}
+.hdr p{font-size:13px;opacity:.7;line-height:1.6}
+.body{padding:28px 32px}
+label{font-size:13px;font-weight:700;color:#333;display:block;margin-bottom:6px}
+input[type=text],input[type=email],input[type=password]{width:100%;padding:12px 14px;border-radius:10px;border:2px solid #e0e0e0;font-size:14px;font-family:'Inter',sans-serif;outline:none;margin-bottom:16px;transition:border .2s}
+input:focus{border-color:#302b63}
+.btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-dark{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff}
+.btn-green{background:linear-gradient(135deg,#1a6b3a,#27ae60);color:#fff}
+.btn-ghost{background:transparent;border:2px solid #e0e0e0;color:#666;margin-top:8px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.err{background:#fdf2f0;border:1px solid #f1948a;border-radius:8px;padding:10px 14px;color:#c0392b;font-size:13px;margin-bottom:14px}
+.note{font-size:11px;color:#aaa;text-align:center;margin-top:10px}
+.admin-link{background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);border:none;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif;margin-top:8px}
+
+/* ── PROGRESS ── */
+.prog-bar{height:5px;background:#f0f0f0}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1a1a2e,#27ae60);transition:width .3s;border-radius:0 4px 4px 0}
+.prog-top{display:flex;justify-content:space-between;align-items:center;padding:14px 22px}
+.prog-top h2{font-family:'Playfair Display',serif;font-size:17px;color:#1a1a2e}
+.prog-ct{font-size:20px;font-weight:800;color:#1a1a2e}
+.prog-ct span{font-size:13px;font-weight:400;color:#aaa}
+
+/* ── QUESTIONS ── */
+.q-wrap{padding:18px 22px}
+.q-block{margin-bottom:20px;padding:16px;border-radius:12px;border:2px solid #f0f0f0;background:#fafafa;transition:all .2s}
+.q-block.ans{border-color:#c8e6c9;background:#f8fff8}
+.q-num{font-size:10px;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:5px}
+.q-text{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:12px;line-height:1.5}
+.opt{width:100%;text-align:left;padding:10px 13px;border-radius:9px;border:2px solid #e8e8e8;background:#fff;font-size:13px;color:#444;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:9px;margin-bottom:6px;transition:all .15s}
+.opt:hover{border-color:#bbb;background:#f5f5f5}
+.opt.sel{font-weight:700}
+.radio{width:17px;height:17px;border-radius:50%;border:2px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.radio-dot{width:7px;height:7px;border-radius:50%;background:#fff}
+
+/* ── RESULT CARD (candidato e admin) ── */
+.res-card{border-radius:14px;overflow:hidden;border:2px solid;box-shadow:0 4px 20px rgba(0,0,0,.08);background:#fff}
+.res-hdr{padding:18px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:2px solid}
+.res-badge{border-radius:12px;padding:7px 18px;font-weight:800;font-size:15px;color:#fff;font-family:'Playfair Display',serif}
+.res-body{padding:20px 22px;display:flex;flex-wrap:wrap;gap:20px}
+.radar-side{flex:0 0 auto;display:flex;flex-direction:column;align-items:center}
+.leg{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.leg-i{display:flex;align-items:center;gap:4px;font-size:11px;color:#555}
+.leg-dot{width:9px;height:9px;border-radius:2px}
+.info-side{flex:1 1 240px}
+.italic-b{font-size:13px;color:#333;line-height:1.7;font-style:italic;border-left:3px solid;padding-left:11px;margin-bottom:14px}
+.two-c{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.mini-b{border-radius:9px;padding:11px;border:1px solid}
+.mini-t{font-weight:700;font-size:12px;margin-bottom:5px}
+.mini-i{font-size:11px;color:#333;margin-bottom:3px}
+.anal-b{border-radius:9px;padding:11px;border:1px solid;margin-bottom:10px}
+.rec-b{border-radius:9px;padding:11px;border:1px solid}
+.bars-sec{padding:0 22px 20px}
+.bar-r{margin-bottom:7px}
+.bar-lbl{display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px}
+.bar-tr{height:9px;background:#f0f0f0;border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;transition:width .8s ease}
+
+/* ── ADMIN ── */
+.adm-wrap{max-width:1000px;width:100%;margin:0 auto}
+.adm-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.adm-title{color:#fff;font-family:'Playfair Display',serif;font-size:22px}
+.adm-sub{color:rgba(255,255,255,.5);font-size:13px;margin-top:3px}
+.adm-btn{padding:9px 18px;border-radius:9px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,#6c63ff)}
+.kpi-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.kpi-val{font-size:28px;font-weight:800;color:#fff;font-family:'Playfair Display',serif}
+.kpi-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:3px}
+.cand-row{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.cand-top{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;flex-wrap:wrap;gap:8px}
+.cand-info{display:flex;align-items:center;gap:12px}
+.cand-av{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;flex-shrink:0;font-family:'Playfair Display',serif}
+.cand-nm{font-size:14px;font-weight:700;color:#fff}
+.cand-em{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+.cand-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pill{border-radius:16px;padding:5px 13px;font-size:11px;font-weight:700}
+.cand-dt{font-size:11px;color:rgba(255,255,255,.3)}
+.btn-print{padding:7px 16px;border-radius:7px;border:none;background:linear-gradient(135deg,#1a6b3a,#27ae60);color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+.chev{color:rgba(255,255,255,.3);font-size:16px;transition:transform .3s}
+.chev.op{transform:rotate(180deg)}
+.cand-body{display:none;padding:0 14px 16px}
+.cand-body.op{display:block}
+.empty-adm{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3)}
+.loading-adm{text-align:center;padding:60px;color:rgba(255,255,255,.4);font-size:15px}
+
+/* ── PRINT AREA ── */
+#print-area{display:none}
+@media print{
+  body > *:not(#print-area){ display:none!important }
+  #print-area{
+    display:block!important;
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    background:#fff;z-index:99999;padding:16px;
+    overflow:auto
+  }
+  #print-area *{ display:revert!important }
+  *{ -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important }
+}
+#print-area .p-page{width:210mm;margin:0 auto;font-family:Arial,sans-serif;font-size:13px;color:#1a1a2e;padding:0}
 </style>
 </head>
 <body>
-<div id="login-screen" class="login-container"><div class="login-box"><h1 class="login-title">🎯 Follow Up de Vagas</h1><p class="login-subtitle">Entre com suas credenciais</p><div id="login-error" class="login-error hidden"></div><div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="seu@email.com"></div><div class="form-group"><label>Senha</label><input type="password" id="login-password" placeholder="••••••••"></div><button class="btn btn-primary" style="width:100%;padding:12px;font-size:15px" id="btnLogin">Entrar</button></div></div>
-<div id="app-screen" class="hidden"><header class="header"><nav class="nav"><button class="nav-btn active" id="nav-dashboard">Dashboard</button><button class="nav-btn" id="nav-contratos">Contratos</button><button class="nav-btn" id="nav-vagas">Vagas</button><button class="nav-btn" id="nav-candidatos">Candidatos</button></nav><div class="header-actions"><button class="btn btn-wehandle btn-sm" id="btnWehandle">📤 Wehandle</button><button class="btn btn-primary btn-sm" id="btnExportData">📥 Exportar</button><button class="btn btn-success btn-sm" id="btnRefresh">🔄 Atualizar</button><span class="user-info" id="user-email"></span><button class="btn btn-outline btn-sm" id="btnLogout">Sair</button></div></header><main class="main"><div id="loading" class="loading"><div class="spinner"></div>Carregando dados...</div><div id="dashboard" class="hidden"></div><div id="contratos" class="hidden"></div><div id="vagas" class="hidden"></div><div id="candidatos" class="hidden"></div></main></div>
-<div id="modal" class="modal-overlay hidden"><div class="modal"><h2 class="modal-title" id="modal-title"></h2><div id="modal-content"></div></div></div>
+
+<!-- ══ PRINT AREA (invisível, só aparece na impressão) ══ -->
+<div id="print-area"></div>
+
+<div id="app"></div>
+
 <script>
-(function(){
-const SUPABASE_URL='https://jocusweupkmzaqxkczjy.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvY3Vzd2V1cGttemFxeGtjemp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NDM3NDAsImV4cCI6MjA4NTIxOTc0MH0.wlSR8teEYnOVornAC0NU0CWHlg_1wrLlXSjvtWo47tU';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const ETAPAS=['Abertura da Vaga','Captação','Triagem','Checagem Dados','Entrevista RH','Teste Prático','Proposta Benel','ASO','Docs pasta DP','Enviar para DP','Apto para Integração','Subir Doc. Portal','PT Cliente','Integração Cliente','Aprovado no Portal'];
-const ESTADOS=['BA','RN'];
-let contratos=[],vagas=[],candidatos=[],currentTab='dashboard',filterContratos=[],filterSearch='',filterEtapa='todos',filterEstado='todos',filterFuncao='todos',sortDir='asc';
+const SB_URL = 'https://zjwiwxldpkqsdorhfbqr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpqd2l3eGxkcGtxc2RvcmhmYnFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4Njk1NzMsImV4cCI6MjA5MDQ0NTU3M30.EGv__7fYx2Zu2zExAPG9QCqbnNEpg9xNLAbQSmNja7g';
+const ADMIN_PASS = 'disc2026';
 
-async function init(){const{data:{session}}=await sb.auth.getSession();if(session)showApp(session.user);}
+const QS = [
+  {id:1,t:"Ao enfrentar um desafio no trabalho, você geralmente:",o:[{t:"Age rapidamente e foca nos resultados",d:"D"},{t:"Envolve outras pessoas e busca soluções criativas",d:"I"},{t:"Analisa com calma e mantém o processo estável",d:"S"},{t:"Pesquisa, coleta dados e segue procedimentos",d:"C"}]},
+  {id:2,t:"Em reuniões de equipe, você costuma:",o:[{t:"Assumir o controle e direcionar a discussão",d:"D"},{t:"Animar o grupo e propor ideias novas",d:"I"},{t:"Ouvir atentamente e apoiar o consenso do grupo",d:"S"},{t:"Fazer perguntas detalhadas e verificar informações",d:"C"}]},
+  {id:3,t:"Quando precisa tomar uma decisão importante, você:",o:[{t:"Decide com confiança, mesmo sem todas as informações",d:"D"},{t:"Consulta outras pessoas e se baseia em intuição",d:"I"},{t:"Pensa com calma e evita riscos desnecessários",d:"S"},{t:"Analisa todos os dados disponíveis antes de decidir",d:"C"}]},
+  {id:4,t:"Como você prefere receber feedback sobre seu trabalho?",o:[{t:"Direto ao ponto, focado em resultados",d:"D"},{t:"De forma positiva, valorizando meu esforço",d:"I"},{t:"Com gentileza, preservando o relacionamento",d:"S"},{t:"Com exemplos concretos e orientações detalhadas",d:"C"}]},
+  {id:5,t:"Qual palavra melhor descreve seu estilo de trabalho?",o:[{t:"Determinado",d:"D"},{t:"Inspirador",d:"I"},{t:"Colaborativo",d:"S"},{t:"Meticuloso",d:"C"}]},
+  {id:6,t:"Quando há conflito na equipe, você tende a:",o:[{t:"Confrontar diretamente e resolver logo",d:"D"},{t:"Mediar com entusiasmo e buscar harmonia",d:"I"},{t:"Evitar confronto e buscar paz no grupo",d:"S"},{t:"Analisar a situação e buscar a solução mais justa",d:"C"}]},
+  {id:7,t:"O que mais te motiva profissionalmente?",o:[{t:"Superar metas e alcançar resultados",d:"D"},{t:"Reconhecimento e interação com pessoas",d:"I"},{t:"Estabilidade e fazer parte de uma equipe unida",d:"S"},{t:"Qualidade do trabalho e domínio técnico",d:"C"}]},
+  {id:8,t:"Como você lida com prazos apertados?",o:[{t:"Foco total no resultado, sem tempo a perder",d:"D"},{t:"Busco ajuda da equipe e mantenho o ânimo",d:"I"},{t:"Trabalho metodicamente mantendo a qualidade",d:"S"},{t:"Organizo tudo detalhadamente para não errar",d:"C"}]},
+  {id:9,t:"Em projetos novos, seu papel natural é:",o:[{t:"Liderar e definir os objetivos",d:"D"},{t:"Engajar a equipe e criar entusiasmo",d:"I"},{t:"Apoiar a execução e manter a consistência",d:"S"},{t:"Planejar detalhes e garantir a qualidade",d:"C"}]},
+  {id:10,t:"Como você reage a mudanças inesperadas no trabalho?",o:[{t:"Adapto rapidamente e vejo como oportunidade",d:"D"},{t:"Fico animado com novas possibilidades",d:"I"},{t:"Me adapto, mas prefiro processos estáveis",d:"S"},{t:"Preciso entender bem a mudança antes de aceitar",d:"C"}]},
+  {id:11,t:"Quando trabalha em equipe, você prefere:",o:[{t:"Liderar as decisões e delegar tarefas",d:"D"},{t:"Colaborar com energia e motivar o grupo",d:"I"},{t:"Apoiar os colegas e garantir harmonia",d:"S"},{t:"Cuidar da parte técnica e do controle de qualidade",d:"C"}]},
+  {id:12,t:"Qual situação te deixa mais desconfortável?",o:[{t:"Falta de autonomia ou controle sobre resultados",d:"D"},{t:"Isolamento e falta de interação com pessoas",d:"I"},{t:"Conflitos frequentes e ambiente instável",d:"S"},{t:"Trabalhos sem padrão ou cheios de erros",d:"C"}]},
+  {id:13,t:"Como você descreve seu ritmo de trabalho?",o:[{t:"Acelerado e orientado a resultados",d:"D"},{t:"Dinâmico e variado, gosto de novidades",d:"I"},{t:"Constante e previsível, prefiro rotinas",d:"S"},{t:"Cuidadoso e preciso, não abro mão da qualidade",d:"C"}]},
+  {id:14,t:"Ao apresentar uma ideia nova para a equipe, você:",o:[{t:"Vai direto ao ponto e defende com firmeza",d:"D"},{t:"Usa criatividade e entusiasmo para convencer",d:"I"},{t:"Apresenta de forma calma e busca consenso",d:"S"},{t:"Fundamenta com dados e argumentos sólidos",d:"C"}]},
+  {id:15,t:"O que colegas costumam reconhecer em você?",o:[{t:"Que sou confiante e focado em resultados",d:"D"},{t:"Que sou animado e fácil de trabalhar junto",d:"I"},{t:"Que sou confiável e sempre apoio o time",d:"S"},{t:"Que sou detalhista e comprometido com a qualidade",d:"C"}]},
+  {id:16,t:"Como você reage quando erra em alguma tarefa?",o:[{t:"Corrijo rapidamente e sigo em frente",d:"D"},{t:"Aprendo com o erro e busco apoio dos colegas",d:"I"},{t:"Fico desconfortável, mas resolvo com calma",d:"S"},{t:"Analiso profundamente o que deu errado para não repetir",d:"C"}]},
+  {id:17,t:"Em situações de pressão, você tende a:",o:[{t:"Assumir o controle e agir com mais energia",d:"D"},{t:"Buscar motivação nas pessoas ao redor",d:"I"},{t:"Manter a calma e trabalhar de forma constante",d:"S"},{t:"Revisar detalhes e garantir que tudo esteja correto",d:"C"}]},
+  {id:18,t:"O que você mais valoriza em um líder?",o:[{t:"Decisão, objetividade e foco em resultados",d:"D"},{t:"Carisma, abertura e capacidade de inspirar",d:"I"},{t:"Empatia, consistência e cuidado com a equipe",d:"S"},{t:"Conhecimento técnico, organização e rigor",d:"C"}]},
+  {id:19,t:"Como você prefere se comunicar no trabalho?",o:[{t:"De forma objetiva, direta e rápida",d:"D"},{t:"De forma expressiva, aberta e interativa",d:"I"},{t:"De forma gentil, paciente e clara",d:"S"},{t:"De forma estruturada, com dados e detalhes",d:"C"}]},
+  {id:20,t:"Qual é sua maior força como profissional?",o:[{t:"Capacidade de fazer acontecer e superar obstáculos",d:"D"},{t:"Habilidade de influenciar e engajar pessoas",d:"I"},{t:"Consistência, lealdade e trabalho em equipe",d:"S"},{t:"Precisão, qualidade e atenção aos detalhes",d:"C"}]}
+];
 
-document.getElementById('btnLogin').onclick=async function(){
-  const email=document.getElementById('login-email').value,pwd=document.getElementById('login-password').value;
-  if(!email||!pwd){showErr('Preencha email e senha');return;}
-  const{data,error}=await sb.auth.signInWithPassword({email,password:pwd});
-  if(error){showErr('Email ou senha incorretos');return;}
-  showApp(data.user);
+const PROF = {
+  D:{name:'Dominância',color:'#C0392B',bg:'#FDF2F0',border:'#E74C3C',icon:'⚡',
+    desc:'Você é direto, decisivo e orientado a resultados. Assume riscos calculados e prefere agir a esperar. Forte senso de urgência e necessidade de autonomia para tomar decisões.',
+    fortes:['Liderança natural e assertividade','Foco intenso em resultados','Tomada de decisão ágil','Alta produtividade sob pressão'],
+    atencao:['Pode ser impaciente com processos lentos','Tende a subestimar o lado humano','Pode parecer autoritário para a equipe'],
+    candidato:'Como analista com perfil D, você entrega análises com agilidade e não hesita em defender seus insights para a liderança. Desenvolver escuta ativa e paciência com processos colaborativos irá ampliar ainda mais seu impacto.',
+    recrutador:'Indicada para funções com metas claras e autonomia de execução. Potencial elevado para liderança de projetos e tomada de decisão rápida. Acompanhar integração com equipe e estimular habilidades interpessoais e escuta ativa.'},
+  I:{name:'Influência',color:'#D35400',bg:'#FEF9F0',border:'#F39C12',icon:'✨',
+    desc:'Você é comunicativa, entusiasmada e persuasiva. Facilidade em criar conexões, engajar pessoas e manter o ambiente energizado. Prefere ambientes dinâmicos e colaborativos.',
+    fortes:['Comunicação eficaz e carismática','Capacidade de motivar equipes','Criatividade e pensamento lateral','Facilidade em networking'],
+    atencao:['Pode ser desorganizada com detalhes','Tende a evitar situações difíceis','Pode comprometer mais do que consegue entregar'],
+    candidato:'Como analista com perfil I, você tem grande facilidade em apresentar resultados e engajar stakeholders. Investir em organização das entregas e atenção a detalhes técnicos elevará a consistência das suas análises.',
+    recrutador:'Indicada para funções de comunicação, apresentação de resultados e trabalho colaborativo. Estruturar entregas com checklist de prazos. Alto potencial para onboarding e treinamento de equipes.'},
+  S:{name:'Estabilidade',color:'#1E8449',bg:'#F0FBF4',border:'#27AE60',icon:'🌿',
+    desc:'Você é paciente, confiável e colaborativa. Valoriza harmonia, consistência e estabilidade. É o pilar da equipe — sempre presente, comprometida e de confiança.',
+    fortes:['Confiabilidade e comprometimento','Trabalho em equipe e empatia','Escuta ativa e sensibilidade','Consistência nas entregas'],
+    atencao:['Pode resistir a mudanças mesmo quando necessárias','Evita conflitos até prejudicar resultados','Dificuldade em impor limites e prioridades'],
+    candidato:'Como analista com perfil S, você é altamente confiável e mantém consistência nas entregas. Desenvolver mais proatividade para propor mudanças e defender suas análises com firmeza irá acelerar seu crescimento.',
+    recrutador:'Indicada para equipes que valorizam consistência e colaboração. Excelente para análise de rotina e suporte a processos. Encorajar posicionamento mais ativo em reuniões e discussões estratégicas.'},
+  C:{name:'Conformidade',color:'#1A5276',bg:'#EBF5FB',border:'#2980B9',icon:'🎯',
+    desc:'Você é analítica, precisa e meticulosa. Prima pela qualidade e segue processos com rigor. Alto padrão de excelência e necessidade de entender as razões por trás das decisões.',
+    fortes:['Atenção excepcional aos detalhes','Alta qualidade e rigor técnico','Pensamento crítico e analítico','Organização e planejamento'],
+    atencao:['Pode ser perfeccionista em excesso','Dificuldade em decidir com dados incompletos','Pode ser excessivamente crítica'],
+    candidato:'Como analista com perfil C, você tem excelência natural em análise crítica e controle de qualidade. Desenvolver mais agilidade nas entregas e flexibilidade quando os dados não são perfeitos irá potencializar seus resultados.',
+    recrutador:'Ideal para análise técnica, auditoria e controle de qualidade. Definir prazos claros e estimular decisão com dados parciais. Excelente para funções que exigem rigor e precisão.'}
 };
 
-document.getElementById('btnLogout').onclick=async function(){await sb.auth.signOut();document.getElementById('app-screen').classList.add('hidden');document.getElementById('login-screen').classList.remove('hidden');};
-document.getElementById('btnRefresh').onclick=async function(){this.textContent='⏳ Atualizando...';this.disabled=true;await loadData();render();this.textContent='🔄 Atualizar';this.disabled=false;showToast('✅ Dados atualizados!');};
-document.getElementById('btnWehandle').onclick=function(){openWehandleModal();};
-
-document.getElementById('btnExportData').onclick=function(){
-  const dados={exportDate:new Date().toISOString(),contratos,vagas,candidatos:candidatos.map(c=>({id:c.id,name:c.name,cpf:c.cpf,position_id:c.positionId,current_stage:c.currentStage,checklist:c.checklist,status:c.status}))};
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(dados,null,2)],{type:'application/json'}));a.download=`followup_dados_${new Date().toISOString().slice(0,10)}.json`;a.click();showToast('📥 Dados exportados!');
+// ── STATE ──
+let ST = {
+  view:'form', step:'info',
+  nome:'', email:'', respostas:{},
+  loading:false, erro:'',
+  adminPass:'', adminErro:'',
+  resultados:[], resultadoAtual:null
 };
 
-function showToast(msg){const t=document.createElement('div');t.style.cssText='position:fixed;bottom:20px;right:20px;background:#16a34a;color:#fff;padding:12px 24px;border-radius:8px;font-weight:500;z-index:9999';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);}
-document.getElementById('login-password').onkeypress=function(e){if(e.key==='Enter')document.getElementById('btnLogin').click();};
-function showErr(m){const e=document.getElementById('login-error');e.textContent=m;e.classList.remove('hidden');}
+function set(p){Object.assign(ST,p);draw();}
 
-async function showApp(user){
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app-screen').classList.remove('hidden');
-  document.getElementById('user-email').textContent=user.email;
-  document.getElementById('loading').classList.remove('hidden');
-  await loadData();
-  document.getElementById('loading').classList.add('hidden');
-  document.getElementById('dashboard').classList.remove('hidden');
-  render();
+// ── SCORE ──
+function calcScore(res){
+  const c={D:0,I:0,S:0,C:0};
+  Object.values(res||{}).forEach(d=>{if(c[d]!==undefined)c[d]++;});
+  const tot=Object.values(c).reduce((a,b)=>a+b,0);
+  const pct={};['D','I','S','C'].forEach(k=>pct[k]=tot?Math.round(c[k]/tot*100):0);
+  const dom=Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0];
+  return{counts:c,pct,dom};
 }
 
-async function loadData(){
-  const{data:ct}=await sb.from('contratos').select('*').order('id');
-  const{data:v}=await sb.from('vagas').select('*').order('id');
-  const{data:c}=await sb.from('candidatos').select('*').order('id');
-  contratos=ct||[];vagas=v||[];
-  candidatos=(c||[]).map(x=>({...x,positionId:x.position_id,currentStage:x.current_stage,checklist:x.checklist||Array(15).fill(false)}));
+// ── RADAR SVG ──
+function radarSVG(pct,size){
+  size=size||180;
+  const cx=size/2,cy=size/2,r=size*0.36;
+  const lb=['D','I','S','C'],ag=[-90,0,90,180];
+  const CO={D:'#C0392B',I:'#D35400',S:'#1E8449',C:'#1A5276'};
+  function pt(k,f){f=f===undefined?1:f;const i=lb.indexOf(k),a=ag[i]*Math.PI/180,v=pct[k]/100*r*f;return[cx+v*Math.cos(a),cy+v*Math.sin(a)];}
+  function ax(i,f){f=f===undefined?1:f;const a=ag[i]*Math.PI/180;return[cx+r*f*Math.cos(a),cy+r*f*Math.sin(a)];}
+  let s=`<svg viewBox="0 0 ${size} ${size}" style="width:100%;max-width:${size}px">`;
+  [.25,.5,.75,1].forEach(f=>{const ps=lb.map((_,i)=>ax(i,f).join(',')).join(' ');s+=`<polygon points="${ps}" fill="none" stroke="#ddd" stroke-width="0.5"/>`;});
+  for(let i=0;i<4;i++){const a=ax(i);s+=`<line x1="${cx}" y1="${cy}" x2="${a[0]}" y2="${a[1]}" stroke="#ddd" stroke-width="0.4"/>`;}
+  const dpts=lb.map(k=>pt(k).join(',')).join(' ');
+  s+=`<polygon points="${dpts}" fill="rgba(108,99,255,.15)" stroke="#6c63ff" stroke-width="1.5"/>`;
+  lb.forEach(k=>{const p=pt(k);s+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${CO[k]}"/>`;});
+  lb.forEach((k,i)=>{const a=ax(i,1.22);s+=`<text x="${a[0]}" y="${+a[1]+4}" text-anchor="middle" font-size="12" font-weight="700" fill="${CO[k]}" font-family="Arial">${k}</text>`;});
+  return s+'</svg>';
 }
 
-function isOk(c){return c.currentStage===14;}
-function getContrato(v){return v?contratos.find(c=>c.id===v.contrato_id):null;}
-function getVagasFiltradas(){return filterContratos.length===0?vagas:vagas.filter(v=>filterContratos.includes(v.contrato_id));}
-function getCandidatosFiltrados(){const vids=getVagasFiltradas().map(v=>v.id);return candidatos.filter(c=>vids.includes(c.positionId));}
+// ── RESULT CARD HTML ──
+function resultCardHTML(r){
+  const {counts,pct,dom}=calcScore(r.respostas);
+  const p=PROF[dom];
+  const dt=r.criado_em?new Date(r.criado_em).toLocaleString('pt-BR'):'';
+  return `
+  <div class="res-card" style="border-color:${p.border}">
+    <div class="res-hdr" style="background:${p.bg};border-color:${p.border}">
+      <div>
+        <div style="font-size:18px;font-weight:800;color:#1a1a2e;font-family:'Playfair Display',serif">${p.icon} ${r.nome}</div>
+        <div style="font-size:12px;color:#666;margin-top:2px">${r.email}</div>
+        ${dt?`<div style="font-size:11px;color:#999;margin-top:1px">${dt}</div>`:''}
+      </div>
+      <div class="res-badge" style="background:${p.color}">Perfil ${dom} · ${p.name}</div>
+    </div>
+    <div class="res-body">
+      <div class="radar-side">
+        ${radarSVG(pct,170)}
+        <div class="leg">
+          ${['D','I','S','C'].map(k=>`<div class="leg-i"><div class="leg-dot" style="background:${PROF[k].color}"></div>${k}: <b>${pct[k]}%</b></div>`).join('')}
+        </div>
+      </div>
+      <div class="info-side">
+        <div class="italic-b" style="border-color:${p.color}">${p.desc}</div>
+        <div class="two-c">
+          <div class="mini-b" style="background:#f8fff8;border-color:#c8e6c9">
+            <div class="mini-t" style="color:#1e6b3a">✅ Pontos Fortes</div>
+            ${p.fortes.map(f=>`<div class="mini-i">• ${f}</div>`).join('')}
+          </div>
+          <div class="mini-b" style="background:#fff8f8;border-color:#ffcdd2">
+            <div class="mini-t" style="color:#c62828">⚠️ Pontos de Atenção</div>
+            ${p.atencao.map(a=>`<div class="mini-i">• ${a}</div>`).join('')}
+          </div>
+        </div>
+        <div class="anal-b" style="background:#eef4ff;border-color:#c5d8f7">
+          <div class="mini-t" style="color:#1a237e">🧑‍💼 Orientação ao Candidato</div>
+          <div style="font-size:12px;color:#1a237e;line-height:1.6">${p.candidato}</div>
+        </div>
+        <div class="rec-b" style="background:#f0fbf4;border-color:#c8e6c9">
+          <div class="mini-t" style="color:#1a3d24">📋 Recomendação ao Recrutador</div>
+          <div style="font-size:12px;color:#1a3d24;line-height:1.6">${p.recrutador}</div>
+        </div>
+      </div>
+    </div>
+    <div class="bars-sec">
+      ${['D','I','S','C'].map(k=>`
+      <div class="bar-r">
+        <div class="bar-lbl">
+          <span style="font-weight:700;color:${PROF[k].color}">${k} — ${PROF[k].name}</span>
+          <span style="color:#999">${counts[k]} respostas · ${pct[k]}%</span>
+        </div>
+        <div class="bar-tr"><div class="bar-fill" style="width:${pct[k]}%;background:${PROF[k].color}"></div></div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
 
-document.getElementById('nav-dashboard').onclick=function(){showTab('dashboard');};
-document.getElementById('nav-contratos').onclick=function(){showTab('contratos');};
-document.getElementById('nav-vagas').onclick=function(){showTab('vagas');};
-document.getElementById('nav-candidatos').onclick=function(){showTab('candidatos');};
+// ── PRINT REPORT ──
+function printReport(r){
+  // Coloca o mesmo card que está na tela dentro do print-area e imprime
+  document.getElementById('print-area').innerHTML =
+    '<div style="padding:16px;background:#fff">' + resultCardHTML(r) + '</div>';
+  window.print();
+  setTimeout(()=>{ document.getElementById('print-area').innerHTML=''; }, 2000);
+}
 
-function showTab(t){currentTab=t;document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('nav-'+t).classList.add('active');['dashboard','contratos','vagas','candidatos'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(t).classList.remove('hidden');render();}
 
-function render(){if(currentTab==='dashboard')renderDash();else if(currentTab==='contratos')renderContratos();else if(currentTab==='vagas')renderVagas();else renderCands();}
+// ── SUPABASE ──
 
-/* ===== CONTRATO FILTER ===== */
-function renderContratoFilter(){
-  const ativos=contratos.filter(c=>c.ativo);
-  let h=`<div class="contrato-filter"><label>📋 Contratos:</label><div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">`;
-  h+=`<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" id="chkTodos" ${filterContratos.length===0?'checked':''} onchange="toggleTodosContratos(this.checked)" style="width:16px;height:16px"><span style="font-weight:${filterContratos.length===0?'600':'400'}">Todos</span></label>`;
-  ativos.forEach(c=>{
-    const checked=filterContratos.includes(c.id);
-    h+=`<label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox" data-contrato="${c.id}" ${checked?'checked':''} onchange="toggleContrato(${c.id},this.checked)" style="width:16px;height:16px"><span style="font-weight:${checked?'600':'400'};color:${checked?'#ea580c':'#374151'}">${c.nome}</span></label>`;
+async function buscarResultados(){
+  const res=await fetch(`${SB_URL}/rest/v1/disc_respostas?order=criado_em.desc`,{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
   });
-  h+=`</div></div>`;
-  return h;
+  return res.json();
 }
-function toggleTodosContratos(checked){if(checked){filterContratos=[];renderDash();}}
-function toggleContrato(id,checked){if(checked){if(!filterContratos.includes(id))filterContratos.push(id);}else{filterContratos=filterContratos.filter(x=>x!==id);}renderDash();}
 
-/* ===== DASHBOARD ===== */
-function renderDash(){
-  const vf=getVagasFiltradas(),cf=getCandidatosFiltrados();
-  const tp=vf.reduce((s,v)=>s+v.quantity,0),tc=cf.length,okT=cf.filter(isOk).length,pT=tp-okT;
-  const cBA=cf.filter(c=>vf.find(v=>v.id===c.positionId)?.state==='BA'),cRN=cf.filter(c=>vf.find(v=>v.id===c.positionId)?.state==='RN');
-  const mBA=vf.filter(v=>v.state==='BA').reduce((s,v)=>s+v.quantity,0),mRN=vf.filter(v=>v.state==='RN').reduce((s,v)=>s+v.quantity,0);
-  const oBA=cBA.filter(isOk).length,oRN=cRN.filter(isOk).length,pBA=mBA-oBA,pRN=mRN-oRN;
-  const eg=tp>0?Math.round(okT/tp*100):0;
-  const cpe=ETAPAS.map((_,i)=>cf.filter(c=>c.currentStage===i).length),epe=ETAPAS.map((_,i)=>tp>0?Math.round(cpe[i]/tp*100):0);
-  
-  let h=renderContratoFilter();
-  h+=`<div class="grid-5"><div class="kpi blue-bg"><div class="kpi-label">Vagas Planejadas</div><div class="kpi-value blue">${tp}</div><div class="kpi-sub">${vf.length} tipos</div></div><div class="kpi purple-bg"><div class="kpi-label">Total Candidatos</div><div class="kpi-value purple">${tc}</div><div class="kpi-sub">BA:${cBA.length}|RN:${cRN.length}</div></div><div class="kpi green-bg"><div class="kpi-label">Concluídos</div><div class="kpi-value green">${okT}</div><div class="kpi-sub">BA:${oBA}|RN:${oRN}</div></div><div class="kpi ${pT>0?'yellow-bg':'green-bg'}"><div class="kpi-label">Faltam p/ Meta</div><div class="kpi-value ${pT>0?'yellow':'green'}">${pT}</div><div class="kpi-sub">BA:${pBA}|RN:${pRN}</div></div><div class="kpi ${eg>=80?'green-bg':eg>=50?'yellow-bg':'red-bg'}"><div class="kpi-label">Eficiência</div><div class="kpi-value ${eg>=80?'green':eg>=50?'yellow':'red'}">${eg}%</div></div></div>`;
-  h+=`<div class="card"><div class="ef-section"><div class="ef-title">📊 Visão Geral</div><div class="etapas-row">${ETAPAS.map((et,i)=>`<div class="etapa-card"><div class="etapa-name">${et}</div><div class="etapa-qty" data-etapa-geral="${i}" style="${cpe[i]>0?'cursor:pointer;text-decoration:underline':''}">${cpe[i]||'-'}</div><div class="etapa-ef" style="background:${cpe[i]>0?(epe[i]>=50?'#dcfce7':'#fef9c3'):'transparent'};color:${cpe[i]>0?(epe[i]>=50?'#16a34a':'#ca8a04'):'#9ca3af'}">${epe[i]}%</div></div>`).join('')}</div></div>`;
-  
-  const contratosAtivos=contratos.filter(c=>c.ativo);
-  h+=`<div class="ef-section"><div class="ef-title">🎯 Follow Up por Função</div><div class="funcoes-grid">`;
-  contratosAtivos.forEach(contrato=>{
-    const vagasContrato=vf.filter(v=>v.contrato_id===contrato.id);
-    const funcsContrato=[...new Set(vagasContrato.map(v=>v.title))];
-    funcsContrato.forEach(func=>{
-      const ds=[];
-      ['BA','RN'].forEach(est=>{
-        const vg=vagasContrato.find(v=>v.title===func&&v.state===est);
-        if(!vg)return;
-        const cs=cf.filter(c=>c.positionId===vg.id);
-        const pe=ETAPAS.map((_,i)=>({i,n:ETAPAS[i],q:cs.filter(c=>c.currentStage===i).length})).filter(e=>e.q>0).sort((a,b)=>a.i-b.i);
-        ds.push({est,vg,pe,t:cs.length,ok:cs.filter(isOk).length,m:vg.quantity});
-      });
-      if(!ds.length)return;
-      h+=`<div class="funcao-card"><div class="funcao-header">${func}<div style="font-size:11px;font-weight:400;opacity:0.9;margin-top:2px">${contrato.nome}</div></div><div class="funcao-body-grid">`;
-      ds.forEach(d=>{const f=d.m-d.ok;h+=`<div class="uf-col"><div class="uf-header-box uf-${d.est.toLowerCase()}"><div class="uf-nome">${d.est==='BA'?'Bahia':'RN'}</div><div class="uf-total-num">${d.t} <span>cand.</span></div><div style="margin-top:4px;font-size:12px;color:#1e40af;font-weight:600">Meta:${d.m}</div><div style="margin-top:4px;font-size:12px;font-weight:700;color:${f>0?'#dc2626':'#16a34a'}">${f>0?'Faltam:'+f:'✓ Atingida!'}</div></div><div class="etapas-lista">`;d.pe.forEach(e=>{h+=`<div class="etapa-item ${e.i===14?'etapa-aprovado':''}" data-vaga="${d.vg.id}" data-etapa="${e.i}"><span class="etapa-item-qty">${e.q}</span><span class="etapa-item-name">${e.n}</span></div>`;});h+=`</div><div class="uf-resumo-box"><div class="resumo-processo"><span class="resumo-num">${d.t-d.ok}</span><span class="resumo-label">⏳ processo</span></div><div class="resumo-aprovado"><span class="resumo-num">${d.ok}</span><span class="resumo-label">✅ ok</span></div></div></div>`;});
-      h+=`</div></div>`;
+// ── HANDLERS ──
+async function submitForm(){
+  if(Object.keys(ST.respostas).length<20)return;
+  set({loading:true,erro:''});
+  try{
+    const dados={nome:ST.nome.trim(),email:ST.email.trim(),respostas:ST.respostas};
+    const res=await fetch(SB_URL+'/rest/v1/disc_respostas',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Prefer':'return=representation'},
+      body:JSON.stringify(dados)
     });
-  });
-  h+=`</div></div></div>`;
-  document.getElementById('dashboard').innerHTML=h;
-  document.querySelectorAll('.etapa-item').forEach(el=>{el.onclick=function(){showCandEtapa(+this.dataset.vaga,+this.dataset.etapa);};});
-  document.querySelectorAll('[data-etapa-geral]').forEach(el=>{if(el.textContent!=='-')el.onclick=function(){showCandEtapaGeral(+this.dataset.etapaGeral);};});
-}
-
-/* ===== MODAL ETAPA POR VAGA ===== */
-function showCandEtapa(vid,eidx){
-  const vg=vagas.find(v=>v.id===vid),cs=candidatos.filter(c=>c.positionId===vid&&c.currentStage===eidx),ct=getContrato(vg);
-  document.getElementById('modal-title').textContent=ETAPAS[eidx];
-  let tbody='';
-  cs.forEach((c,i)=>{tbody+=`<tr><td>${i+1}</td><td>${c.name}</td><td><span class="contrato-badge" style="background:#fff7ed;color:#ea580c">${ct?.nome||'-'}</span></td><td class="center"><button class="btn btn-primary btn-sm" data-id="${c.id}">Checklist</button></td></tr>`;});
-  document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Vaga:<strong style="color:#1e40af">${vg.title}</strong> - ${vg.state}</div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong></div></div><div style="max-height:350px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th>Contrato</th><th class="center">Ação</th></tr></thead><tbody>${tbody}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" id="exportEtapaVagaBtn">📊 Excel</button><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('closeModalBtn').onclick=closeModal;
-  document.getElementById('exportEtapaVagaBtn').onclick=function(){let csv='\uFEFF#;Nome;Função;Estado;Contrato;Etapa\n';cs.forEach((c,i)=>{csv+=`${i+1};${c.name};${vg.title};${vg.state};${ct?.nome||'N/A'};${ETAPAS[eidx]}\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download=`${vg.title.replace(/\s+/g,'_')}_${vg.state}_etapa${eidx+1}.csv`;a.click();showToast('📊 Excel exportado!');};
-  document.querySelectorAll('#modal-content .btn-primary').forEach(b=>{b.onclick=function(){closeModal();setTimeout(()=>openCheck(+this.dataset.id),100);};});
-}
-
-/* ===== MODAL ETAPA GERAL ===== */
-function showCandEtapaGeral(eidx){
-  const cf=getCandidatosFiltrados(),cs=cf.filter(c=>c.currentStage===eidx);
-  document.getElementById('modal-title').textContent=ETAPAS[eidx];
-  let tbody='';cs.forEach((c,i)=>{const vg=vagas.find(v=>v.id===c.positionId),ct=getContrato(vg);tbody+=`<tr><td>${i+1}</td><td>${c.name}</td><td>${vg?.title||'-'}</td><td>${vg?.state||'-'}</td><td>${ct?.nome||'-'}</td><td class="center"><button class="btn btn-primary btn-sm" data-id="${c.id}">Checklist</button></td></tr>`;});
-  document.getElementById('modal-content').innerHTML=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:13px;color:#64748b">Etapa:<strong style="color:#1e40af">${eidx+1}. ${ETAPAS[eidx]}</strong></div><div style="font-size:13px;color:#64748b">Total:<strong style="color:#16a34a">${cs.length}</strong></div></div><div style="max-height:400px;overflow-y:auto">${cs.length?`<table><thead><tr><th>#</th><th>Nome</th><th>Função</th><th>UF</th><th>Contrato</th><th class="center">Ação</th></tr></thead><tbody>${tbody}</tbody></table>`:'<p style="text-align:center;color:#64748b;padding:20px">Nenhum</p>'}</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-success" style="flex:1" id="exportEtapaBtn">📊 Excel</button><button class="btn btn-outline" style="flex:1" id="closeModalBtn">Fechar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('closeModalBtn').onclick=closeModal;
-  document.getElementById('exportEtapaBtn').onclick=function(){let csv='\uFEFF#;Nome;Função;Estado;Contrato;Etapa\n';cs.forEach((c,i)=>{const vg=vagas.find(v=>v.id===c.positionId),ct=getContrato(vg);csv+=`${i+1};${c.name};${vg?.title||'N/A'};${vg?.state||'N/A'};${ct?.nome||'N/A'};${ETAPAS[eidx]}\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download=`etapa_${eidx+1}_${ETAPAS[eidx].replace(/\s+/g,'_')}.csv`;a.click();showToast('📊 Excel exportado!');};
-  document.querySelectorAll('#modal-content .btn-primary').forEach(b=>{b.onclick=function(){closeModal();setTimeout(()=>openCheck(+this.dataset.id),100);};});
-}
-
-/* ===== CHECKLIST ===== */
-function openCheck(id){
-  const c=candidatos.find(x=>x.id===id),v=vagas.find(x=>x.id===c.positionId),ct=getContrato(v);
-  if(!c.checklist)c.checklist=Array(15).fill(false);
-  let checklistTemp=[...c.checklist];
-  function renderCheckModal(){
-    const okNow=checklistTemp[14];
-    let h=`<div style="background:#f1f5f9;padding:12px;border-radius:8px;margin-bottom:16px"><div style="font-size:14px;font-weight:600">${c.name}</div><div style="font-size:12px;color:#64748b">${v?.title||'N/A'} - ${v?.state||''}</div><div style="font-size:12px;color:#ea580c;font-weight:500">${ct?.nome||''}</div><div style="margin-top:8px">${okNow?'<span style="background:#dcfce7;color:#16a34a;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">✅ CONCLUÍDO</span>':'<span style="background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600">⏳ PROCESSO</span>'}</div></div><div style="max-height:320px;overflow-y:auto">`;
-    ETAPAS.forEach((et,i)=>{const ch=checklistTemp[i];h+=`<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:4px;background:${ch?'#f0fdf4':'#fff'};border:1px solid ${ch?'#86efac':'#e2e8f0'};border-radius:6px;cursor:pointer"><input type="checkbox" ${ch?'checked':''} data-idx="${i}" style="width:18px;height:18px"><span style="flex:1;font-size:13px;color:${ch?'#16a34a':'#334155'};font-weight:${ch?'600':'400'}">${i+1}.${et}</span>${ch?'<span style="color:#16a34a">✓</span>':''}</label>`;});
-    h+=`</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-outline" style="flex:1" id="markAllTemp">✓ Todas</button><button class="btn btn-outline" style="flex:1" id="clearAllTemp">✗ Limpar</button></div><div class="btn-group" style="margin-top:8px"><button class="btn btn-success" style="flex:1" id="saveCheck">💾 Salvar</button><button class="btn btn-danger" style="flex:1" id="cancelCheck">✗ Cancelar</button></div>`;
-    document.getElementById('modal-content').innerHTML=h;
-    document.getElementById('modal-title').textContent='Checklist';
-    document.querySelectorAll('#modal-content input[type=checkbox]').forEach(cb=>{cb.onchange=function(){checklistTemp[+this.dataset.idx]=this.checked;renderCheckModal();};});
-    document.getElementById('markAllTemp').onclick=function(){checklistTemp=Array(15).fill(true);renderCheckModal();};
-    document.getElementById('clearAllTemp').onclick=function(){checklistTemp=Array(15).fill(false);renderCheckModal();};
-    document.getElementById('saveCheck').onclick=async function(){let l=-1;for(let i=14;i>=0;i--)if(checklistTemp[i]){l=i;break;}c.checklist=[...checklistTemp];c.currentStage=l>=0?l:0;await sb.from('candidatos').update({checklist:c.checklist,current_stage:c.currentStage}).eq('id',id);showToast('✅ Checklist salvo!');closeModal();render();};
-    document.getElementById('cancelCheck').onclick=function(){closeModal();render();};
+    const result=await res.json();
+    if(!res.ok){
+      set({loading:false,erro:'Erro ao salvar: '+JSON.stringify(result)});
+      return;
+    }
+    const row=Array.isArray(result)?result[0]:result;
+    set({loading:false,resultadoAtual:row,view:'resultado'});
+  }catch(e){
+    set({loading:false,erro:'Erro de conexão: '+e.message});
   }
-  renderCheckModal();
-  document.getElementById('modal').classList.remove('hidden');
 }
 
-/* ===== CONTRATOS ===== */
-function renderContratos(){
-  let h=`<div class="page-header"><h1 class="page-title">Contratos</h1><button class="btn btn-primary" id="newContrato">+ Novo Contrato</button></div><div class="card" style="padding:0"><table><thead><tr><th>Nome</th><th>Empresa</th><th>CNPJ</th><th class="center">Vagas</th><th class="center">Candidatos</th><th class="center">Status</th><th class="center">Ações</th></tr></thead><tbody>`;
-  contratos.forEach(ct=>{const vg=vagas.filter(v=>v.contrato_id===ct.id),cd=candidatos.filter(c=>vg.map(v=>v.id).includes(c.positionId));const cnpjFmt=ct.cnpj?ct.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5'):'—';h+=`<tr><td><strong>${ct.nome}</strong></td><td>${ct.empresa}</td><td style="font-family:monospace;font-size:11px">${cnpjFmt}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${vg.length}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${cd.length}</span></td><td class="center">${ct.ativo?'<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:4px;font-size:11px">Ativo</span>':'<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:4px;font-size:11px">Inativo</span>'}</td><td class="center"><button class="btn btn-outline btn-sm" data-edit-ct="${ct.id}">Editar</button> <button class="btn btn-danger btn-sm" data-del-ct="${ct.id}">Del</button></td></tr>`;});
-  h+=`</tbody></table></div>`;
-  document.getElementById('contratos').innerHTML=h;
-  document.getElementById('newContrato').onclick=function(){openContratoModal();};
-  document.querySelectorAll('[data-edit-ct]').forEach(b=>{b.onclick=function(){openContratoModal(+this.dataset.editCt);};});
-  document.querySelectorAll('[data-del-ct]').forEach(b=>{b.onclick=function(){const id=+this.dataset.delCt,ct=contratos.find(x=>x.id===id),vg=vagas.filter(v=>v.contrato_id===id);confirmDelete('contrato',ct.nome,`${vg.length} vagas vinculadas`,async()=>{await sb.from('contratos').delete().eq('id',id);contratos=contratos.filter(x=>x.id!==id);render();showToast('🗑️ Contrato excluído!');});};});
-}
-
-function openContratoModal(id){
-  const ct=id?contratos.find(x=>x.id===id):null;
-  document.getElementById('modal-title').textContent=ct?'Editar Contrato':'Novo Contrato';
-  document.getElementById('modal-content').innerHTML=`<div class="form-group"><label class="required">Nome do Contrato</label><input type="text" id="ctNome" value="${ct?.nome||''}" placeholder="Ex: Petroreconcavo"></div><div class="form-group"><label class="required">Empresa</label><input type="text" id="ctEmpresa" value="${ct?.empresa||''}" placeholder="Ex: Petroreconcavo"></div><div class="form-group"><label class="required">CNPJ da Unidade</label><input type="text" id="ctCnpj" value="${ct?.cnpj||''}" placeholder="Somente números: 00000000000000" style="font-family:monospace"></div><div class="info-box">ℹ️ O CNPJ será usado na exportação Wehandle como "Identificação Fiscal da Unidade"</div><div class="form-group"><label><input type="checkbox" id="ctAtivo" ${ct?.ativo!==false?'checked':''}> Contrato Ativo</label></div><div class="btn-group"><button class="btn btn-primary" style="flex:1" id="saveContrato">Salvar</button><button class="btn btn-outline" style="flex:1" id="cancelContrato">Cancelar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('cancelContrato').onclick=closeModal;
-  document.getElementById('saveContrato').onclick=async function(){
-    const nome=document.getElementById('ctNome').value.trim(),empresa=document.getElementById('ctEmpresa').value.trim(),cnpj=document.getElementById('ctCnpj').value.replace(/\D/g,''),ativo=document.getElementById('ctAtivo').checked;
-    if(!nome||!empresa){alert('Preencha Nome e Empresa');return;}
-    if(id){await sb.from('contratos').update({nome,empresa,cnpj,ativo}).eq('id',id);const c=contratos.find(x=>x.id===id);c.nome=nome;c.empresa=empresa;c.cnpj=cnpj;c.ativo=ativo;showToast('✅ Contrato atualizado!');}
-    else{const{data}=await sb.from('contratos').insert({nome,empresa,cnpj,ativo}).select();if(data)contratos.push(data[0]);showToast('✅ Contrato criado!');}
-    closeModal();render();
-  };
-}
-
-/* ===== VAGAS ===== */
-function renderVagas(){
-  let h=`<div class="page-header"><h1 class="page-title">Vagas</h1><button class="btn btn-primary" id="newVaga">+ Nova Vaga</button></div><div class="card" style="padding:0"><table><thead><tr><th>Vaga</th><th>Estado</th><th>Contrato</th><th class="center">CBO</th><th class="center">Salário</th><th class="center">Meta</th><th class="center">Cands</th><th class="center">Ações</th></tr></thead><tbody>`;
-  vagas.forEach(v=>{const ct=getContrato(v);h+=`<tr><td>${v.title}</td><td>${v.state}</td><td><span class="contrato-badge" style="background:#fff7ed;color:#ea580c">${ct?.nome||'Sem contrato'}</span></td><td class="center" style="font-family:monospace">${v.cbo||'<span style="color:#dc2626">—</span>'}</td><td class="center">${v.salario?'R$ '+v.salario:'<span style="color:#dc2626">—</span>'}</td><td class="center"><span class="badge-pill" style="background:#dbeafe;color:#1d4ed8">${v.quantity}</span></td><td class="center"><span class="badge-pill" style="background:#f3e8ff;color:#7c3aed">${candidatos.filter(c=>c.positionId===v.id).length}</span></td><td class="center"><button class="btn btn-outline btn-sm" data-edit="${v.id}">Editar</button> <button class="btn btn-danger btn-sm" data-del="${v.id}">Del</button></td></tr>`;});
-  h+=`</tbody></table></div>`;
-  document.getElementById('vagas').innerHTML=h;
-  document.getElementById('newVaga').onclick=function(){openVagaModal();};
-  document.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=function(){openVagaModal(+this.dataset.edit);};});
-  document.querySelectorAll('[data-del]').forEach(b=>{b.onclick=function(){const id=+this.dataset.del,v=vagas.find(x=>x.id===id),numCands=candidatos.filter(c=>c.positionId===id).length;confirmDelete('vaga',v.title,`Estado: ${v.state} | ${numCands} candidatos`,async()=>{await sb.from('candidatos').delete().eq('position_id',id);await sb.from('vagas').delete().eq('id',id);vagas=vagas.filter(x=>x.id!==id);candidatos=candidatos.filter(c=>c.positionId!==id);render();showToast('🗑️ Vaga excluída!');});};});
-}
-
-function openVagaModal(id){
-  const v=id?vagas.find(x=>x.id===id):null;
-  document.getElementById('modal-title').textContent=v?'Editar Vaga':'Nova Vaga';
-  document.getElementById('modal-content').innerHTML=`<div class="form-group"><label class="required">Contrato</label><select id="vContrato"><option value="">Selecione o Contrato</option>${contratos.filter(c=>c.ativo).map(c=>`<option value="${c.id}" ${v?.contrato_id===c.id?'selected':''}>${c.nome}</option>`).join('')}</select></div><div class="form-group"><label class="required">Nome da Vaga</label><input type="text" id="vTitle" value="${v?.title||''}"></div><div class="form-row"><div class="form-group"><label class="required">Estado</label><select id="vState">${ESTADOS.map(e=>`<option value="${e}" ${v?.state===e?'selected':''}>${e}</option>`).join('')}</select></div><div class="form-group"><label class="required">Meta</label><input type="number" id="vQty" value="${v?.quantity||1}"></div></div><div class="section-divider">Dados Wehandle</div><div class="form-row"><div class="form-group"><label class="required">CBO</label><input type="text" id="vCbo" value="${v?.cbo||''}" placeholder="Ex: 782510" style="font-family:monospace"></div><div class="form-group"><label class="required">Salário (R$)</label><input type="text" id="vSalario" value="${v?.salario||''}" placeholder="Ex: 2648,00"></div></div><div class="info-box">ℹ️ CBO e Salário serão usados na exportação Wehandle</div><div class="btn-group"><button class="btn btn-primary" style="flex:1" id="saveVaga">Salvar</button><button class="btn btn-outline" style="flex:1" id="cancelVaga">Cancelar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('cancelVaga').onclick=closeModal;
-  document.getElementById('saveVaga').onclick=async function(){
-    const contrato_id=parseInt(document.getElementById('vContrato').value)||null,t=document.getElementById('vTitle').value.trim(),s=document.getElementById('vState').value,q=parseInt(document.getElementById('vQty').value)||1,cbo=document.getElementById('vCbo').value.trim(),salario=document.getElementById('vSalario').value.trim();
-    if(!t){alert('Preencha o nome');return;}if(!contrato_id){alert('Selecione um contrato');return;}
-    if(id){await sb.from('vagas').update({title:t,state:s,quantity:q,contrato_id,cbo,salario}).eq('id',id);const vv=vagas.find(x=>x.id===id);vv.title=t;vv.state=s;vv.quantity=q;vv.contrato_id=contrato_id;vv.cbo=cbo;vv.salario=salario;showToast('✅ Vaga atualizada!');}
-    else{const{data}=await sb.from('vagas').insert({title:t,state:s,quantity:q,contrato_id,cbo,salario}).select();if(data)vagas.push(data[0]);showToast('✅ Vaga criada!');}
-    closeModal();render();
-  };
-}
-
-/* ===== CANDIDATOS ===== */
-function renderCands(){
-  const funcs=[...new Set(vagas.map(v=>v.title))];
-  const ativos=contratos.filter(c=>c.ativo);
-  let contratoCheckboxes=`<label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;white-space:nowrap"><input type="checkbox" id="chkTodosCand" ${filterContratos.length===0?'checked':''} style="width:14px;height:14px"><span>Todos</span></label>`;
-  ativos.forEach(c=>{contratoCheckboxes+=`<label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;white-space:nowrap"><input type="checkbox" class="chkContratoCand" data-ct="${c.id}" ${filterContratos.includes(c.id)?'checked':''} style="width:14px;height:14px"><span>${c.nome}</span></label>`;});
-  let h=`<div class="page-header"><h1 class="page-title">Candidatos</h1><div class="btn-group"><button class="btn btn-wehandle" id="expWehandle">📤 Wehandle</button><button class="btn btn-success" id="expExcel">📊 Excel</button><button class="btn btn-primary" id="newCand">+ Novo</button></div></div><div class="card"><div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px"><span style="font-weight:600;font-size:13px">📋 Contratos:</span>${contratoCheckboxes}</div><div class="filters"><input type="text" placeholder="Buscar..." id="fSearch" value="${filterSearch}"><select id="fEtapa"><option value="todos">Todas Etapas</option>${ETAPAS.map((e,i)=>`<option value="${i}" ${filterEtapa==i?'selected':''}>${i+1}.${e}</option>`).join('')}</select><select id="fEstado"><option value="todos">Todos Estados</option>${ESTADOS.map(e=>`<option value="${e}" ${filterEstado===e?'selected':''}>${e}</option>`).join('')}</select><select id="fFuncao"><option value="todos">Todas Funções</option>${funcs.map(f=>`<option value="${f}" ${filterFuncao===f?'selected':''}>${f}</option>`).join('')}</select></div></div><div class="card" style="padding:0"><table><thead><tr><th style="cursor:pointer" id="sortName">Nome</th><th>CPF</th><th>Vaga</th><th>Contrato</th><th>Etapa</th><th>Admissão</th><th class="center">Ações</th></tr></thead><tbody id="tbCand"></tbody></table></div>`;
-  document.getElementById('candidatos').innerHTML=h;
-  document.getElementById('fSearch').oninput=function(){filterSearch=this.value;renderTbl();};
-  document.getElementById('chkTodosCand').onchange=function(){if(this.checked){filterContratos=[];renderCands();}};
-  document.querySelectorAll('.chkContratoCand').forEach(cb=>{cb.onchange=function(){const id=+this.dataset.ct;if(this.checked){if(!filterContratos.includes(id))filterContratos.push(id);}else{filterContratos=filterContratos.filter(x=>x!==id);}renderCands();};});
-  document.getElementById('fEtapa').onchange=function(){filterEtapa=this.value;renderTbl();};
-  document.getElementById('fEstado').onchange=function(){filterEstado=this.value;renderTbl();};
-  document.getElementById('fFuncao').onchange=function(){filterFuncao=this.value;renderTbl();};
-  document.getElementById('sortName').onclick=function(){sortDir=sortDir==='asc'?'desc':'asc';renderTbl();};
-  document.getElementById('newCand').onclick=openCandModal;
-  document.getElementById('expExcel').onclick=expExcel;
-  document.getElementById('expWehandle').onclick=openWehandleModal;
-  renderTbl();
-}
-
-function renderTbl(){
-  let f=candidatos.filter(c=>{
-    const v=vagas.find(x=>x.id===c.positionId);
-    const ctMatch=filterContratos.length===0||filterContratos.includes(v?.contrato_id);
-    return c.name.toLowerCase().includes(filterSearch.toLowerCase())&&ctMatch&&(filterEtapa==='todos'||c.currentStage===parseInt(filterEtapa))&&(filterEstado==='todos'||(v&&v.state===filterEstado))&&(filterFuncao==='todos'||(v&&v.title===filterFuncao));
-  });
-  f.sort((a,b)=>sortDir==='asc'?a.name.localeCompare(b.name):b.name.localeCompare(a.name));
-  let h='';
-  f.slice(0,200).forEach(c=>{const v=vagas.find(x=>x.id===c.positionId),ct=getContrato(v),ok=isOk(c),m=c.checklist?c.checklist.filter(x=>x).length:0;const admFmt=c.data_admissao?new Date(c.data_admissao+'T12:00:00').toLocaleDateString('pt-BR'):'-';h+=`<tr style="${ok?'background:#f0fdf4':''}"><td>${c.name}${ok?' <span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:10px;font-size:10px">✓</span>':''}</td><td style="font-family:monospace;font-size:11px">${c.cpf||'<span style="color:#9ca3af">—</span>'}</td><td class="text-gray">${v?.title||'-'} - ${v?.state||''}</td><td><span class="contrato-badge" style="background:#fff7ed;color:#ea580c">${ct?.nome||'-'}</span></td><td><span class="badge" style="background:${ok?'#dcfce7':'#dbeafe'};color:${ok?'#16a34a':'#1d4ed8'}">${c.currentStage+1}.${ETAPAS[c.currentStage]}</span></td><td style="font-size:11px">${admFmt}</td><td><div style="display:flex;gap:4px;justify-content:center"><button class="btn btn-primary btn-sm" data-editc="${c.id}">Editar</button><button class="btn btn-outline btn-sm" data-check="${c.id}">Check</button><button class="btn btn-danger btn-sm" data-delc="${c.id}">Del</button></div></td></tr>`;});
-  document.getElementById('tbCand').innerHTML=h;
-  document.querySelectorAll('[data-editc]').forEach(b=>{b.onclick=function(){openCandEditModal(+this.dataset.editc);};});
-  document.querySelectorAll('[data-check]').forEach(b=>{b.onclick=function(){openCheck(+this.dataset.check);};});
-  document.querySelectorAll('[data-delc]').forEach(b=>{b.onclick=function(){const id=+this.dataset.delc,c=candidatos.find(x=>x.id===id),v=vagas.find(x=>x.id===c.positionId),ct=getContrato(v);confirmDelete('candidato',c.name,`${v?.title||'N/A'} - ${v?.state||''} | ${ct?.nome||''}`,async()=>{await sb.from('candidatos').delete().eq('id',id);candidatos=candidatos.filter(x=>x.id!==id);renderTbl();showToast('🗑️ Candidato excluído!');});};});
-}
-
-/* ===== NOVO CANDIDATO ===== */
-function openCandModal(){
-  document.getElementById('modal-title').textContent='Novo Candidato';
-  document.getElementById('modal-content').innerHTML=`<div class="section-divider">Dados Básicos</div><div class="form-group"><label class="required">Nome Completo</label><input type="text" id="cName" placeholder="Nome completo"></div><div class="form-row"><div class="form-group"><label>CPF</label><input type="text" id="cCpf" placeholder="Somente números" style="font-family:monospace"></div><div class="form-group"><label class="required">Vaga</label><select id="cVaga"><option value="">Selecione</option>${vagas.map(v=>{const ct=getContrato(v);return`<option value="${v.id}">${v.title} - ${v.state} (${ct?.nome||''})</option>`;}).join('')}</select></div></div><div class="form-group"><label>Etapa Atual</label><select id="cEtapa">${ETAPAS.map((e,i)=>`<option value="${i}">${i+1}.${e}</option>`).join('')}</select></div><div class="section-divider">Dados Pessoais (Wehandle)</div><div class="form-row-3"><div class="form-group"><label>Email</label><input type="email" id="cEmail" placeholder="email@exemplo.com"></div><div class="form-group"><label>Sexo</label><select id="cSexo"><option value="">Selecione</option><option>Masculino</option><option>Feminino</option></select></div><div class="form-group"><label>Dt. Nascimento</label><input type="date" id="cNasc"></div></div><div class="form-group"><label>Data Admissão</label><input type="date" id="cAdm"></div><div class="section-divider">Endereço (Wehandle)</div><div class="form-row-3"><div class="form-group"><label>CEP</label><input type="text" id="cCep" placeholder="00000000" style="font-family:monospace"></div><div class="form-group" style="grid-column:span 2"><label>Endereço</label><input type="text" id="cEnd" placeholder="Rua, Av..."></div></div><div class="form-row"><div class="form-group"><label>Número</label><input type="text" id="cNum" placeholder="123"></div><div class="form-group"><label>OBS</label><input type="text" id="cObs" placeholder="Observações"></div></div><div class="info-box">ℹ️ Campos Wehandle podem ser preenchidos depois via "Editar"</div><div class="btn-group" style="margin-top:16px"><button class="btn btn-primary" style="flex:1" id="saveCand">Salvar</button><button class="btn btn-outline" style="flex:1" id="cancelCand">Cancelar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('cancelCand').onclick=closeModal;
-  document.getElementById('saveCand').onclick=async function(){
-    const n=document.getElementById('cName').value.trim(),p=parseInt(document.getElementById('cVaga').value),s=parseInt(document.getElementById('cEtapa').value)||0;
-    const cpf=document.getElementById('cCpf').value.replace(/\D/g,''),email=document.getElementById('cEmail').value.trim(),sexo=document.getElementById('cSexo').value,data_nascimento=document.getElementById('cNasc').value||null,data_admissao=document.getElementById('cAdm').value||null,cep=document.getElementById('cCep').value.replace(/\D/g,''),endereco=document.getElementById('cEnd').value.trim(),numero_endereco=document.getElementById('cNum').value.trim(),obs=document.getElementById('cObs').value.trim();
-    if(!n){alert('Preencha o nome');return;}if(!p){alert('Selecione uma vaga');return;}
-    const ch=Array(15).fill(false);for(let i=0;i<=s;i++)ch[i]=true;
-    const{data}=await sb.from('candidatos').insert({name:n,position_id:p,current_stage:s,status:'in_process',checklist:ch,cpf:cpf||null,email:email||null,sexo:sexo||null,data_nascimento,data_admissao,cep:cep||null,endereco:endereco||null,numero_endereco:numero_endereco||null,obs:obs||null}).select();
-    if(data){candidatos.push({...data[0],positionId:data[0].position_id,currentStage:data[0].current_stage});showToast('✅ Candidato adicionado!');}
-    closeModal();render();
-  };
-}
-
-/* ===== EDITAR CANDIDATO ===== */
-function openCandEditModal(id){
-  const c=candidatos.find(x=>x.id===id),v=vagas.find(x=>x.id===c.positionId),ct=getContrato(v);
-  document.getElementById('modal-title').textContent='Editar Candidato';
-  document.getElementById('modal-content').innerHTML=`<div class="section-divider">Dados Básicos</div><div class="form-group"><label class="required">Nome Completo</label><input type="text" id="eName" value="${c.name}"></div><div class="form-row"><div class="form-group"><label>CPF</label><input type="text" id="eCpf" value="${c.cpf||''}" style="font-family:monospace"></div><div class="form-group"><label class="required">Vaga</label><select id="eVaga">${vagas.map(vv=>{const cct=getContrato(vv);return`<option value="${vv.id}" ${vv.id===c.positionId?'selected':''}>${vv.title} - ${vv.state} (${cct?.nome||''})</option>`;}).join('')}</select></div></div><div class="section-divider">Dados Pessoais (Wehandle)</div><div class="form-row-3"><div class="form-group"><label>Email</label><input type="email" id="eEmail" value="${c.email||''}"></div><div class="form-group"><label>Sexo</label><select id="eSexo"><option value="">Selecione</option><option ${c.sexo==='Masculino'?'selected':''}>Masculino</option><option ${c.sexo==='Feminino'?'selected':''}>Feminino</option></select></div><div class="form-group"><label>Dt. Nascimento</label><input type="date" id="eNasc" value="${c.data_nascimento||''}"></div></div><div class="form-group"><label>Data Admissão</label><input type="date" id="eAdm" value="${c.data_admissao||''}"></div><div class="section-divider">Endereço (Wehandle)</div><div class="form-row-3"><div class="form-group"><label>CEP</label><input type="text" id="eCep" value="${c.cep||''}" style="font-family:monospace"></div><div class="form-group" style="grid-column:span 2"><label>Endereço</label><input type="text" id="eEnd" value="${c.endereco||''}"></div></div><div class="form-row"><div class="form-group"><label>Número</label><input type="text" id="eNum" value="${c.numero_endereco||''}"></div><div class="form-group"><label>OBS</label><input type="text" id="eObs" value="${c.obs||''}"></div></div><div class="btn-group" style="margin-top:16px"><button class="btn btn-primary" style="flex:1" id="saveEdit">Salvar</button><button class="btn btn-outline" style="flex:1" id="cancelEdit">Cancelar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('cancelEdit').onclick=closeModal;
-  document.getElementById('saveEdit').onclick=async function(){
-    const name=document.getElementById('eName').value.trim(),position_id=parseInt(document.getElementById('eVaga').value);
-    const cpf=document.getElementById('eCpf').value.replace(/\D/g,''),email=document.getElementById('eEmail').value.trim(),sexo=document.getElementById('eSexo').value,data_nascimento=document.getElementById('eNasc').value||null,data_admissao=document.getElementById('eAdm').value||null,cep=document.getElementById('eCep').value.replace(/\D/g,''),endereco=document.getElementById('eEnd').value.trim(),numero_endereco=document.getElementById('eNum').value.trim(),obs=document.getElementById('eObs').value.trim();
-    if(!name){alert('Preencha o nome');return;}
-    await sb.from('candidatos').update({name,position_id,cpf:cpf||null,email:email||null,sexo:sexo||null,data_nascimento,data_admissao,cep:cep||null,endereco:endereco||null,numero_endereco:numero_endereco||null,obs:obs||null}).eq('id',id);
-    c.name=name;c.positionId=position_id;c.position_id=position_id;c.cpf=cpf||null;c.email=email||null;c.sexo=sexo||null;c.data_nascimento=data_nascimento;c.data_admissao=data_admissao;c.cep=cep||null;c.endereco=endereco||null;c.numero_endereco=numero_endereco||null;c.obs=obs||null;
-    showToast('✅ Dados salvos!');closeModal();render();
-  };
-}
-
-/* ===== EXPORTAR WEHANDLE ===== */
-function openWehandleModal(){
-  const aprovados=candidatos.filter(isOk);
-  const comCpf=aprovados.filter(c=>c.cpf);
-  const semCpf=aprovados.filter(c=>!c.cpf);
-  const completos=aprovados.filter(c=>c.cpf&&c.email&&c.sexo&&c.data_nascimento);
-  
-  let ctOptions=contratos.filter(c=>c.ativo).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
-  
-  document.getElementById('modal-title').textContent='📤 Exportar para Wehandle';
-  document.getElementById('modal-content').innerHTML=`<div class="info-box" style="background:#faf5ff;border-color:#c4b5fd;color:#7c3aed"><strong>Layout Wehandle:</strong> Exporta candidatos APROVADOS no formato de importação do sistema Wehandle (XLSX)</div><div class="form-group"><label class="required">Contrato</label><select id="whContrato"><option value="todos">Todos os Contratos</option>${ctOptions}</select></div><div class="form-group"><label>Data de Admissão (padrão p/ quem não tem)</label><input type="date" id="whAdm"></div><div id="whPreview" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:16px 0"><div style="font-size:13px;font-weight:600;margin-bottom:8px">Prévia da exportação:</div><div style="font-size:12px;color:#64748b"><div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0"><span>Candidatos Aprovados:</span><strong style="color:#16a34a">${aprovados.length}</strong></div><div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0"><span>Com CPF preenchido:</span><strong style="color:#16a34a">${comCpf.length}</strong></div><div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0"><span>Sem CPF (não exportados):</span><strong style="color:#dc2626">${semCpf.length}</strong></div><div style="display:flex;justify-content:space-between;padding:4px 0"><span>Com dados completos:</span><strong style="color:#2563eb">${completos.length}</strong></div></div></div><div style="background:#fefce8;padding:10px;border-radius:6px;border:1px solid #fde047;margin-bottom:16px;font-size:12px;color:#854d0e">⚠️ Apenas candidatos APROVADOS com CPF preenchido serão exportados.<br>Campos fixos: Nacionalidade=BR, Regime=CLT - Tempo Indeterminado</div><div class="btn-group"><button class="btn btn-wehandle" style="flex:1" id="gerarWehandle">📤 Gerar XLSX Wehandle</button><button class="btn btn-outline" style="flex:1" id="cancelWh">Cancelar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('cancelWh').onclick=closeModal;
-  document.getElementById('gerarWehandle').onclick=function(){gerarXlsxWehandle();};
-}
-
-function gerarXlsxWehandle(){
-  const ctId=document.getElementById('whContrato').value;
-  const admPadrao=document.getElementById('whAdm').value;
-  let aprov=candidatos.filter(isOk).filter(c=>c.cpf);
-  
-  if(ctId!=='todos'){
-    const vagasDoContrato=vagas.filter(v=>v.contrato_id===parseInt(ctId)).map(v=>v.id);
-    aprov=aprov.filter(c=>vagasDoContrato.includes(c.positionId));
+async function loginAdmin(){
+  if(ST.adminPass===ADMIN_PASS){
+    set({loading:true,adminErro:'',view:'admin'});
+    const res=await buscarResultados();
+    set({resultados:Array.isArray(res)?res:[],loading:false});
+  } else {
+    set({adminErro:'Senha incorreta.'});
   }
-  
-  if(!aprov.length){alert('Nenhum candidato aprovado com CPF para exportar!');return;}
-  
-  // Gerar CSV no layout Wehandle (separador ;)
-  let csv='\uFEFF';
-  csv+='Identificação Fiscal do Funcionário *;Nome Completo *;Cargo *;Identificação Fiscal da Unidade *;Cbo *;Data de admissão *;Nacionalidade *;Regime de contrato *;Email;Sexo;Data de Nascimento;Salário;CEP;Endereço;Número;OBS\n';
-  
-  aprov.forEach(c=>{
-    const v=vagas.find(x=>x.id===c.positionId);
-    const ct=getContrato(v);
-    const adm=c.data_admissao||admPadrao||'';
-    const admFmt=adm?new Date(adm+'T12:00:00').toLocaleDateString('pt-BR'):'';
-    const nascFmt=c.data_nascimento?new Date(c.data_nascimento+'T12:00:00').toLocaleDateString('pt-BR'):'';
-    
-    csv+=`${c.cpf};${c.name};${(v?.title||'').toUpperCase()};${ct?.cnpj||''};${v?.cbo||''};${admFmt};BR;CLT - Tempo Indeterminado;${c.email||''};${c.sexo||''};${nascFmt};${v?.salario||''};${c.cep||''};${c.endereco||''};${c.numero_endereco||''};${c.obs||''}\n`;
-  });
-  
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
-  a.download=`WEHANDLE_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  showToast(`📤 Wehandle exportado! ${aprov.length} candidatos`);
-  closeModal();
 }
 
-/* ===== EXPORT EXCEL ===== */
-function expExcel(){
-  let d=candidatos.map(c=>{const v=vagas.find(x=>x.id===c.positionId),ct=getContrato(v);return{n:c.name,f:v?.title||'N/A',e:ETAPAS[c.currentStage]||'N/A',s:v?.state||'',ct:ct?.nome||'N/A',ctId:v?.contrato_id,st:isOk(c)?'Concluído':'Processo'};});
-  d=d.filter(x=>x.n.toLowerCase().includes(filterSearch.toLowerCase())&&(filterContratos.length===0||filterContratos.includes(x.ctId))&&(filterEstado==='todos'||x.s===filterEstado)&&(filterFuncao==='todos'||x.f===filterFuncao));
-  d.sort((a,b)=>a.n.localeCompare(b.n));
-  let csv='\uFEFF'+'Nome;Função;Etapa;Estado;Contrato;Status\n';d.forEach(x=>{csv+=`${x.n};${x.f};${x.e};${x.s};${x.ct};${x.st}\n`;});
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download=`candidatos_${new Date().toISOString().slice(0,10)}.csv`;a.click();showToast('📊 Excel exportado!');
+async function atualizarAdmin(){
+  set({loading:true});
+  const res=await buscarResultados();
+  set({resultados:Array.isArray(res)?res:[],loading:false});
 }
 
-function closeModal(){document.getElementById('modal').classList.add('hidden');}
-document.getElementById('modal').onclick=function(e){if(e.target===this)closeModal();};
-
-function confirmDelete(tipo,nome,info,onConfirm){
-  document.getElementById('modal-title').textContent='⚠️ Confirmar Exclusão';
-  document.getElementById('modal-content').innerHTML=`<div style="background:#fef2f2;padding:16px;border-radius:8px;margin-bottom:16px;border:1px solid #fecaca"><div style="font-size:14px;color:#dc2626;font-weight:600;margin-bottom:8px">Você está prestes a excluir:</div><div style="font-size:16px;font-weight:700;color:#1e293b">${nome}</div><div style="font-size:13px;color:#64748b;margin-top:4px">${info}</div></div><div style="background:#fefce8;padding:12px;border-radius:8px;margin-bottom:16px;border:1px solid #fde047"><div style="font-size:13px;color:#854d0e">⚠️ Esta ação não pode ser desfeita!</div></div><div class="btn-group"><button class="btn btn-danger" style="flex:1" id="confirmDelBtn">🗑️ Sim, Excluir</button><button class="btn btn-outline" style="flex:1" id="cancelDelBtn">Cancelar</button></div>`;
-  document.getElementById('modal').classList.remove('hidden');
-  document.getElementById('cancelDelBtn').onclick=closeModal;
-  document.getElementById('confirmDelBtn').onclick=async function(){closeModal();await onConfirm();};
+function toggleCard(i){
+  const b=document.getElementById('cb'+i);
+  const c=document.getElementById('cv'+i);
+  if(b&&c){const op=b.classList.toggle('op');c.classList.toggle('op',op);}
 }
 
-init();
-})();
+// ── RENDER ──
+function renderInfo(){
+  return`<div class="card">
+    <div class="hdr">
+      <div style="display:inline-block;background:rgba(255,255,255,.1);border-radius:20px;padding:4px 16px;font-size:10px;letter-spacing:3px;margin-bottom:12px;color:rgba(255,255,255,.6)">AVALIAÇÃO COMPORTAMENTAL</div>
+      <h1>Perfil DISC</h1>
+      <p>20 questões · Aproximadamente 5 minutos<br/>Responda com honestidade — não há respostas certas ou erradas.</p>
+    </div>
+    <div class="body">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px">
+        ${[{k:'D',c:'#C0392B'},{k:'I',c:'#D35400'},{k:'S',c:'#1E8449'},{k:'C',c:'#1A5276'}].map(({k,c})=>`
+        <div style="text-align:center;padding:12px 6px;border-radius:12px;background:${c}15;border:2px solid ${c}30">
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:${c}">${k}</div>
+          <div style="font-size:10px;color:#666;margin-top:2px">${PROF[k].name}</div>
+        </div>`).join('')}
+      </div>
+      <label>Nome completo *</label>
+      <input type="text" id="inp-nome" placeholder="Digite seu nome" value="${ST.nome}" oninput="ST.nome=this.value"/>
+      <label>E-mail *</label>
+      <input type="email" id="inp-email" placeholder="Digite seu e-mail" value="${ST.email}" oninput="ST.email=this.value" onkeydown="if(event.key==='Enter')irParaPerguntas()"/>
+      ${ST.erro?`<div class="err">${ST.erro}</div>`:''}
+      <button class="btn btn-dark" onclick="irParaPerguntas()">Iniciar Avaliação →</button>
+      <p class="note">Suas informações são utilizadas apenas para identificar seu resultado.</p>
+    </div>
+  </div>
+  <button class="admin-link" onclick="set({view:'adminLogin',adminErro:'',adminPass:''})">Acesso Admin</button>`;
+}
+
+function irParaPerguntas(){
+  const n=document.getElementById('inp-nome')?.value||ST.nome;
+  const e=document.getElementById('inp-email')?.value||ST.email;
+  ST.nome=n;ST.email=e;
+  if(!n.trim()){set({erro:'Informe seu nome.'});return;}
+  if(!e.trim()||!e.includes('@')){set({erro:'Informe um e-mail válido.'});return;}
+  set({erro:'',step:'perguntas'});
+  window.scrollTo(0,0);
+}
+
+function renderPerguntas(){
+  const total=Object.keys(ST.respostas).length;
+  const prog=Math.round(total/20*100);
+  const allDone=total===20;
+  return`<div class="card">
+    <div style="background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff">
+      <div class="prog-top">
+        <h2>Avaliação DISC</h2>
+        <div class="prog-ct">${total}<span>/20</span></div>
+      </div>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${prog}%"></div></div>
+    <div class="q-wrap">
+      ${QS.map(q=>{
+        const ans=ST.respostas[q.id];
+        return`<div class="q-block ${ans?'ans':''}">
+          <div class="q-num">QUESTÃO ${String(q.id).padStart(2,'0')}</div>
+          <div class="q-text">${q.t}</div>
+          ${q.o.map(op=>{
+            const sel=ans===op.d;
+            const p=PROF[op.d];
+            return`<button class="opt ${sel?'sel':''}"
+              style="${sel?`border-color:${p.color};background:${p.bg};color:${p.color}`:''}"
+              onclick="ST.respostas={...ST.respostas,[${q.id}]:'${op.d}'};draw()">
+              <div class="radio" style="${sel?`border-color:${p.color};background:${p.color}`:''}">
+                ${sel?'<div class="radio-dot"></div>':''}
+              </div>
+              ${op.t}
+            </button>`;
+          }).join('')}
+        </div>`;
+      }).join('')}
+      ${!allDone?`<div style="text-align:center;font-size:13px;color:#999;margin-bottom:14px">Responda todas as ${20-total} questão(ões) restantes para concluir.</div>`:''}
+      <button class="btn ${allDone?'btn-green':'btn-dark'}" ${!allDone||ST.loading?'disabled':''} onclick="submitForm()">
+        ${ST.loading?'⏳ Salvando...':(allDone?'✅ Ver Meu Resultado':'⏳ '+total+'/20 respondidas')}
+      </button>
+    </div>
+  </div>`;
+}
+
+function renderResultado(){
+  const r=ST.resultadoAtual;
+  if(!r)return'';
+  return`<div class="card" style="max-width:700px">
+    <div class="hdr">
+      <div style="font-size:32px;margin-bottom:8px">${PROF[calcScore(r.respostas).dom].icon}</div>
+      <h1>Seu Perfil DISC está pronto!</h1>
+      <p>Obrigado, ${r.nome}! Veja sua avaliação abaixo.</p>
+    </div>
+    <div class="body">
+      ${resultCardHTML(r)}
+      <div style="background:#f8f9fa;border-radius:10px;padding:14px;font-size:13px;color:#666;text-align:center;margin-top:14px;line-height:1.6">
+        ✅ Suas respostas foram registradas. O recrutador já pode visualizar seu perfil.
+      </div>
+    </div>
+  </div>
+  <button class="admin-link" onclick="set({view:'adminLogin',adminErro:'',adminPass:''})">Acesso Admin</button>`;
+}
+
+function renderAdminLogin(){
+  return`<div class="card" style="max-width:400px">
+    <div class="hdr">
+      <div style="font-size:32px;margin-bottom:8px">🔐</div>
+      <h1>Painel Admin</h1>
+      <p>Acesso restrito ao recrutador</p>
+    </div>
+    <div class="body">
+      <label>Senha</label>
+      <input type="password" placeholder="Digite a senha" value="${ST.adminPass}"
+        oninput="ST.adminPass=this.value" onkeydown="if(event.key==='Enter')loginAdmin()"/>
+      ${ST.adminErro?`<div class="err">${ST.adminErro}</div>`:''}
+      <button class="btn btn-dark" onclick="loginAdmin()">Acessar →</button>
+      <button class="btn btn-ghost" onclick="set({view:'form',step:'info'})">← Voltar</button>
+    </div>
+  </div>`;
+}
+
+function renderAdmin(){
+  const rs=ST.resultados;
+  const dom={D:0,I:0,S:0,C:0};
+  rs.forEach(r=>{const s=calcScore(r.respostas);dom[s.dom]++;});
+  const kpis=[
+    {l:'Total',v:rs.length,s:'candidatas',c:'#6c63ff'},
+    {l:'Dominância D',v:dom.D,s:'candidatas',c:'#C0392B'},
+    {l:'Influência I',v:dom.I,s:'candidatas',c:'#D35400'},
+    {l:'Estabilidade S',v:dom.S,s:'candidatas',c:'#1E8449'},
+    {l:'Conformidade C',v:dom.C,s:'candidatas',c:'#1A5276'},
+  ];
+  return`<div class="adm-wrap">
+    <div class="adm-top">
+      <div>
+        <div class="adm-title">📊 Painel DISC</div>
+        <div class="adm-sub">${rs.length} resposta(s) recebida(s)</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="adm-btn" onclick="atualizarAdmin()">🔄 Atualizar</button>
+        <button class="adm-btn" onclick="set({view:'form',step:'info'})">← Sair</button>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      ${kpis.map(k=>`<div class="kpi" style="--kc:${k.c}">
+        <div class="kpi-lbl">${k.l}</div>
+        <div class="kpi-val">${k.v}</div>
+        <div class="kpi-sub">${k.s}</div>
+      </div>`).join('')}
+    </div>
+    ${ST.loading?`<div class="loading-adm">⏳ Carregando...</div>`:
+      rs.length===0?`<div class="empty-adm"><div style="font-size:48px;margin-bottom:12px">📭</div><div>Nenhuma resposta ainda.</div></div>`:
+      (_RS=rs,rs).map((r,i)=>{
+        const {dom,pct}=calcScore(r.respostas);
+        const p=PROF[dom];
+        const dt=r.criado_em?new Date(r.criado_em).toLocaleString('pt-BR'):'';
+        return`<div class="cand-row">
+          <div class="cand-top" onclick="toggleCard(${i})">
+            <div class="cand-info">
+              <div class="cand-av" style="background:${p.color}">${dom}</div>
+              <div>
+                <div class="cand-nm">${r.nome}</div>
+                <div class="cand-em">${r.email}</div>
+              </div>
+            </div>
+            <div class="cand-right">
+              <span class="pill" style="background:${p.bg};color:${p.color}">${p.icon} ${p.name}</span>
+              <span class="cand-dt">${dt}</span>
+              <button class="btn-print" onclick="event.stopPropagation();printReport(_RS[${i}])">
+                🖨️ Imprimir Relatório
+              </button>
+              <span class="chev" id="cv${i}">⌄</span>
+            </div>
+          </div>
+          <div class="cand-body" id="cb${i}">
+            <div style="padding:8px 0 4px">${resultCardHTML(r)}</div>
+          </div>
+        </div>`;
+      }).join('')
+    }
+  </div>`;
+}
+
+function draw(){
+  const app=document.getElementById('app');
+  if(ST.view==='admin'){
+    document.body.style.padding='24px 16px';
+    app.innerHTML=`<div style="max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:0">${renderAdmin()}</div>`;
+    return;
+  }
+  document.body.style.padding='24px 16px';
+  app.innerHTML=`<div class="app-wrap">${
+    ST.view==='adminLogin'?renderAdminLogin():
+    ST.view==='resultado'?renderResultado():
+    ST.step==='perguntas'?renderPerguntas():
+    renderInfo()
+  }</div>`;
+}
+
+var _RS=[];
+draw();
 </script>
 </body>
 </html>
